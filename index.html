@@ -3,88 +3,94 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shree Warana Vidyalaya - Timetable System</title>
+<title>Shree Warana Vidyalaya - Timetable</title>
 <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Marathi&family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--pr:#1a3a5c;--ac:#e67e22;--gd:#f39c12;--lt:#f0f4f8;--tx:#2c3e50;--mu:#7f8c8d;--dn:#e74c3c;--ok:#27ae60;--bd:#dce3ea;--sh:0 4px 24px rgba(26,58,92,0.10);--rd:14px;}
+:root{--pr:#1a3a5c;--ac:#e67e22;--gd:#f39c12;--lt:#f0f4f8;--tx:#2c3e50;--mu:#7f8c8d;--dn:#e74c3c;--ok:#27ae60;--bd:#dce3ea;--sh:0 4px 24px rgba(26,58,92,.10);--rd:12px;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'DM Sans',sans-serif;background:#eaf0f6;color:var(--tx);min-height:100vh;}
-.hdr{background:linear-gradient(135deg,var(--pr) 60%,#2471a3);color:white;position:sticky;top:0;z-index:200;box-shadow:0 4px 20px rgba(26,58,92,.3);}
-.hdr-in{max-width:1600px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:9px 18px;}
-.logo{width:42px;height:42px;border-radius:50%;background:var(--gd);display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:900;color:var(--pr);flex-shrink:0;}
-.hdr-txt h1{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;}
-.hdr-txt p{font-size:.68rem;opacity:.75;margin-top:1px;}
+.hdr{background:linear-gradient(135deg,var(--pr) 60%,#2471a3);color:#fff;position:sticky;top:0;z-index:200;box-shadow:0 4px 18px rgba(26,58,92,.3);}
+.hdr-in{max-width:1700px;margin:0 auto;display:flex;align-items:center;gap:11px;padding:8px 16px;}
+.logo{width:40px;height:40px;border-radius:50%;background:var(--gd);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:900;color:var(--pr);flex-shrink:0;}
+.hdr-txt h1{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;}
+.hdr-txt p{font-size:.67rem;opacity:.75;margin-top:1px;}
 .hdr-nav{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap;}
-.nb{padding:5px 11px;border-radius:6px;border:none;cursor:pointer;font-size:.74rem;font-weight:600;font-family:'DM Sans',sans-serif;transition:all .2s;background:rgba(255,255,255,.12);color:white;}
+.nb{padding:5px 10px;border-radius:6px;border:none;cursor:pointer;font-size:.72rem;font-weight:600;font-family:'DM Sans',sans-serif;transition:all .2s;background:rgba(255,255,255,.12);color:#fff;}
 .nb:hover,.nb.active{background:var(--gd);color:var(--pr);}
-.app{max-width:1600px;margin:0 auto;padding:18px 14px;}
-.card{background:white;border-radius:var(--rd);box-shadow:var(--sh);padding:18px;margin-bottom:14px;}
-.ct{font-size:.93rem;font-weight:700;color:var(--pr);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
-.fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px;}
-.fg label{display:block;font-size:.7rem;font-weight:600;color:var(--mu);margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px;}
-.fg input,.fg select{width:100%;padding:6px 9px;border:1.5px solid var(--bd);border-radius:6px;font-size:.84rem;font-family:'DM Sans',sans-serif;color:var(--tx);background:var(--lt);outline:none;transition:border .2s;}
-.fg input:focus,.fg select:focus{border-color:var(--pr);background:white;}
-.btn{padding:6px 14px;border-radius:6px;border:none;cursor:pointer;font-size:.8rem;font-weight:600;font-family:'DM Sans',sans-serif;transition:all .2s;display:inline-flex;align-items:center;gap:4px;}
-.bp{background:var(--pr);color:white;}.bp:hover{background:#154572;}
+.app{max-width:1700px;margin:0 auto;padding:16px 12px;}
+.card{background:#fff;border-radius:var(--rd);box-shadow:var(--sh);padding:16px;margin-bottom:13px;}
+.ct{font-size:.9rem;font-weight:700;color:var(--pr);margin-bottom:11px;display:flex;align-items:center;gap:5px;}
+.fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:9px;}
+.fg label,.fl{display:block;font-size:.68rem;font-weight:600;color:var(--mu);margin-bottom:2px;text-transform:uppercase;letter-spacing:.3px;}
+.fg input,.fg select,.fi{width:100%;padding:6px 8px;border:1.5px solid var(--bd);border-radius:6px;font-size:.83rem;font-family:'DM Sans',sans-serif;color:var(--tx);background:var(--lt);outline:none;transition:border .2s;}
+.fg input:focus,.fg select:focus,.fi:focus{border-color:var(--pr);background:#fff;}
+.btn{padding:6px 13px;border-radius:6px;border:none;cursor:pointer;font-size:.78rem;font-weight:600;font-family:'DM Sans',sans-serif;transition:all .2s;display:inline-flex;align-items:center;gap:4px;}
+.bp{background:var(--pr);color:#fff;}.bp:hover{background:#154572;}
 .bg2{background:var(--gd);color:var(--pr);}.bg2:hover{background:#e67e22;}
-.bd2{background:var(--dn);color:white;}.bd2:hover{background:#c0392b;}
-.bk{background:var(--ok);color:white;}.bk:hover{background:#1e8449;}
-.bi{background:#2980b9;color:white;}.bi:hover{background:#1f618d;}
-.bo{background:transparent;border:1.5px solid var(--pr);color:var(--pr);}.bo:hover{background:var(--pr);color:white;}
-.bs{padding:3px 8px;font-size:.69rem;}
-.tab-bar{display:flex;gap:3px;border-bottom:2px solid var(--bd);margin-bottom:14px;flex-wrap:wrap;}
-.tab{padding:6px 13px;cursor:pointer;border-radius:6px 6px 0 0;font-size:.79rem;font-weight:600;color:var(--mu);transition:all .2s;border:none;background:transparent;font-family:'DM Sans',sans-serif;position:relative;bottom:-2px;}
-.tab.active{color:var(--pr);background:white;border:2px solid var(--bd);border-bottom:2px solid white;}
+.bd2{background:var(--dn);color:#fff;}.bd2:hover{background:#c0392b;}
+.bk{background:var(--ok);color:#fff;}.bk:hover{background:#1e8449;}
+.bi{background:#2980b9;color:#fff;}.bi:hover{background:#1f618d;}
+.bo{background:transparent;border:1.5px solid var(--pr);color:var(--pr);}.bo:hover{background:var(--pr);color:#fff;}
+.bs{padding:3px 7px;font-size:.67rem;}
+.tab-bar{display:flex;gap:2px;border-bottom:2px solid var(--bd);margin-bottom:13px;flex-wrap:wrap;}
+.tab{padding:5px 12px;cursor:pointer;border-radius:6px 6px 0 0;font-size:.77rem;font-weight:600;color:var(--mu);transition:all .2s;border:none;background:transparent;font-family:'DM Sans',sans-serif;position:relative;bottom:-2px;}
+.tab.active{color:var(--pr);background:#fff;border:2px solid var(--bd);border-bottom:2px solid #fff;}
 .tab:hover:not(.active){color:var(--pr);background:var(--lt);}
-.dt{width:100%;border-collapse:collapse;font-size:.82rem;}
-.dt th{background:var(--pr);color:white;padding:7px 10px;text-align:left;font-weight:600;font-size:.69rem;text-transform:uppercase;letter-spacing:.3px;}
+/* DATA TABLE */
+.dt{width:100%;border-collapse:collapse;font-size:.8rem;}
+.dt th{background:var(--pr);color:#fff;padding:6px 9px;text-align:left;font-weight:600;font-size:.67rem;text-transform:uppercase;letter-spacing:.3px;}
 .dt th:first-child{border-radius:6px 0 0 0;}.dt th:last-child{border-radius:0 6px 0 0;}
-.dt td{padding:6px 10px;border-bottom:1px solid var(--bd);vertical-align:middle;}
-.dt tr:hover td{background:var(--lt);}.dt tr:last-child td{border-bottom:none;}
-.ttw{overflow-x:auto;}
-.ttt{border-collapse:collapse;font-size:.74rem;}
-.ttt th{background:var(--pr);color:white;padding:5px 6px;text-align:center;font-weight:600;font-size:.66rem;white-space:nowrap;}
-.ttt .dc{background:var(--pr);color:white;font-weight:700;padding:5px 8px;white-space:nowrap;font-size:.75rem;min-width:48px;}
-.tc{padding:4px 4px;border:1px solid var(--bd);text-align:center;vertical-align:middle;min-width:76px;cursor:pointer;transition:background .15s;}
-.tc:hover{background:#dbeafe;}
-.tc.filled{background:#eaf5fb;}
-.tc.dl{border-right:2.5px dashed #94b8d8!important;}
-.tc.dr{background:#eff8ff;border-left:none!important;}
-.tc .sl{font-weight:700;font-size:.74rem;display:block;}
-.tc .tl{font-size:.62rem;color:var(--mu);display:block;}
-.tc.bk-c{background:#fef9e7;color:#b7770d;font-weight:700;font-size:.7rem;cursor:default;}
-.tc.ln-c{background:#fff3e0;color:#d35400;font-weight:700;font-size:.7rem;cursor:default;}
-.tc.st-c{background:#e8f5e9;color:#2e7d32;font-weight:700;font-size:.68rem;cursor:default;}
-.tc.sb-c{background:#f3e5f5;color:#7b1fa2;font-weight:700;font-size:.68rem;cursor:default;}
-.tc.em-c{background:#fafafa;color:#ccc;font-size:.66rem;}
-.tc.as-c{background:#fff9c4;color:#856404;font-weight:700;font-size:.66rem;cursor:default;}
-.badge{display:inline-block;padding:2px 6px;border-radius:20px;font-size:.65rem;font-weight:700;}
+.dt td{padding:5px 9px;border-bottom:1px solid var(--bd);vertical-align:middle;}
+.dt tr:hover td{background:var(--lt);}
+/* PRINT-STYLE TIMETABLE (rows=time, cols=days) */
+.ptt{border-collapse:collapse;width:100%;font-size:.72rem;}
+.ptt th{background:var(--pr);color:#fff;padding:5px 5px;text-align:center;font-size:.65rem;white-space:nowrap;border:1px solid #aaa;}
+.ptt th.sh-day{background:#7f3d00;}
+.ptt td{border:1px solid #ccc;padding:3px 3px;vertical-align:middle;text-align:center;}
+.ptt td.time-col{background:#f8fafc;font-weight:700;font-size:.63rem;color:var(--pr);text-align:center;min-width:62px;white-space:nowrap;}
+.ptt td.day-hdr{background:var(--pr);color:#fff;font-weight:700;font-size:.7rem;text-align:center;}
+.ptt td.sh-hdr{background:#7f3d00;color:#fff;font-weight:700;font-size:.7rem;text-align:center;}
+.ptt td.assembly{background:#fff9c4;color:#856404;font-weight:700;font-size:.63rem;}
+.ptt td.brk{background:#fef9e7;color:#b7770d;font-size:.62rem;font-weight:700;}
+.ptt td.lnch{background:#fff3e0;color:#d35400;font-size:.62rem;font-weight:700;}
+.ptt td.abhy{background:#e8f5e9;color:#2e7d32;font-size:.62rem;font-weight:700;}
+.ptt td.abhr{background:#f3e5f5;color:#7b1fa2;font-size:.62rem;font-weight:700;}
+.ptt td.off{background:#f0f0f0;color:#bbb;font-size:.6rem;}
+.ptt td.filled{background:#eaf5fb;cursor:pointer;}
+.ptt td.filled:hover{background:#cce5f5;}
+.ptt td.empty{background:#fafafa;color:#ccc;font-size:.6rem;cursor:pointer;}
+.ptt td.empty:hover{background:#dbeafe;}
+.ptt td.dbl-l{border-right:2.5px dashed #94b8d8!important;}
+.ptt td.dbl-r{background:#eff8ff;border-left:none!important;}
+.cell-subj{font-weight:700;font-size:.72rem;display:block;line-height:1.2;}
+.cell-info{font-size:.6rem;color:#666;display:block;line-height:1.2;}
+/* TEACHER COL */
+.ptt td.tchr-col{background:#f8fafc;font-size:.62rem;text-align:left;padding:4px 5px;vertical-align:top;min-width:110px;}
+/* MISC */
+.badge{display:inline-block;padding:1px 6px;border-radius:20px;font-size:.63rem;font-weight:700;}
 .bb{background:#d6eaf8;color:#1a5276;}.bgg{background:#d5f5e3;color:#1e8449;}
 .bo2{background:#fdebd0;color:#a04000;}.br{background:#fdecea;color:#922b21;}
-.bp2{background:#e8daef;color:#6c3483;}.bgy{background:#eee;color:#555;}
+.bgy{background:#eee;color:#555;}.bpu{background:#e8daef;color:#6c3483;}
 .mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center;}
 .mo.show{display:flex;}
-.md{background:white;border-radius:var(--rd);padding:20px;width:92%;max-width:500px;box-shadow:0 20px 60px rgba(0,0,0,.3);position:relative;max-height:92vh;overflow-y:auto;}
-.md h3{font-size:.95rem;font-weight:700;color:var(--pr);margin-bottom:12px;}
-.mc{position:absolute;top:9px;right:9px;background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--mu);}
+.md{background:#fff;border-radius:var(--rd);padding:18px;width:92%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.3);position:relative;max-height:92vh;overflow-y:auto;}
+.md h3{font-size:.92rem;font-weight:700;color:var(--pr);margin-bottom:11px;}
+.mc{position:absolute;top:8px;right:8px;background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--mu);}
 .page{display:none;}.page.active{display:block;}
-.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;flex-wrap:wrap;gap:6px;}
-.chip{padding:2px 8px;border-radius:20px;background:#d6eaf8;color:#1a5276;font-size:.71rem;font-weight:600;display:inline-flex;align-items:center;gap:3px;}
-.es{text-align:center;padding:28px 18px;color:var(--mu);}
-.es .bi2{font-size:2.4rem;margin-bottom:5px;}
-.ttc{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:12px;}
-.ttc select{padding:6px 9px;border:1.5px solid var(--bd);border-radius:6px;font-size:.83rem;font-family:'DM Sans',sans-serif;color:var(--tx);background:var(--lt);outline:none;}
-.cb{background:#fdecea;color:#c0392b;border:1px solid #f5c6cb;border-radius:7px;padding:5px 10px;font-size:.75rem;font-weight:600;margin-bottom:7px;}
-.ib{background:#e8f4fd;color:#1a5276;border:1px solid #aed6f1;border-radius:7px;padding:6px 11px;font-size:.76rem;margin-bottom:9px;}
-.wb{background:#fdecea;color:#922b21;border:1px solid #f5c6cb;border-radius:7px;padding:5px 10px;font-size:.75rem;margin-bottom:7px;}
-.ob{background:#d5f5e3;color:#1e8449;border:1px solid #82e0aa;border-radius:7px;padding:5px 10px;font-size:.75rem;margin-bottom:7px;}
-.warn-b{background:#fff3cd;color:#856404;border:1px solid #ffc107;border-radius:7px;padding:9px 13px;font-size:.8rem;font-weight:600;margin-bottom:9px;}
-.ld-bar{height:7px;border-radius:4px;background:#e0e0e0;overflow:hidden;margin-top:2px;}
-.ld-fill{height:100%;border-radius:4px;transition:width .3s;}
-.toast{position:fixed;bottom:22px;right:22px;background:#1a3a5c;color:white;padding:11px 18px;border-radius:9px;font-size:.83rem;font-weight:600;z-index:9999;transform:translateY(100px);opacity:0;transition:all .35s;box-shadow:0 8px 30px rgba(0,0,0,.25);}
+.es{text-align:center;padding:26px 16px;color:var(--mu);}
+.ib{background:#e8f4fd;color:#1a5276;border:1px solid #aed6f1;border-radius:6px;padding:5px 10px;font-size:.74rem;margin-bottom:8px;}
+.wb{background:#fdecea;color:#922b21;border:1px solid #f5c6cb;border-radius:6px;padding:5px 10px;font-size:.73rem;margin-bottom:7px;}
+.ob{background:#d5f5e3;color:#1e8449;border:1px solid #82e0aa;border-radius:6px;padding:5px 10px;font-size:.73rem;margin-bottom:7px;}
+.warn-b{background:#fff3cd;color:#856404;border:1px solid #ffc107;border-radius:6px;padding:8px 12px;font-size:.78rem;font-weight:600;margin-bottom:8px;}
+.ld-bar{height:6px;border-radius:3px;background:#e0e0e0;overflow:hidden;margin-top:2px;}
+.ld-fill{height:100%;border-radius:3px;}
+.toast{position:fixed;bottom:20px;right:20px;background:#1a3a5c;color:#fff;padding:10px 16px;border-radius:8px;font-size:.8rem;font-weight:600;z-index:9999;transform:translateY(100px);opacity:0;transition:all .3s;box-shadow:0 8px 28px rgba(0,0,0,.25);}
 .toast.show{transform:translateY(0);opacity:1;}
 .toast.warn{background:#e67e22;}.toast.error{background:#e74c3c;}.toast.success{background:#27ae60;}
-@media(max-width:600px){.hdr-in{padding:6px 8px;gap:5px;}.nb{padding:4px 6px;font-size:.66rem;}.app{padding:8px 5px;}}
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px;}
+.ttw{overflow-x:auto;}
+.chip{padding:2px 7px;border-radius:20px;background:#d6eaf8;color:#1a5276;font-size:.69rem;font-weight:600;}
+@media(max-width:600px){.hdr-in{padding:6px 7px;gap:4px;}.nb{padding:4px 6px;font-size:.64rem;}.app{padding:7px 5px;}}
 </style>
 </head>
 <body>
@@ -94,218 +100,211 @@ body{font-family:'DM Sans',sans-serif;background:#eaf0f6;color:var(--tx);min-hei
     <div class="logo">श्री</div>
     <div class="hdr-txt">
       <h1>Shree Warana Vidyalaya, Warananagar</h1>
-      <p>Tal: Panhala, Dist: Kolhapur &nbsp;|&nbsp; Timetable Management System</p>
+      <p>Tal: Panhala, Dist: Kolhapur &nbsp;|&nbsp; Timetable System v6</p>
     </div>
     <nav class="hdr-nav">
-      <button class="nb active" onclick="showPage('setup',this)">⚙️ Setup</button>
-      <button class="nb" onclick="showPage('assign',this)">📋 Subjects</button>
-      <button class="nb" onclick="showPage('timetable',this)">📅 Timetable</button>
-      <button class="nb" onclick="showPage('view',this)">👁️ View</button>
-      <button class="nb" onclick="showPage('print',this)">🖨️ Print</button>
-      <button class="nb" onclick="showPage('reports',this)">📊 Reports</button>
+      <button class="nb active" onclick="SP('setup',this)">⚙️ Setup</button>
+      <button class="nb" onclick="SP('assign',this)">📋 Subjects</button>
+      <button class="nb" onclick="SP('editor',this)">📅 Editor</button>
+      <button class="nb" onclick="SP('view',this)">👁️ View</button>
+      <button class="nb" onclick="SP('print',this)">🖨️ Print</button>
+      <button class="nb" onclick="SP('reports',this)">📊 Reports</button>
     </nav>
   </div>
 </header>
 <div class="app">
-
 <!-- SETUP -->
 <div id="page-setup" class="page active">
   <div class="tab-bar">
-    <button class="tab active" onclick="showTab('ts',this)">🏫 Settings</button>
-    <button class="tab" onclick="showTab('tt',this)">👨‍🏫 Teachers</button>
-    <button class="tab" onclick="showTab('tc',this)">🏛️ Classes</button>
-    <button class="tab" onclick="showTab('tsub',this)">📚 Subjects</button>
+    <button class="tab active" onclick="ST2('ts',this)">🏫 Settings</button>
+    <button class="tab" onclick="ST2('tt2',this)">👨‍🏫 Teachers</button>
+    <button class="tab" onclick="ST2('tc2',this)">🏛️ Classes</button>
+    <button class="tab" onclick="ST2('tsub2',this)">📚 Subjects</button>
   </div>
   <div id="ts">
-    <div class="card">
-      <div class="ct">⏰ Schedule Settings</div>
+    <div class="card"><div class="ct">⏰ Schedule</div>
       <div class="fg">
-        <div><label>Assembly Time (12-hr)</label><input type="time" id="assemblyTime" value="07:15"><small style="color:var(--mu);font-size:.66rem;">12-hr format मध्ये दाखवेल</small></div>
+        <div><label>Assembly Time</label><input type="time" id="assemblyTime" value="07:15"></div>
         <div><label>Assembly Duration (min)</label><input type="number" id="assemblyDuration" value="15" min="5" max="30"></div>
         <div><label>School Start Time</label><input type="time" id="startTime" value="07:30"></div>
-        <div><label>Periods per Day (Mon/Tue/Thu/Fri)</label><input type="number" id="numPeriods" value="9" min="4" max="12"></div>
-        <div><label>Wed & Sat Periods</label><input type="number" id="shortDayPeriods" value="6" min="4" max="9"><small style="color:var(--mu);font-size:.66rem;">बुध/शनि — Abhyasika नाही</small></div>
+        <div><label>Periods/Day (Normal)</label><input type="number" id="numPeriods" value="9" min="4" max="12"></div>
+        <div><label>Wed & Sat Periods</label><input type="number" id="shortDayPeriods" value="6" min="4" max="9"><small style="color:var(--mu);font-size:.64rem;">Abhyasika नाही</small></div>
         <div><label>Period Duration (min)</label><input type="number" id="periodDuration" value="45" min="30" max="90"></div>
         <div><label>Short Break After P#</label><input type="number" id="shortBreakAfter" value="3" min="1" max="9"></div>
         <div><label>Short Break (min)</label><input type="number" id="shortBreakDuration" value="15" min="5" max="30"></div>
         <div><label>Lunch After P#</label><input type="number" id="lunchBreakAfter" value="6" min="1" max="12"></div>
-        <div><label>Lunch Duration (min) <span style="color:var(--ac);font-size:.63rem;">90–100 शिफारस</span></label><input type="number" id="lunchBreakDuration" value="90" min="15" max="120"></div>
+        <div><label>Lunch (min)</label><input type="number" id="lunchBreakDuration" value="90" min="15" max="120"></div>
         <div><label>Abhyasika (min)</label><input type="number" id="studyDuration" value="65" min="0" max="120"></div>
-        <div><label>Abhyasika नंतर Break (min)</label><input type="number" id="studyBreakDuration" value="10" min="0" max="30"></div>
-        <div><label>Theory Periods (P1 to P#)</label><input type="number" id="subjectPeriodLimit" value="6" min="1" max="12"></div>
-        <div><label>Max Periods/Teacher/Week</label><input type="number" id="maxTeacherPeriods" value="36" min="10" max="60"></div>
-        <div><label>मुख्याध्यापक नाव</label><input type="text" id="mukhyadhyapakName" placeholder="मुख्याध्यापक नाव"></div>
+        <div><label>Abhyasika Break (min)</label><input type="number" id="studyBreakDuration" value="10" min="0" max="30"></div>
+        <div><label>Theory Period Limit (P1–?)</label><input type="number" id="subjectPeriodLimit" value="6" min="1" max="12"><small style="color:var(--mu);font-size:.64rem;">P7+ = Activity preferably</small></div>
+        <div><label>Max Warning Periods/Teacher</label><input type="number" id="maxTeacherPeriods" value="36" min="10" max="60"><small style="color:var(--mu);font-size:.64rem;">Exceeded = warning only, no block</small></div>
+        <div><label>मुख्याध्यापक नाव</label><input type="text" id="mukhyadhyapakName" placeholder="नाव"></div>
       </div>
-      <div style="margin-top:11px;display:flex;gap:7px;align-items:center;flex-wrap:wrap;">
-        <button class="btn bp" onclick="saveSettings()">💾 Save Settings</button>
-        <span id="sv" style="color:var(--ok);font-size:.76rem;display:none;">✓ Saved!</span>
+      <div style="margin-top:10px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+        <button class="btn bp" onclick="saveS()">💾 Save</button>
+        <span id="sv" style="color:var(--ok);font-size:.74rem;display:none;">✓ Saved!</span>
       </div>
-      <div id="prevArea" style="margin-top:12px;"></div>
+      <div id="prevA" style="margin-top:11px;"></div>
     </div>
-    <div class="card">
-      <div class="ct">📅 Working Days</div>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;" id="wdDays">
-        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:.85rem;"><input type="checkbox" value="Monday" checked> Monday</label>
-        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:.85rem;"><input type="checkbox" value="Tuesday" checked> Tuesday</label>
-        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:.85rem;"><input type="checkbox" value="Wednesday" checked> Wednesday</label>
-        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:.85rem;"><input type="checkbox" value="Thursday" checked> Thursday</label>
-        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:.85rem;"><input type="checkbox" value="Friday" checked> Friday</label>
-        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:.85rem;"><input type="checkbox" value="Saturday" checked> Saturday</label>
+    <div class="card"><div class="ct">📅 Working Days</div>
+      <div style="display:flex;gap:11px;flex-wrap:wrap;" id="wdDays">
+        <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:.84rem;"><input type="checkbox" value="Monday" checked> Mon</label>
+        <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:.84rem;"><input type="checkbox" value="Tuesday" checked> Tue</label>
+        <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:.84rem;"><input type="checkbox" value="Wednesday" checked> Wed</label>
+        <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:.84rem;"><input type="checkbox" value="Thursday" checked> Thu</label>
+        <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:.84rem;"><input type="checkbox" value="Friday" checked> Fri</label>
+        <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:.84rem;"><input type="checkbox" value="Saturday" checked> Sat</label>
       </div>
     </div>
   </div>
-  <div id="tt" style="display:none;">
-    <div class="card">
-      <div class="ct">➕ Add Teacher</div>
+  <div id="tt2" style="display:none;">
+    <div class="card"><div class="ct">➕ Add Teacher</div>
       <div class="fg">
         <div><label>Name</label><input type="text" id="tname" placeholder="Rajesh Patil"></div>
         <div><label>Code (max 5)</label><input type="text" id="tcode" placeholder="RP" maxlength="5"></div>
         <div><label>Phone</label><input type="text" id="tphone" placeholder="9876543210"></div>
-        <div><label>Subjects</label><select id="tsubjs" multiple style="height:70px;"></select></div>
+        <div><label>Subjects</label><select id="tsubjs" multiple style="height:68px;"></select></div>
       </div>
-      <div style="margin-top:8px;"><button class="btn bp" onclick="addTeacher()">➕ Add</button></div>
+      <div style="margin-top:7px;"><button class="btn bp" onclick="addTeacher()">➕ Add</button></div>
     </div>
     <div class="card">
       <div class="sh"><div class="ct" style="margin-bottom:0;">Teachers (<span id="tcount">0</span>)</div>
-        <input type="text" id="tsearch" onkeyup="renderTeachers()" placeholder="Search..." style="padding:5px 8px;border:1.5px solid var(--bd);border-radius:6px;font-size:.77rem;outline:none;"></div>
-      <div class="ttw"><table class="dt"><thead><tr><th>#</th><th>Name</th><th>Code</th><th>Subjects</th><th>Load</th><th></th></tr></thead>
+        <input type="text" id="tsearch" onkeyup="renderTeachers()" placeholder="Search..." style="padding:4px 8px;border:1.5px solid var(--bd);border-radius:6px;font-size:.76rem;outline:none;"></div>
+      <div class="ttw"><table class="dt"><thead><tr><th>#</th><th>Name</th><th>Code</th><th>Subjects</th><th>Weekly Load</th><th></th></tr></thead>
       <tbody id="tbody-t"></tbody></table></div>
-      <div id="empty-t" class="es"><div class="bi2">👨‍🏫</div><p>No teachers yet.</p></div>
+      <div id="empty-t" class="es"><p>👨‍🏫 No teachers yet.</p></div>
     </div>
   </div>
-  <div id="tc" style="display:none;">
-    <div class="card">
-      <div class="ct">➕ Add Class / Division</div>
-      <div class="ib">📌 प्रत्येक वर्गाच्या 6 तुकड्या: A B C D E F — प्रत्येक स्वतंत्र add करा.</div>
+  <div id="tc2" style="display:none;">
+    <div class="card"><div class="ct">➕ Add Class</div>
+      <div class="ib">📌 6 Tukdya: A,B = Marathi | C,D,E,F = Semi-English — "Add 6 Divisions" button वापरा.</div>
       <div class="fg">
-        <div><label>Standard</label><select id="cstd"><option>Nursery</option><option>Jr. KG</option><option>Sr. KG</option><option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option><option>6th</option><option>7th</option><option>8th</option><option selected>9th</option><option>10th</option><option>11th</option><option>12th</option></select></div>
-        <div><label>Division (Tukdi)</label><input type="text" id="cdiv" placeholder="A"></div>
+        <div><label>Standard</label><select id="cstd"><option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option><option>6th</option><option>7th</option><option>8th</option><option selected>9th</option><option>10th</option><option>11th</option><option>12th</option></select></div>
+        <div><label>Division</label><input type="text" id="cdiv" placeholder="A" maxlength="3"></div>
         <div><label>Medium</label><select id="cmed"><option>Marathi</option><option>Semi-English</option><option>English</option></select></div>
         <div><label>Class Teacher</label><select id="cct"></select></div>
         <div><label>Students</label><input type="number" id="cstr" placeholder="40" min="1"></div>
       </div>
       <div style="display:flex;gap:7px;margin-top:8px;flex-wrap:wrap;">
-        <button class="btn bp" onclick="addClass()">➕ Add</button>
-        <button class="btn bi" onclick="addAllDivs()">⚡ Add A–F (6 Divisions)</button>
+        <button class="btn bp" onclick="addClass()">➕ Add One</button>
+        <button class="btn bi" onclick="addStdDivs()">⚡ Add 6 Divisions (A–F)</button>
       </div>
     </div>
     <div class="card">
       <div class="ct">Classes (<span id="ccount">0</span>)</div>
       <div class="ttw"><table class="dt"><thead><tr><th>#</th><th>Std</th><th>Div</th><th>Medium</th><th>Class Teacher</th><th>Students</th><th></th></tr></thead>
       <tbody id="tbody-c"></tbody></table></div>
-      <div id="empty-c" class="es"><div class="bi2">🏛️</div><p>No classes yet.</p></div>
+      <div id="empty-c" class="es"><p>🏛️ No classes yet.</p></div>
     </div>
   </div>
-  <div id="tsub" style="display:none;">
-    <div class="card">
-      <div class="ct">➕ Add Subject</div>
+  <div id="tsub2" style="display:none;">
+    <div class="card"><div class="ct">➕ Add Subject</div>
+      <div class="ib">📌 <strong>preferred_late=true</strong> असलेले विषय P7-9 मध्ये prefer होतात (Art, PE, etc.) पण गरज असल्यास P1-6 मध्ये पण येऊ शकतात.</div>
       <div class="fg">
         <div><label>Name</label><input type="text" id="sname" placeholder="Mathematics"></div>
-        <div><label>Code</label><input type="text" id="scode" placeholder="MATH" maxlength="6"></div>
-        <div><label>Type</label><select id="stype"><option value="theory">📖 Theory (P1–6)</option><option value="practical">🎨 Practical (P7+)</option><option value="any">📌 Any</option></select></div>
+        <div><label>Code (max 6)</label><input type="text" id="scode" placeholder="MATH" maxlength="6"></div>
+        <div><label>Type</label><select id="stype">
+          <option value="theory">📖 Theory (P1–6 prefer)</option>
+          <option value="practical">🎨 Practical (P7-9 prefer)</option>
+          <option value="any">📌 Any Period</option>
+        </select></div>
+        <div><label>Priority (high = more daily)</label><select id="spriority">
+          <option value="normal">Normal</option>
+          <option value="high">⭐ High (Science/Math/Eng)</option>
+        </select></div>
         <div><label>Color</label><input type="color" id="scolor" value="#3498db"></div>
       </div>
-      <div style="margin-top:8px;"><button class="btn bp" onclick="addSubject()">➕ Add</button></div>
+      <div style="margin-top:7px;"><button class="btn bp" onclick="addSubject()">➕ Add</button></div>
     </div>
     <div class="card">
       <div class="ct">Subjects</div>
-      <div id="subj-list" style="display:flex;flex-wrap:wrap;gap:7px;"></div>
-      <div id="empty-s" class="es"><div class="bi2">📚</div><p>No subjects yet.</p></div>
+      <div id="subj-list" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+      <div id="empty-s" class="es"><p>📚 No subjects yet.</p></div>
     </div>
   </div>
 </div>
 
 <!-- CLASS SUBJECTS -->
 <div id="page-assign" class="page">
-  <div class="card">
-    <div class="ct">📋 Class-wise Subject & Teacher Assignment</div>
-    <div class="ib">प्रत्येक वर्ग-तुकडीसाठी विषय, विषय शिक्षक आणि periods/week इथे assign करा.</div>
-    <div class="ttc">
-      <div><label style="font-size:.69rem;font-weight:600;color:var(--mu);text-transform:uppercase;display:block;margin-bottom:2px;">Class</label>
-      <select id="asel" onchange="renderAssign()"><option value="">-- Select --</option></select></div>
-      <button class="btn bp" onclick="saveAssign()" style="margin-top:16px;">💾 Save</button>
-      <button class="btn bi" onclick="copyFrom()" style="margin-top:16px;">📋 Copy from...</button>
-      <span id="asv" style="color:var(--ok);font-size:.76rem;display:none;margin-top:18px;">✓ Saved!</span>
+  <div class="card"><div class="ct">📋 Class-wise Subject Assignment</div>
+    <div class="ib">प्रत्येक वर्ग-तुकडीसाठी विषय, शिक्षक, periods/week assign करा.</div>
+    <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:12px;">
+      <div><div class="fl">Class</div><select id="asel" class="fi" style="min-width:200px;" onchange="renderAssign()"><option value="">-- Select --</option></select></div>
+      <button class="btn bp" onclick="saveAssign()">💾 Save</button>
+      <button class="btn bi" onclick="copyFrom()">📋 Copy from...</button>
+      <span id="asv" style="color:var(--ok);font-size:.74rem;display:none;">✓ Saved!</span>
     </div>
-    <div id="aarea"><div class="es"><div class="bi2">📋</div><p>Select a class.</p></div></div>
+    <div id="aarea"><div class="es"><p>📋 Select a class.</p></div></div>
   </div>
 </div>
 
-<!-- TIMETABLE -->
-<div id="page-timetable" class="page">
+<!-- EDITOR -->
+<div id="page-editor" class="page">
   <div class="card">
     <div class="ct">📅 Timetable Editor</div>
     <div id="tlw"></div>
-    <div class="ttc">
-      <div><label style="font-size:.69rem;font-weight:600;color:var(--mu);text-transform:uppercase;display:block;margin-bottom:2px;">Class</label>
-      <select id="ttsel" onchange="loadEditor()"><option value="">-- Select --</option></select></div>
-      <button class="btn bg2" onclick="autoFill()" style="margin-top:16px;">⚡ Auto-Generate</button>
-      <button class="btn bo" onclick="clearTT()" style="margin-top:16px;">🗑️ Clear</button>
-      <button class="btn bp" onclick="saveTT()" style="margin-top:16px;">💾 Save</button>
+    <div style="display:flex;gap:7px;align-items:flex-end;flex-wrap:wrap;margin-bottom:11px;">
+      <div><div class="fl">Class</div><select id="ttsel" class="fi" style="min-width:200px;" onchange="loadEditor()"><option value="">-- Select --</option></select></div>
+      <button class="btn bg2" onclick="autoFill()">⚡ Auto-Generate</button>
+      <button class="btn bo" onclick="clearTT()">🗑️ Clear</button>
+      <button class="btn bp" onclick="saveTT()">💾 Save</button>
     </div>
     <div id="cflts"></div>
-    <div id="ttarea"><div class="es"><div class="bi2">📅</div><p>Select a class.</p></div></div>
+    <div id="ttarea"><div class="es"><p>📅 Select a class.</p></div></div>
   </div>
 </div>
 
 <!-- VIEW -->
 <div id="page-view" class="page">
   <div class="tab-bar">
-    <button class="tab active" onclick="showVTab('vc',this)">🏛️ Class-wise</button>
-    <button class="tab" onclick="showVTab('vt',this)">👨‍🏫 Teacher-wise</button>
-    <button class="tab" onclick="showVTab('va',this)">📊 All</button>
+    <button class="tab active" onclick="SVT('vc',this)">🏛️ Class View</button>
+    <button class="tab" onclick="SVT('vt',this)">👨‍🏫 Teacher View</button>
   </div>
   <div id="vc"><div class="card">
-    <div class="ttc"><div><label style="font-size:.69rem;font-weight:600;color:var(--mu);text-transform:uppercase;display:block;margin-bottom:2px;">Class</label>
-    <select id="vcsel" onchange="renderCV()"><option value="">-- Select --</option></select></div></div>
-    <div id="cva"><div class="es"><div class="bi2">🏛️</div><p>Select a class.</p></div></div>
+    <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:11px;">
+      <div><div class="fl">Class</div><select id="vcsel" class="fi" style="min-width:200px;" onchange="renderCV()"><option value="">-- Select --</option></select></div>
+    </div>
+    <div id="cva"><div class="es"><p>🏛️ Select a class.</p></div></div>
   </div></div>
   <div id="vt" style="display:none;"><div class="card">
-    <div class="ttc"><div><label style="font-size:.69rem;font-weight:600;color:var(--mu);text-transform:uppercase;display:block;margin-bottom:2px;">Teacher</label>
-    <select id="vtsel" onchange="renderTV()"><option value="">-- Select --</option></select></div></div>
-    <div id="tva"><div class="es"><div class="bi2">👨‍🏫</div><p>Select a teacher.</p></div></div>
-  </div></div>
-  <div id="va" style="display:none;"><div class="card">
-    <div class="sh"><div class="ct" style="margin-bottom:0;">All Timetables</div></div>
-    <div id="ava"><div class="es"><div class="bi2">📊</div><p>No timetables.</p></div></div>
+    <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:11px;">
+      <div><div class="fl">Teacher</div><select id="vtsel" class="fi" style="min-width:200px;" onchange="renderTV()"><option value="">-- Select --</option></select></div>
+    </div>
+    <div id="tva"><div class="es"><p>👨‍🏫 Select a teacher.</p></div></div>
   </div></div>
 </div>
 
 <!-- PRINT -->
 <div id="page-print" class="page">
-  <div class="card">
-    <div class="ct">🖨️ Print Options</div>
-    <div class="ib" style="margin-bottom:14px;">
-      <strong>Print Layout:</strong> पहिला column = वेळ (AM/PM) | मध्ये = Mon–Sat | शेवटचा column = विषय शिक्षक यादी<br>
-      वर = शाळेचे नाव व पत्ता | खाली = वर्गशिक्षक सही (डावीकडे) + मुख्याध्यापक सही (उजवीकडे)
+  <div class="card"><div class="ct">🖨️ Print Options</div>
+    <div class="ib" style="margin-bottom:13px;">
+      <strong>Print Layout:</strong> पहिला col = वेळ (AM/PM) | मध्ये = Mon–Sat | शेवटचा col = विषय शिक्षक<br>
+      वर = शाळा + वर्ग + तुकडी + वर्गशिक्षक | खाली = वर्गशिक्षक सही (डावी) + मुख्याध्यापक सही (उजवी)<br>
+      🗓️ एकत्रित print: Mon(9 sub-cols) Tue(9) Wed(9) | शिक्षक नावे | Thu(9) Fri(9) Sat(9) — A3 paper
     </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;">
-      <div style="border:1.5px solid var(--bd);border-radius:10px;padding:15px;">
-        <div style="font-weight:700;color:var(--pr);font-size:.88rem;margin-bottom:6px;">🏫 वर्गानुसार Print</div>
-        <div style="font-size:.76rem;color:var(--mu);margin-bottom:10px;">प्रत्येक वर्ग-तुकडीसाठी स्वतंत्र page — वेळ, दिवस, विषय शिक्षक, स्वाक्षरी</div>
-        <div style="display:flex;gap:7px;flex-wrap:wrap;">
-          <button class="btn bp" onclick="printByClass('all')">🖨️ सर्व वर्ग</button>
-          <div style="margin-top:0;">
-            <select id="pClassSel" style="padding:5px 8px;border:1.5px solid var(--bd);border-radius:6px;font-size:.78rem;"><option value="">एक वर्ग...</option></select>
-            <button class="btn bo bs" onclick="printByClass('one')" style="margin-top:4px;">🖨️ Print</button>
-          </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:11px;">
+      <div style="border:1.5px solid var(--bd);border-radius:9px;padding:13px;">
+        <div style="font-weight:700;color:var(--pr);font-size:.86rem;margin-bottom:5px;">🏫 वर्गानुसार (A4)</div>
+        <div style="font-size:.73rem;color:var(--mu);margin-bottom:9px;">प्रत्येक वर्गासाठी स्वतंत्र page</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+          <button class="btn bp" onclick="pClass('all')">🖨️ सर्व वर्ग</button>
+          <select id="pCSel" style="padding:4px 7px;border:1.5px solid var(--bd);border-radius:5px;font-size:.75rem;"><option value="">एक वर्ग...</option></select>
+          <button class="btn bo bs" onclick="pClass('one')">🖨️</button>
         </div>
       </div>
-      <div style="border:1.5px solid var(--bd);border-radius:10px;padding:15px;">
-        <div style="font-weight:700;color:var(--pr);font-size:.88rem;margin-bottom:6px;">👨‍🏫 विषय शिक्षकानुसार Print</div>
-        <div style="font-size:.76rem;color:var(--mu);margin-bottom:10px;">प्रत्येक शिक्षकाचे स्वतंत्र page — कोणत्या वर्गात कोणत्या वेळी — स्वाक्षरी</div>
-        <div style="display:flex;gap:7px;flex-wrap:wrap;">
-          <button class="btn bi" onclick="printByTeacher('all')">🖨️ सर्व शिक्षक</button>
-          <div>
-            <select id="pTeachSel" style="padding:5px 8px;border:1.5px solid var(--bd);border-radius:6px;font-size:.78rem;"><option value="">एक शिक्षक...</option></select>
-            <button class="btn bo bs" onclick="printByTeacher('one')" style="margin-top:4px;">🖨️ Print</button>
-          </div>
+      <div style="border:1.5px solid var(--bd);border-radius:9px;padding:13px;">
+        <div style="font-weight:700;color:var(--pr);font-size:.86rem;margin-bottom:5px;">👨‍🏫 शिक्षकानुसार (A4)</div>
+        <div style="font-size:.73rem;color:var(--mu);margin-bottom:9px;">प्रत्येक शिक्षकासाठी स्वतंत्र page + Abhyasika</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+          <button class="btn bi" onclick="pTeacher('all')">🖨️ सर्व शिक्षक</button>
+          <select id="pTSel" style="padding:4px 7px;border:1.5px solid var(--bd);border-radius:5px;font-size:.75rem;"><option value="">एक शिक्षक...</option></select>
+          <button class="btn bo bs" onclick="pTeacher('one')">🖨️</button>
         </div>
       </div>
-      <div style="border:1.5px solid var(--bd);border-radius:10px;padding:15px;">
-        <div style="font-weight:700;color:var(--pr);font-size:.88rem;margin-bottom:6px;">📊 एकत्रित शाळा Print</div>
-        <div style="font-size:.76rem;color:var(--mu);margin-bottom:10px;">दिवसानुसार — सर्व वर्ग एका table मध्ये — संपूर्ण शाळेचे overview</div>
-        <button class="btn bg2" onclick="printFullSchool()">🖨️ Print संपूर्ण शाळा</button>
+      <div style="border:1.5px solid var(--bd);border-radius:9px;padding:13px;">
+        <div style="font-weight:700;color:var(--pr);font-size:.86rem;margin-bottom:5px;">📊 एकत्रित शाळा (A3)</div>
+        <div style="font-size:.73rem;color:var(--mu);margin-bottom:9px;">Mon–Wed | Teachers | Thu–Sat layout</div>
+        <button class="btn bg2" onclick="pSchool()">🖨️ संपूर्ण शाळा</button>
       </div>
     </div>
   </div>
@@ -314,21 +313,21 @@ body{font-family:'DM Sans',sans-serif;background:#eaf0f6;color:var(--tx);min-hei
 <!-- REPORTS -->
 <div id="page-reports" class="page">
   <div class="tab-bar">
-    <button class="tab active" onclick="showRTab('rl',this)">👨‍🏫 Teacher Load</button>
-    <button class="tab" onclick="showRTab('rs',this)">📚 Subject Cover</button>
-    <button class="tab" onclick="showRTab('rf',this)">🕐 Free Periods</button>
-    <button class="tab" onclick="showRTab('re',this)">📤 Export</button>
+    <button class="tab active" onclick="SRT('rl',this)">👨‍🏫 Teacher Load</button>
+    <button class="tab" onclick="SRT('rs',this)">📚 Subject Cover</button>
+    <button class="tab" onclick="SRT('rf',this)">🕐 Free Periods</button>
+    <button class="tab" onclick="SRT('re',this)">📤 Export</button>
   </div>
-  <div id="rl"><div class="card"><div class="sh"><div class="ct" style="margin-bottom:0;">Teacher Load</div><button class="btn bk" onclick="renderLoadRep()">🔄 Refresh</button></div><div id="loadRep"></div></div></div>
-  <div id="rs" style="display:none;"><div class="card"><div class="sh"><div class="ct" style="margin-bottom:0;">Subject Coverage</div><button class="btn bk" onclick="renderSubjRep()">🔄 Refresh</button></div><div id="subjRep"></div></div></div>
-  <div id="rf" style="display:none;"><div class="card"><div class="sh"><div class="ct" style="margin-bottom:0;">Free Periods</div><button class="btn bk" onclick="renderFreeRep()">🔄 Refresh</button></div><div id="freeRep"></div></div></div>
+  <div id="rl"><div class="card"><div class="sh"><div class="ct" style="margin-bottom:0;">Teacher Load</div><button class="btn bk" onclick="rLoad()">🔄 Refresh</button></div><div id="loadRep"></div></div></div>
+  <div id="rs" style="display:none;"><div class="card"><div class="sh"><div class="ct" style="margin-bottom:0;">Subject Coverage</div><button class="btn bk" onclick="rSubj()">🔄 Refresh</button></div><div id="subjRep"></div></div></div>
+  <div id="rf" style="display:none;"><div class="card"><div class="sh"><div class="ct" style="margin-bottom:0;">Free Periods</div><button class="btn bk" onclick="rFree()">🔄 Refresh</button></div><div id="freeRep"></div></div></div>
   <div id="re" style="display:none;"><div class="card"><div class="ct">📤 Export</div>
-    <div style="display:flex;gap:9px;flex-wrap:wrap;">
-      <button class="btn bp" onclick="exportJSON()">📥 Export JSON</button>
-      <button class="btn bk" onclick="exportCSV()">📊 Export CSV</button>
-      <button class="btn bg2" onclick="importJSON()">📤 Import JSON</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn bp" onclick="expJSON()">📥 JSON Backup</button>
+      <button class="btn bk" onclick="expCSV()">📊 CSV</button>
+      <button class="btn bg2" onclick="impJSON()">📤 Import JSON</button>
     </div>
-    <input type="file" id="impFile" accept=".json" style="display:none;" onchange="doImport(event)">
+    <input type="file" id="impF" accept=".json" style="display:none;" onchange="doImp(event)">
   </div></div>
 </div>
 
@@ -339,883 +338,919 @@ body{font-family:'DM Sans',sans-serif;background:#eaf0f6;color:var(--tx);min-hei
   <div class="md">
     <button class="mc" onclick="closeMod()">✕</button>
     <h3>📝 Assign Period</h3>
-    <div id="minfo" style="margin-bottom:9px;font-size:.77rem;color:var(--mu);background:var(--lt);padding:5px 9px;border-radius:6px;"></div>
+    <div id="minfo" style="margin-bottom:8px;font-size:.75rem;color:var(--mu);background:var(--lt);padding:5px 8px;border-radius:5px;"></div>
     <div id="mrest" style="display:none;margin-bottom:7px;"></div>
     <div id="mcth" style="display:none;margin-bottom:7px;" class="ib"></div>
-    <div style="margin-bottom:9px;"><label style="font-size:.7rem;font-weight:600;color:var(--mu);text-transform:uppercase;display:block;margin-bottom:3px;">Subject</label>
-      <select id="msubj" onchange="onSubjChange()"><option value="">-- Select --</option></select></div>
-    <div style="margin-bottom:9px;"><label style="font-size:.7rem;font-weight:600;color:var(--mu);text-transform:uppercase;display:block;margin-bottom:3px;">Teacher</label>
-      <select id="mteach" onchange="checkMConflict()"><option value="">-- Select --</option></select></div>
-    <div id="mcfl" style="display:none;margin-bottom:7px;"></div>
-    <div id="mload" style="display:none;margin-bottom:7px;"></div>
-    <div style="margin-bottom:11px;">
-      <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:.8rem;">
+    <div style="margin-bottom:8px;"><label class="fl">Subject</label>
+      <select id="msubj" class="fi" onchange="onSC()"></select></div>
+    <div style="margin-bottom:8px;"><label class="fl">Teacher</label>
+      <select id="mteach" class="fi" onchange="chkMC()"></select></div>
+    <div id="mcfl" style="display:none;margin-bottom:6px;"></div>
+    <div id="mload" style="display:none;margin-bottom:6px;"></div>
+    <div style="margin-bottom:10px;">
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.78rem;">
         <input type="checkbox" id="mdbl" onchange="updDbl()"> 🔗 Double Period
       </label>
     </div>
-    <div id="dblmsg" style="display:none;margin-bottom:8px;"></div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;">
-      <button class="btn bp" onclick="assignPeriod()">✅ Assign</button>
-      <button class="btn bd2" onclick="clearPeriod()">🗑️ Clear</button>
+    <div id="dblmsg" style="display:none;margin-bottom:7px;"></div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;">
+      <button class="btn bp" onclick="assignP()">✅ Assign</button>
+      <button class="btn bd2" onclick="clearP()">🗑️ Clear</button>
       <button class="btn bo" onclick="closeMod()">Cancel</button>
     </div>
   </div>
 </div>
-
 <!-- MODAL: Copy -->
-<div class="mo" id="modCopy">
-  <div class="md" style="max-width:380px;">
-    <button class="mc" onclick="document.getElementById('modCopy').classList.remove('show')">✕</button>
+<div class="mo" id="modCp">
+  <div class="md" style="max-width:360px;">
+    <button class="mc" onclick="document.getElementById('modCp').classList.remove('show')">✕</button>
     <h3>📋 Copy Assignment</h3>
-    <div style="margin-bottom:11px;"><label style="font-size:.7rem;font-weight:600;color:var(--mu);text-transform:uppercase;display:block;margin-bottom:3px;">Copy FROM</label>
-    <select id="cpFrom"><option value="">-- Source class --</option></select></div>
-    <div style="display:flex;gap:6px;">
+    <div style="margin-bottom:10px;"><label class="fl">Copy FROM</label>
+    <select id="cpFrom" class="fi"></select></div>
+    <div style="display:flex;gap:5px;">
       <button class="btn bp" onclick="doCopy()">✅ Copy</button>
-      <button class="btn bo" onclick="document.getElementById('modCopy').classList.remove('show')">Cancel</button>
+      <button class="btn bo" onclick="document.getElementById('modCp').classList.remove('show')">Cancel</button>
     </div>
   </div>
 </div>
 <script>
 // ===== STATE =====
-let ST={teachers:[],classes:[],subjects:[],timetables:{},classSubjects:{},
-  settings:{assemblyTime:'07:15',assemblyDuration:15,mukhyadhyapakName:'',
+let D={teachers:[],classes:[],subjects:[],TT:{},CS:{},
+  cfg:{assemblyTime:'07:15',assemblyDuration:15,mukhyadhyapakName:'',
     startTime:'07:30',numPeriods:9,shortDayPeriods:6,periodDuration:45,
     shortBreakAfter:3,shortBreakDuration:15,lunchBreakAfter:6,lunchBreakDuration:90,
     studyDuration:65,studyBreakDuration:10,subjectPeriodLimit:6,maxTeacherPeriods:36,
     workingDays:['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']}};
 let CM={cid:null,day:null,p:null};
 
-function load(){const d=localStorage.getItem('wvs6');if(d)try{ST=JSON.parse(d);}catch(e){}applyS();}
-function save(){localStorage.setItem('wvs6',JSON.stringify(ST));}
+const KEY='wvs7';
+function load(){const s=localStorage.getItem(KEY);if(s)try{D=JSON.parse(s);}catch(e){}applyS();}
+function save(){localStorage.setItem(KEY,JSON.stringify(D));}
 
 // ===== TOAST =====
-function toast(m,t='success',d=3200){const el=document.getElementById('toast');el.textContent=m;el.className='toast '+t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),d);}
+function toast(m,t='success',d=3200){const e=document.getElementById('toast');e.textContent=m;e.className='toast '+t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),d);}
 
-// ===== TIME HELPERS =====
+// ===== TIME =====
 function t2m(t){if(!t)return 0;const[h,mn]=t.split(':').map(Number);return h*60+mn;}
 function m2t(m){return`${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;}
 function m2t12(m){let h=Math.floor(m/60),mn=m%60,ap=h>=12?'PM':'AM';h=h%12||12;return`${h}:${String(mn).padStart(2,'0')} ${ap}`;}
-function isShortDay(d){return d==='Wednesday'||d==='Saturday';}
-function getMaxP(day){const s=ST.settings;return isShortDay(day)?+(s.shortDayPeriods||6):+(s.numPeriods||9);}
-function getGroup(p){return p<=3?'A':p<=6?'B':'C';}
-function sameGroup(a,b){return getGroup(a)===getGroup(b);}
+function isShort(d){return d==='Wednesday'||d==='Saturday';}
+function maxP(day){return isShort(day)?+(D.cfg.shortDayPeriods||6):+(D.cfg.numPeriods||9);}
+function getGrp(p){return p<=3?'A':p<=6?'B':'C';}
+function sameGrp(a,b){return getGrp(a)===getGrp(b);}
 
-// ===== PERIOD TIMES (full day) =====
+// All period start/end times (full day, 9 periods)
 function getPTimes(){
-  const s=ST.settings;const n=+(s.numPeriods||9);
-  let cur=t2m(s.startTime||'07:30');const arr=[];
+  const c=D.cfg;const n=+(c.numPeriods||9);let cur=t2m(c.startTime||'07:30');const arr=[];
   for(let i=1;i<=n;i++){
-    arr.push({p:i,s:m2t(cur),e:m2t(cur+(+s.periodDuration||45))});
-    cur+=+(s.periodDuration||45);
-    if(i===+(s.shortBreakAfter||3))cur+=+(s.shortBreakDuration||15);
-    if(i===+(s.lunchBreakAfter||6)){
-      cur+=+(s.lunchBreakDuration||90);
-      cur+=+(s.studyDuration||65);
-      cur+=+(s.studyBreakDuration||10);
-    }
+    arr.push({p:i,s:m2t(cur),e:m2t(cur+(+c.periodDuration||45))});
+    cur+=+(c.periodDuration||45);
+    if(i===+(c.shortBreakAfter||3))cur+=+(c.shortBreakDuration||15);
+    if(i===+(c.lunchBreakAfter||6)){cur+=+(c.lunchBreakDuration||90)++(c.studyDuration||65)++(c.studyBreakDuration||10);}
   }
   return arr;
 }
 
-// Build schedule cols for a given day (short days skip study/studybreak)
-function buildCols(day){
-  const s=ST.settings;const maxP=day?getMaxP(day):(+(s.numPeriods||9));
-  const isShort=day?isShortDay(day):false;
-  const lb=+(s.lunchBreakAfter||6);const ptimes=getPTimes().filter(x=>x.p<=maxP);
-  let cols=[];
-  ptimes.forEach(pt=>{
-    cols.push({t:'p',pt});
-    if(pt.p===+(s.shortBreakAfter||3)&&pt.p<maxP){
-      const st=m2t(t2m(pt.e));const en=m2t(t2m(pt.e)+(+s.shortBreakDuration||15));
-      cols.push({t:'sb',s:st,e:en,dur:+(s.shortBreakDuration||15)});
-    }
-    if(pt.p===lb&&pt.p<=maxP){
-      const lst=m2t(t2m(pt.e));const len=m2t(t2m(pt.e)+(+s.lunchBreakDuration||90));
-      cols.push({t:'lb',s:lst,e:len,dur:+(s.lunchBreakDuration||90)});
-      if(!isShort&&+(s.studyDuration||0)>0){
-        const sst=len;const sen=m2t(t2m(len)+(+s.studyDuration||65));
-        cols.push({t:'ab',s:sst,e:sen,dur:+(s.studyDuration||65)});
-      }
-      if(!isShort&&+(s.studyBreakDuration||0)>0){
-        const bst=m2t(t2m(pt.e)+(+s.lunchBreakDuration||90)+(+s.studyDuration||65));
-        cols.push({t:'abr',s:bst,e:m2t(t2m(bst)+(+s.studyBreakDuration||10)),dur:+(s.studyBreakDuration||10)});
-      }
+// Build ordered row list (rows = time slots in day)
+function buildRows(day){
+  const c=D.cfg;const mp=maxP(day);const isS=isShort(day);
+  const ptAll=getPTimes().filter(x=>x.p<=mp);const lb=+(c.lunchBreakAfter||6);const sb=+(c.shortBreakAfter||3);
+  const rows=[];
+  ptAll.forEach(pt=>{
+    rows.push({type:'p',pt});
+    if(pt.p===sb&&pt.p<mp){
+      const s=m2t(t2m(pt.e));rows.push({type:'sb',s,e:m2t(t2m(s)+(+c.shortBreakDuration||15)),dur:+(c.shortBreakDuration||15)});}
+    if(pt.p===lb&&pt.p<=mp){
+      const ls=m2t(t2m(pt.e));const ld=+(c.lunchBreakDuration||90);
+      rows.push({type:'lb',s:ls,e:m2t(t2m(ls)+ld),dur:ld});
+      if(!isS&&+(c.studyDuration||0)>0){const as=m2t(t2m(ls)+ld);rows.push({type:'ab',s:as,e:m2t(t2m(as)+(+c.studyDuration)),dur:+(c.studyDuration)});}
+      if(!isS&&+(c.studyBreakDuration||0)>0){const bst=m2t(t2m(ls)+ld+(+c.studyDuration||0));rows.push({type:'abr',s:bst,e:m2t(t2m(bst)+(+c.studyBreakDuration)),dur:+(c.studyBreakDuration)});}
     }
   });
-  return cols;
+  return rows;
 }
+// Full rows = non-short day rows (for column structure)
+function fullRows(){return buildRows('Monday');}
 
 // ===== NAV =====
-function showPage(n,b){
+function SP(n,b){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+n).classList.add('active');
   document.querySelectorAll('.nb').forEach(x=>x.classList.remove('active'));if(b)b.classList.add('active');
-  if(n==='assign')popSel('asel',true);
-  if(n==='timetable'){popSel('ttsel');checkLoads();}
-  if(n==='view'){popSel('vcsel',true);popSel('vtsel',false,true);renderAV();}
-  if(n==='print'){popPrintSels();}
-  if(n==='reports')renderLoadRep();
+  if(n==='assign'){popSel('asel');renderAssign();}
+  if(n==='editor'){popSel('ttsel');checkLoads();}
+  if(n==='view'){popSel('vcsel');popSelT('vtsel');}
+  if(n==='print'){ppSels();}
+  if(n==='reports')rLoad();
 }
-function showTab(id,b){['ts','tt','tc','tsub'].forEach(x=>{const el=document.getElementById(x);if(el)el.style.display='none';});
+function ST2(id,b){['ts','tt2','tc2','tsub2'].forEach(x=>{const e=document.getElementById(x);if(e)e.style.display='none';});
   document.getElementById(id).style.display='block';
   document.querySelectorAll('#page-setup .tab-bar .tab').forEach(t=>t.classList.remove('active'));if(b)b.classList.add('active');
-  if(id==='tt'){popSubjSel();renderTeachers();}if(id==='tc'){popCTSel();renderClasses();}if(id==='tsub')renderSubjects();}
-function showVTab(id,b){['vc','vt','va'].forEach(x=>document.getElementById(x).style.display='none');
+  if(id==='tt2'){popSubjSel();renderTeachers();}if(id==='tc2'){popCTSel();renderClasses();}if(id==='tsub2')renderSubjects();}
+function SVT(id,b){['vc','vt'].forEach(x=>document.getElementById(x).style.display='none');
   document.getElementById(id).style.display='block';
-  document.querySelectorAll('#page-view .tab').forEach(t=>t.classList.remove('active'));if(b)b.classList.add('active');
-  if(id==='va')renderAV();}
-function showRTab(id,b){['rl','rs','rf','re'].forEach(x=>document.getElementById(x).style.display='none');
+  document.querySelectorAll('#page-view .tab').forEach(t=>t.classList.remove('active'));if(b)b.classList.add('active');}
+function SRT(id,b){['rl','rs','rf','re'].forEach(x=>document.getElementById(x).style.display='none');
   document.getElementById(id).style.display='block';
   document.querySelectorAll('#page-reports .tab').forEach(t=>t.classList.remove('active'));if(b)b.classList.add('active');
-  if(id==='rl')renderLoadRep();if(id==='rs')renderSubjRep();if(id==='rf')renderFreeRep();}
+  if(id==='rl')rLoad();if(id==='rs')rSubj();if(id==='rf')rFree();}
 
-function popSel(id,isClass,isTeacher){
-  const el=document.getElementById(id);if(!el)return;
-  if(isTeacher){el.innerHTML='<option value="">-- Select --</option>'+ST.teachers.map(t=>`<option value="${t.id}">${t.name} (${t.code})</option>`).join('');}
-  else el.innerHTML='<option value="">-- Select --</option>'+ST.classes.map(c=>`<option value="${c.id}">${c.std}-${c.division} (${c.medium})</option>`).join('');
-}
-function popSubjSel(){const el=document.getElementById('tsubjs');if(el)el.innerHTML=ST.subjects.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');}
-function popCTSel(){const el=document.getElementById('cct');if(el)el.innerHTML='<option value="">-- Select --</option>'+ST.teachers.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');}
-function popPrintSels(){
-  const pc=document.getElementById('pClassSel');if(pc)pc.innerHTML='<option value="">एक वर्ग...</option>'+ST.classes.map(c=>`<option value="${c.id}">${c.std}-${c.division}</option>`).join('');
-  const pt=document.getElementById('pTeachSel');if(pt)pt.innerHTML='<option value="">एक शिक्षक...</option>'+ST.teachers.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
-}
+function popSel(id){const e=document.getElementById(id);if(!e)return;
+  e.innerHTML='<option value="">-- Select --</option>'+D.classes.map(c=>`<option value="${c.id}">${c.std}-${c.division} (${c.medium})</option>`).join('');}
+function popSelT(id){const e=document.getElementById(id);if(!e)return;
+  e.innerHTML='<option value="">-- Select --</option>'+D.teachers.map(t=>`<option value="${t.id}">${t.name} (${t.code})</option>`).join('');}
+function popSubjSel(){const e=document.getElementById('tsubjs');if(e)e.innerHTML=D.subjects.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');}
+function popCTSel(){const e=document.getElementById('cct');if(e)e.innerHTML='<option value="">-- None --</option>'+D.teachers.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');}
+function ppSels(){
+  const pc=document.getElementById('pCSel');if(pc)pc.innerHTML='<option value="">एक वर्ग...</option>'+D.classes.map(c=>`<option value="${c.id}">${c.std}-${c.division}</option>`).join('');
+  const pt=document.getElementById('pTSel');if(pt)pt.innerHTML='<option value="">एक शिक्षक...</option>'+D.teachers.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');}
 
 // ===== SETTINGS =====
 function applyS(){
-  const s=ST.settings;
-  ['assemblyTime','startTime','mukhyadhyapakName'].forEach(id=>{const el=document.getElementById(id);if(el&&s[id]!==undefined)el.value=s[id];});
+  const c=D.cfg;
+  ['assemblyTime','startTime','mukhyadhyapakName'].forEach(id=>{const e=document.getElementById(id);if(e&&c[id]!==undefined)e.value=c[id];});
   ['assemblyDuration','numPeriods','shortDayPeriods','periodDuration','shortBreakAfter','shortBreakDuration',
    'lunchBreakAfter','lunchBreakDuration','studyDuration','studyBreakDuration','subjectPeriodLimit','maxTeacherPeriods'].forEach(id=>{
-    const el=document.getElementById(id);if(el&&s[id]!==undefined)el.value=s[id];});
-  if(s.workingDays)document.querySelectorAll('#wdDays input').forEach(cb=>cb.checked=s.workingDays.includes(cb.value));
-  renderPreview();
+    const e=document.getElementById(id);if(e&&c[id]!==undefined)e.value=c[id];});
+  if(c.workingDays)document.querySelectorAll('#wdDays input').forEach(cb=>cb.checked=c.workingDays.includes(cb.value));
+  renderPrev();
 }
-function saveSettings(){
-  const s=ST.settings;
-  ['assemblyTime','startTime','mukhyadhyapakName'].forEach(id=>{const el=document.getElementById(id);if(el)s[id]=el.value;});
+function saveS(){
+  const c=D.cfg;
+  ['assemblyTime','startTime','mukhyadhyapakName'].forEach(id=>{const e=document.getElementById(id);if(e)c[id]=e.value;});
   ['assemblyDuration','numPeriods','shortDayPeriods','periodDuration','shortBreakAfter','shortBreakDuration',
    'lunchBreakAfter','lunchBreakDuration','studyDuration','studyBreakDuration','subjectPeriodLimit','maxTeacherPeriods'].forEach(id=>{
-    const el=document.getElementById(id);if(el)s[id]=Math.max(0,+el.value);});
-  s.lunchBreakDuration=Math.min(120,Math.max(15,s.lunchBreakDuration));
-  s.workingDays=[];document.querySelectorAll('#wdDays input:checked').forEach(cb=>s.workingDays.push(cb.value));
+    const e=document.getElementById(id);if(e)c[id]=Math.max(0,+e.value);});
+  c.lunchBreakDuration=Math.min(120,Math.max(15,c.lunchBreakDuration));
+  c.workingDays=[];document.querySelectorAll('#wdDays input:checked').forEach(cb=>c.workingDays.push(cb.value));
   save();const sv=document.getElementById('sv');sv.style.display='inline';setTimeout(()=>sv.style.display='none',2000);
-  renderPreview();toast('Settings saved!');
+  renderPrev();toast('Settings saved!');
 }
-function renderPreview(){
-  const s=ST.settings;
-  const aStart=m2t12(t2m(s.assemblyTime||'07:15'));
-  const aEnd=m2t12(t2m(s.assemblyTime||'07:15')+(+(s.assemblyDuration||15)));
-  const cols=buildCols();const gc=['#d6eaf8','#d5f5e3','#fdebd0'];
-  let h=`<div style="font-size:.77rem;color:var(--pr);font-weight:700;margin-bottom:6px;">📅 Full Day Schedule (Normal Days):</div>
-  <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px;">
-  <span class="badge" style="background:#fff3cd;color:#856404;">🙏 Assembly: ${aStart}–${aEnd}</span>`;
-  cols.forEach(c=>{
-    if(c.t==='p'){const g=Math.floor((c.pt.p-1)/3);h+=`<span class="badge" style="background:${gc[g]||'#eee'};color:#333;">P${c.pt.p}: ${m2t12(t2m(c.pt.s))}–${m2t12(t2m(c.pt.e))}</span>`;}
-    else if(c.t==='sb')h+=`<span class="badge bo2">☕ Break ${c.dur}m</span>`;
-    else if(c.t==='lb')h+=`<span class="badge bo2" style="background:#fff3e0;">🍱 Lunch ${c.dur}m</span>`;
-    else if(c.t==='ab')h+=`<span class="badge" style="background:#e8f5e9;color:#2e7d32;">📖 Abhyasika ${c.dur}m</span>`;
-    else if(c.t==='abr')h+=`<span class="badge" style="background:#f3e5f5;color:#7b1fa2;">☕ Break ${c.dur}m</span>`;
+function renderPrev(){
+  const c=D.cfg;const aS=m2t12(t2m(c.assemblyTime||'07:15'));const aE=m2t12(t2m(c.assemblyTime||'07:15')+(+(c.assemblyDuration||15)));
+  const rows=buildRows('Monday');const gc=['#d6eaf8','#d5f5e3','#fdebd0'];
+  let h=`<div style="font-size:.75rem;color:var(--pr);font-weight:700;margin-bottom:5px;">📅 Normal Day:</div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;">
+  <span class="badge" style="background:#fff3cd;color:#856404;">🙏 Assembly: ${aS}–${aE}</span>`;
+  rows.forEach(r=>{
+    if(r.type==='p'){const g=Math.floor((r.pt.p-1)/3);h+=`<span class="badge" style="background:${gc[g]};color:#333;">P${r.pt.p}: ${m2t12(t2m(r.pt.s))}–${m2t12(t2m(r.pt.e))}</span>`;}
+    else if(r.type==='sb')h+=`<span class="badge bo2">☕ ${r.dur}m</span>`;
+    else if(r.type==='lb')h+=`<span class="badge bo2" style="background:#fff3e0;">🍱 ${r.dur}m</span>`;
+    else if(r.type==='ab')h+=`<span class="badge" style="background:#e8f5e9;color:#2e7d32;">📖 Abhyasika ${r.dur}m</span>`;
+    else if(r.type==='abr')h+=`<span class="badge" style="background:#f3e5f5;color:#7b1fa2;">☕ ${r.dur}m</span>`;
   });
-  const shortCols=buildCols('Wednesday');
-  h+=`</div><div style="font-size:.77rem;color:#7f3d00;font-weight:700;margin-bottom:5px;">🗓️ Wed & Sat (Short Day — ${s.shortDayPeriods} periods, Abhyasika नाही):</div>
-  <div style="display:flex;flex-wrap:wrap;gap:5px;">
-  <span class="badge" style="background:#fff3cd;color:#856404;">🙏 Assembly: ${aStart}–${aEnd}</span>`;
-  shortCols.forEach(c=>{
-    if(c.t==='p')h+=`<span class="badge" style="background:#fdebd0;color:#7f3d00;">P${c.pt.p}: ${m2t12(t2m(c.pt.s))}–${m2t12(t2m(c.pt.e))}</span>`;
-    else if(c.t==='sb')h+=`<span class="badge bo2">☕ Break ${c.dur}m</span>`;
-    else if(c.t==='lb')h+=`<span class="badge bo2" style="background:#fff3e0;">🍱 Lunch ${c.dur}m</span>`;
+  const sr=buildRows('Wednesday');
+  h+=`</div><div style="font-size:.75rem;color:#7f3d00;font-weight:700;margin-bottom:5px;">🗓️ Wed/Sat (${c.shortDayPeriods} periods):</div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;">
+  <span class="badge" style="background:#fff3cd;color:#856404;">🙏 Assembly</span>`;
+  sr.forEach(r=>{
+    if(r.type==='p')h+=`<span class="badge" style="background:#fdebd0;color:#7f3d00;">P${r.pt.p}: ${m2t12(t2m(r.pt.s))}–${m2t12(t2m(r.pt.e))}</span>`;
+    else if(r.type==='sb')h+=`<span class="badge bo2">☕ ${r.dur}m</span>`;
+    else if(r.type==='lb')h+=`<span class="badge bo2" style="background:#fff3e0;">🍱 ${r.dur}m</span>`;
   });
-  h+=`</div><div style="margin-top:6px;font-size:.72rem;color:var(--mu);">📖 Theory: P1–P${s.subjectPeriodLimit} | 🎨 Activity: P${+s.subjectPeriodLimit+1}+ | Groups: A(1–3) B(4–6) C(7–9) | Max ${s.maxTeacherPeriods} periods/teacher/week</div></div>`;
-  document.getElementById('prevArea').innerHTML=h;
+  h+=`</div><div style="font-size:.7rem;color:var(--mu);">Theory: P1–P${c.subjectPeriodLimit} | Practical prefer: P${+c.subjectPeriodLimit+1}+ (allowed P1–6 if needed) | Max warning: ${c.maxTeacherPeriods} periods</div>`;
+  document.getElementById('prevA').innerHTML=h;
 }
 
 // ===== SUBJECTS =====
 function addSubject(){
   const name=document.getElementById('sname').value.trim(),code=document.getElementById('scode').value.trim().toUpperCase();
   const color=document.getElementById('scolor').value,type=document.getElementById('stype').value;
+  const priority=document.getElementById('spriority').value;
   if(!name||!code)return toast('Name & code required!','error');
-  if(ST.subjects.find(s=>s.code===code))return toast('Code exists!','error');
-  ST.subjects.push({id:Date.now(),name,code,color,type});save();
+  if(D.subjects.find(s=>s.code===code))return toast('Code exists!','error');
+  D.subjects.push({id:Date.now(),name,code,color,type,priority:priority||'normal'});save();
   document.getElementById('sname').value='';document.getElementById('scode').value='';
   renderSubjects();popSubjSel();toast(`${name} added`);
 }
 function renderSubjects(){
   const list=document.getElementById('subj-list'),empty=document.getElementById('empty-s');
-  if(!ST.subjects.length){list.innerHTML='';empty.style.display='block';return;}
+  if(!D.subjects.length){list.innerHTML='';empty.style.display='block';return;}
   empty.style.display='none';
-  list.innerHTML=ST.subjects.map(s=>`<div style="display:flex;align-items:center;gap:5px;padding:4px 9px;border-radius:6px;background:${s.color}20;border:1.5px solid ${s.color};">
+  list.innerHTML=D.subjects.map(s=>`<div style="display:flex;align-items:center;gap:4px;padding:4px 8px;border-radius:6px;background:${s.color}18;border:1.5px solid ${s.color};">
     <div style="width:8px;height:8px;border-radius:50%;background:${s.color};flex-shrink:0;"></div>
-    <span style="font-weight:700;color:${s.color};font-size:.76rem;">${s.code}</span>
-    <span style="font-size:.82rem;">${s.name}</span>
+    <span style="font-weight:700;color:${s.color};font-size:.74rem;">${s.code}</span>
+    <span style="font-size:.8rem;">${s.name}</span>
     <span class="badge ${s.type==='theory'?'bb':s.type==='practical'?'bo2':'bgy'}" style="font-size:.58rem;">${s.type}</span>
+    ${s.priority==='high'?'<span class="badge" style="background:#fff3cd;color:#856404;font-size:.58rem;">⭐high</span>':''}
     <button class="btn bd2 bs" onclick="delSubj(${s.id})">✕</button>
   </div>`).join('');
 }
-function delSubj(id){if(!confirm('Delete?'))return;ST.subjects=ST.subjects.filter(s=>s.id!==id);save();renderSubjects();popSubjSel();}
+function delSubj(id){if(!confirm('Delete?'))return;D.subjects=D.subjects.filter(s=>s.id!==id);save();renderSubjects();popSubjSel();}
 
 // ===== TEACHERS =====
 function getTLoad(tid){
-  const s=ST.settings;let c=0;
-  ST.classes.forEach(cls=>(s.workingDays||[]).forEach(day=>{for(let p=1;p<=getMaxP(day);p++){const cell=ST.timetables[cls.id]?.[day]?.[p];if(cell?.teacherId===tid&&!cell.isDoubleCont)c++;}}));
+  let c=0;D.classes.forEach(cls=>(D.cfg.workingDays||[]).forEach(day=>{for(let p=1;p<=maxP(day);p++){const cell=D.TT[cls.id]?.[day]?.[p];if(cell?.teacherId===tid&&!cell.isDoubleCont)c++;}}));
   return c;
 }
 function addTeacher(){
   const name=document.getElementById('tname').value.trim(),code=document.getElementById('tcode').value.trim().toUpperCase();
   if(!name||!code)return toast('Name & code required!','error');
-  if(ST.teachers.find(t=>t.code===code))return toast('Code exists!','error');
+  if(D.teachers.find(t=>t.code===code))return toast('Code exists!','error');
   const subjs=Array.from(document.getElementById('tsubjs').selectedOptions).map(o=>+o.value);
-  ST.teachers.push({id:Date.now(),name,code,phone:document.getElementById('tphone').value.trim(),subjects:subjs});
+  D.teachers.push({id:Date.now(),name,code,phone:document.getElementById('tphone').value.trim(),subjects:subjs});
   save();document.getElementById('tname').value='';document.getElementById('tcode').value='';document.getElementById('tphone').value='';
   renderTeachers();popCTSel();toast(`${name} added`);
 }
 function renderTeachers(){
   const q=(document.getElementById('tsearch')?.value||'').toLowerCase();
-  const tbody=document.getElementById('tbody-t'),empty=document.getElementById('empty-t');
-  const fl=ST.teachers.filter(t=>t.name.toLowerCase().includes(q)||t.code.toLowerCase().includes(q));
-  document.getElementById('tcount').textContent=ST.teachers.length;
-  if(!fl.length){tbody.innerHTML='';empty.style.display='block';return;}
-  empty.style.display='none';const max=+(ST.settings.maxTeacherPeriods||36);
-  tbody.innerHTML=fl.map((t,i)=>{
-    const sn=(t.subjects||[]).map(sid=>{const s=ST.subjects.find(x=>x.id===sid);return s?`<span class="badge" style="background:${s.color}20;color:${s.color};">${s.code}</span>`:''}).join(' ');
-    const ld=getTLoad(t.id);const pct=Math.min(100,Math.round(ld/max*100));const col=ld>max?'#e74c3c':ld>max*.8?'#f39c12':'#27ae60';
-    return`<tr><td>${i+1}</td><td><strong>${t.name}</strong></td><td><span class="badge bgg">${t.code}</span></td><td>${sn||'—'}</td>
-    <td><span style="font-size:.75rem;font-weight:700;color:${col};">${ld}/${max}</span>
-    <div class="ld-bar" style="width:78px;"><div class="ld-fill" style="width:${pct}%;background:${col};"></div></div>
-    ${ld>max?'<span class="badge br">⚠️ Over</span>':''}</td>
-    <td><button class="btn bd2 bs" onclick="delTeacher(${t.id})">Del</button></td></tr>`;
+  const tb=document.getElementById('tbody-t'),em=document.getElementById('empty-t');
+  const fl=D.teachers.filter(t=>t.name.toLowerCase().includes(q)||t.code.toLowerCase().includes(q));
+  document.getElementById('tcount').textContent=D.teachers.length;
+  if(!fl.length){tb.innerHTML='';em.style.display='block';return;}
+  em.style.display='none';const mx=+(D.cfg.maxTeacherPeriods||36);
+  tb.innerHTML=fl.map((t,i)=>{
+    const sn=(t.subjects||[]).map(sid=>{const s=D.subjects.find(x=>x.id===sid);return s?`<span class="badge" style="background:${s.color}18;color:${s.color};">${s.code}</span>`:''}).join(' ');
+    const ld=getTLoad(t.id);const pct=Math.min(100,Math.round(ld/mx*100));const col=ld>mx?'#e74c3c':ld>mx*.8?'#f39c12':'#27ae60';
+    return`<tr><td>${i+1}</td><td><strong>${t.name}</strong></td><td><span class="badge bgg">${t.code}</span></td>
+    <td>${sn||'—'}</td>
+    <td><span style="font-size:.73rem;font-weight:700;color:${col};">${ld}/${mx}</span>
+    <div class="ld-bar" style="width:75px;"><div class="ld-fill" style="width:${pct}%;background:${col};"></div></div>
+    ${ld>mx?'<span class="badge br">⚠️ Over</span>':''}</td>
+    <td><button class="btn bd2 bs" onclick="delT(${t.id})">Del</button></td></tr>`;
   }).join('');
 }
-function delTeacher(id){if(!confirm('Delete?'))return;ST.teachers=ST.teachers.filter(t=>t.id!==id);save();renderTeachers();popCTSel();}
+function delT(id){if(!confirm('Delete?'))return;D.teachers=D.teachers.filter(t=>t.id!==id);save();renderTeachers();popCTSel();}
 function checkLoads(){
-  const max=+(ST.settings.maxTeacherPeriods||36);
-  const over=ST.teachers.filter(t=>getTLoad(t.id)>max);
+  const mx=+(D.cfg.maxTeacherPeriods||36);const over=D.teachers.filter(t=>getTLoad(t.id)>mx);
   const el=document.getElementById('tlw');if(!el)return;
-  el.innerHTML=over.length?`<div class="warn-b">⚠️ ${over.map(t=>`<strong>${t.name}</strong>(${getTLoad(t.id)})`).join(', ')} — ${max} periods/week limit ओलांडला!</div>`:'';
+  el.innerHTML=over.length?`<div class="warn-b">⚠️ ${over.map(t=>`<strong>${t.name}</strong>(${getTLoad(t.id)})`).join(', ')} — ${mx} periods/week पेक्षा जास्त! (No restriction, only warning)</div>`:'';
 }
 
 // ===== CLASSES =====
 function addClass(){
   const std=document.getElementById('cstd').value,div=document.getElementById('cdiv').value.trim().toUpperCase();
   if(!div)return toast('Division required!','error');
-  const id=`${std}-${div}`;if(ST.classes.find(c=>c.id===id))return toast('Already exists!','error');
-  ST.classes.push({id,std,division:div,medium:document.getElementById('cmed').value,classTeacherId:+document.getElementById('cct').value||null,strength:+document.getElementById('cstr').value||0});
+  const id=`${std}-${div}`;if(D.classes.find(c=>c.id===id))return toast('Already exists!','error');
+  D.classes.push({id,std,division:div,medium:document.getElementById('cmed').value,classTeacherId:+document.getElementById('cct').value||null,strength:+document.getElementById('cstr').value||0});
   save();renderClasses();toast(`${id} added`);
 }
-function addAllDivs(){
-  const std=document.getElementById('cstd').value,med=document.getElementById('cmed').value;
-  const str=+document.getElementById('cstr').value||0;let added=0;
-  ['A','B','C','D','E','F'].forEach(div=>{const id=`${std}-${div}`;
-    if(!ST.classes.find(c=>c.id===id)){ST.classes.push({id,std,division:div,medium:med,classTeacherId:null,strength:str});added++;}});
-  save();renderClasses();toast(`${added} divisions added`);
+function addStdDivs(){
+  const std=document.getElementById('cstd').value;let added=0;
+  // A,B = Marathi, C,D,E,F = Semi-English
+  [['A','Marathi'],['B','Marathi'],['C','Semi-English'],['D','Semi-English'],['E','Semi-English'],['F','Semi-English']].forEach(([div,med])=>{
+    const id=`${std}-${div}`;
+    if(!D.classes.find(c=>c.id===id)){D.classes.push({id,std,division:div,medium:med,classTeacherId:null,strength:0});added++;}
+  });
+  save();renderClasses();toast(`${added} divisions added for ${std}`);
 }
 function renderClasses(){
-  const tbody=document.getElementById('tbody-c'),empty=document.getElementById('empty-c');
-  document.getElementById('ccount').textContent=ST.classes.length;
-  if(!ST.classes.length){tbody.innerHTML='';empty.style.display='block';return;}
-  empty.style.display='none';
-  tbody.innerHTML=ST.classes.map((c,i)=>{const ct=ST.teachers.find(t=>t.id===c.classTeacherId);
-    return`<tr><td>${i+1}</td><td><strong>${c.std}</strong></td><td><span class="badge bb">${c.division}</span></td><td>${c.medium}</td><td>${ct?ct.name:'—'}</td><td>${c.strength||'—'}</td>
-    <td><button class="btn bd2 bs" onclick="delClass('${c.id}')">Del</button></td></tr>`;}).join('');
+  const tb=document.getElementById('tbody-c'),em=document.getElementById('empty-c');
+  document.getElementById('ccount').textContent=D.classes.length;
+  if(!D.classes.length){tb.innerHTML='';em.style.display='block';return;}
+  em.style.display='none';
+  tb.innerHTML=D.classes.map((c,i)=>{const ct=D.teachers.find(t=>t.id===c.classTeacherId);
+    return`<tr><td>${i+1}</td><td><strong>${c.std}</strong></td><td><span class="badge bb">${c.division}</span></td>
+    <td><span class="badge ${c.medium==='Marathi'?'bgg':'bpu'}">${c.medium}</span></td>
+    <td>${ct?ct.name:'—'}</td><td>${c.strength||'—'}</td>
+    <td><button class="btn bd2 bs" onclick="delC('${c.id}')">Del</button></td></tr>`;}).join('');
 }
-function delClass(id){if(!confirm('Delete?'))return;ST.classes=ST.classes.filter(c=>c.id!==id);delete ST.timetables[id];delete ST.classSubjects[id];save();renderClasses();}
+function delC(id){if(!confirm('Delete?'))return;D.classes=D.classes.filter(c=>c.id!==id);delete D.TT[id];delete D.CS[id];save();renderClasses();}
 
 // ===== ASSIGN =====
 function renderAssign(){
   const cid=document.getElementById('asel').value;
-  if(!cid){document.getElementById('aarea').innerHTML='<div class="es"><div class="bi2">📋</div><p>Select a class.</p></div>';return;}
-  const cls=ST.classes.find(c=>c.id===cid);const ct=ST.teachers.find(t=>t.id===cls.classTeacherId);
-  const rows=ST.classSubjects[cid]||[];
-  let h=`<div class="ib" style="margin-bottom:10px;"><strong>${cls.std}-${cls.division} (${cls.medium})</strong>${ct?` | वर्गशिक्षक: <strong>${ct.name}</strong>`:' | ⚠️ No class teacher'}</div>`;
-  h+=`<div class="ttw"><table class="dt" style="min-width:480px;"><thead><tr><th>#</th><th>Subject</th><th>Type</th><th>Teacher</th><th>Periods/Wk</th><th></th></tr></thead><tbody id="arows">`;
+  if(!cid){document.getElementById('aarea').innerHTML='<div class="es"><p>📋 Select a class.</p></div>';return;}
+  const cls=D.classes.find(c=>c.id===cid);const ct=D.teachers.find(t=>t.id===cls.classTeacherId);
+  const rows=D.CS[cid]||[];
+  let h=`<div class="ib" style="margin-bottom:9px;"><strong>${cls.std}-${cls.division} (${cls.medium})</strong>${ct?` | वर्गशिक्षक: <strong>${ct.name}</strong>`:' | ⚠️ No class teacher'}</div>`;
+  h+=`<div class="ttw"><table class="dt" style="min-width:470px;"><thead><tr><th>#</th><th>Subject</th><th>Type</th><th>Priority</th><th>Teacher</th><th>P/Week</th><th></th></tr></thead><tbody id="arows">`;
   rows.forEach((row,idx)=>{
-    const subj=ST.subjects.find(s=>s.id===row.subjectId);
-    const tOpts=ST.teachers.map(t=>`<option value="${t.id}" ${t.id===row.teacherId?'selected':''}>${t.name}</option>`).join('');
-    h+=`<tr><td>${idx+1}</td><td><span class="badge" style="background:${subj?.color||'#eee'}20;color:${subj?.color||'#333'};">${subj?.code||'?'}</span> ${subj?.name||'?'}</td>
-    <td><span class="badge ${subj?.type==='theory'?'bb':subj?.type==='practical'?'bo2':'bgy'}" style="font-size:.6rem;">${subj?.type||'?'}</span></td>
-    <td><select data-r="${idx}" class="ar-t" style="padding:3px 6px;font-size:.77rem;border:1px solid var(--bd);border-radius:5px;min-width:145px;"><option value="">-- Select --</option>${tOpts}</select></td>
-    <td><input type="number" data-r="${idx}" class="ar-p" value="${row.periodsPerWeek||3}" min="1" max="20" style="width:50px;padding:3px;font-size:.77rem;border:1px solid var(--bd);border-radius:5px;text-align:center;"></td>
-    <td><button class="btn bd2 bs" onclick="rmARow(${idx},'${cid}')">✕</button></td></tr>`;
+    const subj=D.subjects.find(s=>s.id===row.subjectId);
+    const tOpts=D.teachers.map(t=>`<option value="${t.id}" ${t.id===row.teacherId?'selected':''}>${t.name}</option>`).join('');
+    h+=`<tr><td>${idx+1}</td>
+    <td><span class="badge" style="background:${subj?.color||'#eee'}18;color:${subj?.color||'#333'};">${subj?.code||'?'}</span> ${subj?.name||'?'}</td>
+    <td><span class="badge ${subj?.type==='theory'?'bb':subj?.type==='practical'?'bo2':'bgy'}" style="font-size:.58rem;">${subj?.type||'?'}</span></td>
+    <td><span class="badge ${subj?.priority==='high'?'':'bgy'}" style="${subj?.priority==='high'?'background:#fff3cd;color:#856404;':''}font-size:.58rem;">${subj?.priority||'normal'}</span></td>
+    <td><select data-r="${idx}" class="ar-t" style="padding:3px 5px;font-size:.75rem;border:1px solid var(--bd);border-radius:5px;min-width:140px;"><option value="">-- Select --</option>${tOpts}</select></td>
+    <td><input type="number" data-r="${idx}" class="ar-p" value="${row.periodsPerWeek||3}" min="1" max="20" style="width:48px;padding:3px;font-size:.75rem;border:1px solid var(--bd);border-radius:5px;text-align:center;"></td>
+    <td><button class="btn bd2 bs" onclick="rmAR(${idx},'${cid}')">✕</button></td></tr>`;
   });
   h+=`</tbody></table></div>`;
-  const sOpts=ST.subjects.map(s=>`<option value="${s.id}">${s.name} [${s.type}]</option>`).join('');
-  h+=`<div style="margin-top:11px;display:flex;gap:7px;flex-wrap:wrap;align-items:flex-end;padding:11px;background:var(--lt);border-radius:8px;">
-    <div><label style="font-size:.69rem;font-weight:600;color:var(--mu);text-transform:uppercase;display:block;margin-bottom:2px;">Subject</label><select id="nas" style="padding:5px 8px;border:1.5px solid var(--bd);border-radius:6px;font-size:.8rem;min-width:155px;"><option value="">-- Select --</option>${sOpts}</select></div>
-    <div><label style="font-size:.69rem;font-weight:600;color:var(--mu);text-transform:uppercase;display:block;margin-bottom:2px;">Teacher</label><select id="nat" style="padding:5px 8px;border:1.5px solid var(--bd);border-radius:6px;font-size:.8rem;min-width:155px;"><option value="">-- Select --</option>${ST.teachers.map(t=>`<option value="${t.id}">${t.name}</option>`).join('')}</select></div>
-    <div><label style="font-size:.69rem;font-weight:600;color:var(--mu);text-transform:uppercase;display:block;margin-bottom:2px;">Periods/Wk</label><input type="number" id="nap" value="3" min="1" max="20" style="width:55px;padding:5px;border:1.5px solid var(--bd);border-radius:6px;text-align:center;"></div>
-    <button class="btn bk" onclick="addARow('${cid}')">➕ Add</button>
+  const sOpts=D.subjects.map(s=>`<option value="${s.id}">${s.name} [${s.type}/${s.priority||'normal'}]</option>`).join('');
+  h+=`<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:flex-end;padding:10px;background:var(--lt);border-radius:7px;">
+    <div><label class="fl">Subject</label><select id="nas" class="fi" style="min-width:155px;"><option value="">-- Select --</option>${sOpts}</select></div>
+    <div><label class="fl">Teacher</label><select id="nat" class="fi" style="min-width:155px;"><option value="">-- Select --</option>${D.teachers.map(t=>`<option value="${t.id}">${t.name}</option>`).join('')}</select></div>
+    <div><label class="fl">P/Week</label><input type="number" id="nap" value="3" min="1" max="20" style="width:52px;padding:5px;border:1.5px solid var(--bd);border-radius:5px;text-align:center;"></div>
+    <button class="btn bk" onclick="addAR('${cid}')">➕ Add</button>
   </div>`;
   document.getElementById('aarea').innerHTML=h;
 }
-function addARow(cid){
+function addAR(cid){
   const sid=+document.getElementById('nas').value,tid=+document.getElementById('nat').value||null,ppw=+document.getElementById('nap').value||3;
   if(!sid)return toast('Select subject!','error');
-  if(!ST.classSubjects[cid])ST.classSubjects[cid]=[];
-  if(ST.classSubjects[cid].find(r=>r.subjectId===sid))return toast('Already assigned!','warn');
-  ST.classSubjects[cid].push({subjectId:sid,teacherId:tid,periodsPerWeek:ppw});
-  save();renderAssign();document.getElementById('asel').value=cid;
+  if(!D.CS[cid])D.CS[cid]=[];
+  if(D.CS[cid].find(r=>r.subjectId===sid))return toast('Already assigned!','warn');
+  D.CS[cid].push({subjectId:sid,teacherId:tid,periodsPerWeek:ppw});save();renderAssign();document.getElementById('asel').value=cid;
 }
-function rmARow(idx,cid){if(!ST.classSubjects[cid])return;ST.classSubjects[cid].splice(idx,1);save();renderAssign();document.getElementById('asel').value=cid;}
+function rmAR(idx,cid){if(!D.CS[cid])return;D.CS[cid].splice(idx,1);save();renderAssign();document.getElementById('asel').value=cid;}
 function saveAssign(){
   const cid=document.getElementById('asel').value;if(!cid)return;
-  if(!ST.classSubjects[cid])ST.classSubjects[cid]=[];
-  document.querySelectorAll('.ar-t').forEach(sel=>{const idx=+sel.dataset.r;if(ST.classSubjects[cid][idx])ST.classSubjects[cid][idx].teacherId=+sel.value||null;});
-  document.querySelectorAll('.ar-p').forEach(inp=>{const idx=+inp.dataset.r;if(ST.classSubjects[cid][idx])ST.classSubjects[cid][idx].periodsPerWeek=+inp.value||3;});
+  if(!D.CS[cid])D.CS[cid]=[];
+  document.querySelectorAll('.ar-t').forEach(sel=>{const idx=+sel.dataset.r;if(D.CS[cid][idx])D.CS[cid][idx].teacherId=+sel.value||null;});
+  document.querySelectorAll('.ar-p').forEach(inp=>{const idx=+inp.dataset.r;if(D.CS[cid][idx])D.CS[cid][idx].periodsPerWeek=+inp.value||3;});
   save();const el=document.getElementById('asv');el.style.display='inline';setTimeout(()=>el.style.display='none',2000);toast('Saved!');
 }
 function copyFrom(){
-  const cid=document.getElementById('asel').value;if(!cid)return toast('Select target class first!','warn');
+  const cid=document.getElementById('asel').value;if(!cid)return toast('Select target class!','warn');
   const sel=document.getElementById('cpFrom');
-  sel.innerHTML='<option value="">-- Source --</option>'+ST.classes.filter(c=>c.id!==cid).map(c=>`<option value="${c.id}">${c.std}-${c.division}</option>`).join('');
-  document.getElementById('modCopy').classList.add('show');
+  sel.innerHTML='<option value="">-- Source --</option>'+D.classes.filter(c=>c.id!==cid).map(c=>`<option value="${c.id}">${c.std}-${c.division}</option>`).join('');
+  document.getElementById('modCp').classList.add('show');
 }
 function doCopy(){
   const from=document.getElementById('cpFrom').value,to=document.getElementById('asel').value;
-  if(!from||!to)return;
-  ST.classSubjects[to]=JSON.parse(JSON.stringify(ST.classSubjects[from]||[]));
-  save();document.getElementById('modCopy').classList.remove('show');renderAssign();document.getElementById('asel').value=to;toast('Copied!');
+  if(!from||!to)return;D.CS[to]=JSON.parse(JSON.stringify(D.CS[from]||[]));
+  save();document.getElementById('modCp').classList.remove('show');renderAssign();document.getElementById('asel').value=to;toast('Copied!');
 }
-// ===== TIMETABLE EDITOR =====
-function loadEditor(){
-  const cid=document.getElementById('ttsel').value;
-  if(!cid){document.getElementById('ttarea').innerHTML='<div class="es"><div class="bi2">📅</div><p>Select a class.</p></div>';return;}
-  renderEditor(cid);
-}
-function renderEditor(cid){
-  const cls=ST.classes.find(c=>c.id===cid);if(!cls)return;
-  const s=ST.settings;const days=s.workingDays||[];const tt=ST.timetables[cid]||{};
-  const ct=ST.teachers.find(t=>t.id===cls.classTeacherId);
-  const hasSubs=(ST.classSubjects[cid]||[]).length>0;
-  // Use non-short day cols for header (full)
-  const fullCols=buildCols();
-  // Group header colspan
-  let gA=0,gB=0,gC=0,gAx=0,gBx=0,gCx=0;
-  fullCols.forEach(c=>{
-    if(c.t==='p'){const g=getGroup(c.pt.p);if(g==='A')gA++;else if(g==='B')gB++;else gC++;}
-    else if(c.t==='sb'){const a=+(s.shortBreakAfter||3);if(a<=3)gAx++;else if(a<=6)gBx++;else gCx++;}
-    else{const la=+(s.lunchBreakAfter||6);if(la<=3)gAx++;else if(la<=6)gBx++;else gCx++;}
-  });
-  let h=`<div style="margin-bottom:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-    <h3 style="font-size:.9rem;font-weight:700;color:var(--pr);">${cls.std}-${cls.division} (${cls.medium})</h3>
-    ${ct?`<span class="badge bgg">वर्गशिक्षक: ${ct.name}</span>`:'<span class="badge br">⚠️ No class teacher</span>'}
-    ${hasSubs?`<span class="badge bb">${ST.classSubjects[cid].length} subjects</span>`:'<span class="badge br">⚠️ Assign subjects first!</span>'}
+// ===== SHARED TIMETABLE GRID (rows=time, cols=days) =====
+// Used by EDITOR and VIEW (same layout as print)
+function buildTTGrid(cid, editable){
+  const c=D.cfg;const days=c.workingDays||[];const rows=fullRows();const tt=D.TT[cid]||{};
+  const cls=D.classes.find(x=>x.id===cid);const ct=D.teachers.find(t=>t.id===cls?.classTeacherId);
+  const csl=D.CS[cid]||[];
+  const spT=csl.map(r=>{const s=D.subjects.find(x=>x.id===r.subjectId);const t=D.teachers.find(x=>x.id===r.teacherId);return s&&t?`<span style="display:inline-block;font-size:.62rem;line-height:1.4;margin-right:3px;"><strong style="color:${s.color};">${s.code}:</strong>${t.name}</span>`:''}).filter(Boolean).join('');
+  const aS=m2t12(t2m(c.assemblyTime||'07:15'));const aE=m2t12(t2m(c.assemblyTime||'07:15')+(+(c.assemblyDuration||15)));
+  let h=`<div style="margin-bottom:6px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:5px;">
+    <div>
+      <div style="font-size:.88rem;font-weight:700;color:var(--pr);">${cls?.std}-${cls?.division} (${cls?.medium})</div>
+      ${ct?`<div style="font-size:.71rem;color:var(--mu);">वर्गशिक्षक: <strong>${ct.name}</strong></div>`:''}
+    </div>
+    <div style="font-size:.65rem;color:#555;text-align:right;max-width:280px;">${spT}</div>
   </div>
-  <div class="ttw"><table class="ttt"><thead>
-  <tr><th rowspan="2">Day</th>
-    <th colspan="${gA+gAx}" style="background:#1a4a7a;">📘 Group A (P1–3)</th>
-    <th colspan="${gB+gBx}" style="background:#1a5e34;">📗 Group B (P4–6)</th>
-    <th colspan="${gC+gCx}" style="background:#7f3d00;">📙 Group C (P7–9)</th>
-  </tr><tr>`;
-  fullCols.forEach(c=>{
-    if(c.t==='p'){const isTh=c.pt.p<=+(s.subjectPeriodLimit||6);
-      h+=`<th style="${!isTh?'background:#7f3d00;':''}" title="${m2t12(t2m(c.pt.s))}–${m2t12(t2m(c.pt.e))}">P${c.pt.p}<br><small>${m2t12(t2m(c.pt.s))}</small><br><span style="font-size:.58rem;">${isTh?'📖':'🎨'}</span></th>`;}
-    else if(c.t==='sb')h+=`<th style="background:#b7770d;min-width:44px;">☕<br><small>${c.dur}m</small></th>`;
-    else if(c.t==='lb')h+=`<th style="background:#d35400;min-width:48px;">🍱<br><small>${c.dur}m</small></th>`;
-    else if(c.t==='ab')h+=`<th style="background:#2e7d32;min-width:48px;">📖<br><small>${c.dur}m</small></th>`;
-    else if(c.t==='abr')h+=`<th style="background:#7b1fa2;min-width:40px;">☕<br><small>${c.dur}m</small></th>`;
-  });
-  h+='</tr></thead><tbody>';
-  days.forEach(day=>{
-    const isShort=isShortDay(day);const maxP=getMaxP(day);
-    h+=`<tr><td class="dc">${day.substring(0,3)}${isShort?'<br><span style="font-size:.58rem;opacity:.7;">6T</span>':''}</td>`;
-    fullCols.forEach(c=>{
-      if(c.t==='sb'){h+=`<td class="tc bk-c">☕<br><small>${m2t12(t2m(c.s))}</small></td>`;return;}
-      if(c.t==='lb'){h+=`<td class="tc ln-c">🍱<br><small>${m2t12(t2m(c.s))}</small></td>`;return;}
-      if(c.t==='ab'){
-        if(isShort)h+=`<td class="tc" style="background:#f3f3f3;color:#ccc;font-size:.6rem;">—</td>`;
-        else h+=`<td class="tc st-c">📖<br><small>Abhy.</small></td>`;return;}
-      if(c.t==='abr'){
-        if(isShort)h+=`<td class="tc" style="background:#f3f3f3;color:#ccc;font-size:.6rem;">—</td>`;
-        else h+=`<td class="tc sb-c">☕<br><small>Brk</small></td>`;return;}
-      const p=c.pt.p;
-      if(p>maxP){h+=`<td class="tc" style="background:#f0f0f0;color:#bbb;font-size:.6rem;">—</td>`;return;}
-      const cell=tt[day]?.[p];
-      if(cell?.isDoubleCont){h+=`<td class="tc dr" onclick="openMod('${cid}','${day}',${p})"><span style="color:#94b8d8;font-size:.62rem;">↩dbl</span></td>`;return;}
-      if(cell?.subjectId){
-        const subj=ST.subjects.find(s=>s.id===cell.subjectId);const tchr=ST.teachers.find(t=>t.id===cell.teacherId);
-        h+=`<td class="tc filled${cell.isDouble?' dl':''}" onclick="openMod('${cid}','${day}',${p})" style="border-top:2.5px solid ${subj?.color||'#3498db'}">
-          <span class="sl" style="color:${subj?.color||'#1a3a5c'}">${subj?.code||'?'}${cell.isDouble?'×2':''}</span>
-          <span class="tl">${tchr?.code||'?'}</span></td>`;
-      } else {
-        const isTh=p<=+(s.subjectPeriodLimit||6);
-        h+=`<td class="tc em-c" onclick="openMod('${cid}','${day}',${p})">${isTh?'+':'🎨'}</td>`;
-      }
-    });
-    h+='</tr>';
+  <div class="ttw"><table class="ptt">
+  <thead><tr>
+    <th>वेळ / Time</th>`;
+  days.forEach(day=>{const iS=isShort(day);
+    h+=`<th class="${iS?'sh-day':''}">${day}<br><span style="font-size:.58rem;opacity:.8;">${iS?'6T':'9T'}</span></th>`;});
+  h+=`<th>विषय शिक्षक</th></tr></thead><tbody>`;
+  // Assembly
+  h+=`<tr><td class="time-col">🙏<br>${aS}<br>${aE}</td>`;
+  const asmRows=rows.filter(r=>r.type==='p').length + rows.filter(r=>r.type!=='p').length + 1;
+  days.forEach(()=>h+=`<td class="assembly">Assembly<br>प्रार्थना</td>`);
+  h+=`<td class="tchr-col" rowspan="${asmRows}">${spT||'—'}</td></tr>`;
+  rows.forEach(row=>{
+    if(row.type==='p'){
+      const p=row.pt.p;const tStr=`${m2t12(t2m(row.pt.s))} –<br>${m2t12(t2m(row.pt.e))}`;
+      h+=`<tr><td class="time-col">${tStr}<br><span style="color:#888;font-size:.58rem;">P${p}</span></td>`;
+      days.forEach(day=>{
+        const mp=maxP(day);if(p>mp){h+=`<td class="off">—</td>`;return;}
+        const cell=tt[day]?.[p];
+        if(cell?.isDoubleCont){
+          h+=editable?`<td class="ptt dbl-r" onclick="openMod('${cid}','${day}',${p})"><span style="font-size:.58rem;color:#94b8d8;">↩dbl</span></td>`:`<td class="dbl-r"><span style="font-size:.58rem;color:#94b8d8;">↩</span></td>`;return;}
+        if(cell?.subjectId){
+          const subj=D.subjects.find(s=>s.id===cell.subjectId);const tchr=D.teachers.find(t=>t.id===cell.teacherId);
+          const cn=editable?`onclick="openMod('${cid}','${day}',${p})"`:' ';
+          h+=`<td class="filled${cell.isDouble?' dbl-l':''}" ${cn} style="border-top:2px solid ${subj?.color||'#3498db'}">
+            <span class="cell-subj" style="color:${subj?.color||'#1a3a5c'}">${subj?.code||'?'}${cell.isDouble?'×2':''}</span>
+            <span class="cell-info">${tchr?.code||'?'}</span></td>`;
+        } else {
+          const isTh=p<=+(c.subjectPeriodLimit||6);
+          h+=editable?`<td class="empty" onclick="openMod('${cid}','${day}',${p})">${isTh?'+':'🎨'}</td>`:`<td class="empty">—</td>`;
+        }
+      });
+      h+='</tr>';
+    } else {
+      let cl='brk',em='☕',lbl='';
+      if(row.type==='lb'){cl='lnch';em='🍱';lbl=`Lunch ${row.dur}m`;}
+      else if(row.type==='ab'){cl='abhy';em='📖';lbl=`Abhyasika ${row.dur}m`;}
+      else if(row.type==='abr'){cl='abhr';em='☕';lbl=`Break ${row.dur}m`;}
+      else lbl=`Break ${row.dur}m`;
+      const tStr=row.s?`${m2t12(t2m(row.s))} –<br>${m2t12(t2m(row.e))}`:'';
+      h+=`<tr><td class="time-col">${tStr}</td>`;
+      days.forEach(day=>{
+        if((row.type==='ab'||row.type==='abr')&&isShort(day))h+=`<td class="off">—</td>`;
+        else h+=`<td class="${cl}">${em}<br><span style="font-size:.6rem;">${lbl}</span></td>`;
+      });
+      h+='</tr>';
+    }
   });
   h+='</tbody></table></div>';
-  document.getElementById('ttarea').innerHTML=h;
-  checkConflicts(cid);checkLoads();
+  return h;
 }
-function checkConflicts(cid){
-  const s=ST.settings;const days=s.workingDays||[];const cfls=[];
-  days.forEach(day=>{for(let p=1;p<=getMaxP(day);p++){
-    const cell=ST.timetables[cid]?.[day]?.[p];if(!cell?.teacherId)continue;
-    ST.classes.forEach(cls=>{if(cls.id===cid)return;const o=ST.timetables[cls.id]?.[day]?.[p];
-      if(o?.teacherId===cell.teacherId){const t=ST.teachers.find(x=>x.id===cell.teacherId);cfls.push(`⚠️ <strong>${t?.name}</strong> — ${day} P${p}`);}});
+
+// ===== EDITOR =====
+function loadEditor(){
+  const cid=document.getElementById('ttsel').value;
+  if(!cid){document.getElementById('ttarea').innerHTML='<div class="es"><p>📅 Select a class.</p></div>';return;}
+  document.getElementById('ttarea').innerHTML=buildTTGrid(cid,true);
+  chkCF(cid);checkLoads();
+}
+function chkCF(cid){
+  const c=D.cfg;const cfls=[];
+  (c.workingDays||[]).forEach(day=>{for(let p=1;p<=maxP(day);p++){
+    const cell=D.TT[cid]?.[day]?.[p];if(!cell?.teacherId)continue;
+    D.classes.forEach(cls=>{if(cls.id===cid)return;const o=D.TT[cls.id]?.[day]?.[p];
+      if(o?.teacherId===cell.teacherId){const t=D.teachers.find(x=>x.id===cell.teacherId);cfls.push(`⚠️ <strong>${t?.name}</strong> — ${day} P${p}`);}});
   }});
-  document.getElementById('cflts').innerHTML=[...new Set(cfls)].map(c=>`<div class="cb">${c} — एकाच वेळी दोन वर्गांत!</div>`).join('');
+  document.getElementById('cflts').innerHTML=[...new Set(cfls)].map(x=>`<div class="wb">${x} — एकाच वेळी दोन वर्गांत!</div>`).join('');
 }
+function saveTT(){save();toast('Timetable saved!');}
+function clearTT(){const cid=document.getElementById('ttsel').value;if(!cid||!confirm('Clear?'))return;D.TT[cid]={};save();loadEditor();toast('Cleared','warn');}
 
 // ===== MODAL =====
 function openMod(cid,day,p){
-  CM={cid,day,p};const cls=ST.classes.find(c=>c.id===cid);const s=ST.settings;
-  const isTh=p<=+(s.subjectPeriodLimit||6);const isShort=isShortDay(day);
-  const ptimes=getPTimes();const pt=ptimes.find(x=>x.p===p);
-  const ct=ST.teachers.find(t=>t.id===cls.classTeacherId);
-  document.getElementById('minfo').innerHTML=`<strong>${cls.std}-${cls.division}</strong> | ${day}${isShort?' (Short Day)':''} | P${p} ${pt?`(${m2t12(t2m(pt.s))}–${m2t12(t2m(pt.e))})`:''} | ${isTh?'📖 Theory':'🎨 Activity'}`;
-  const cthEl=document.getElementById('mcth');
-  if(p===1&&ct){cthEl.style.display='block';cthEl.innerHTML=`👨‍🏫 <strong>P1 Suggestion:</strong> वर्गशिक्षक <strong>${ct.name}</strong> यांना P1 assign करावा.`;}
-  else cthEl.style.display='none';
-  const rEl=document.getElementById('mrest');
-  if(!isTh){rEl.style.display='block';rEl.className='ib';rEl.innerHTML='🎨 Activity Period — Theory subjects इथे येणार नाहीत.';}else rEl.style.display='none';
-  const csl=ST.classSubjects[cid]||[];
-  const filtered=csl.filter(row=>{const subj=ST.subjects.find(x=>x.id===row.subjectId);if(!subj)return false;
-    if(!isTh&&subj.type==='theory')return false;if(isTh&&subj.type==='practical')return false;return true;});
+  CM={cid,day,p};const cls=D.classes.find(c=>c.id===cid);const c=D.cfg;
+  const isTh=p<=+(c.subjectPeriodLimit||6);const isSd=isShort(day);
+  const pt=getPTimes().find(x=>x.p===p);const ctobj=D.teachers.find(t=>t.id===cls.classTeacherId);
+  document.getElementById('minfo').innerHTML=`<strong>${cls.std}-${cls.division}</strong> | ${day}${isSd?' (Short Day)':''} | P${p} ${pt?`(${m2t12(t2m(pt.s))}–${m2t12(t2m(pt.e))})`:''} | ${isTh?'📖 Theory zone':'🎨 Activity zone'}`;
+  const cth=document.getElementById('mcth');
+  if(p===1&&ctobj){cth.style.display='block';cth.innerHTML=`👨‍🏫 P1 suggestion: <strong>${ctobj.name}</strong> (वर्गशिक्षक)`;}else cth.style.display='none';
+  const re=document.getElementById('mrest');
+  if(!isTh){re.style.display='block';re.className='ib';re.innerHTML='🎨 Activity zone — Practical subjects prefer. Theory allowed if needed.';}else re.style.display='none';
+  const csl=D.CS[cid]||[];
+  // Build subject options: prefer-match first, others allowed
+  let preferred=[],others=[];
+  csl.forEach(row=>{const subj=D.subjects.find(x=>x.id===row.subjectId);if(!subj)return;
+    if(!isTh&&subj.type==='theory')others.push({subj,row});
+    else if(isTh&&subj.type==='practical')others.push({subj,row});
+    else preferred.push({subj,row});});
   const msubj=document.getElementById('msubj');
-  if(filtered.length)msubj.innerHTML='<option value="">-- Select --</option>'+filtered.map(row=>{const subj=ST.subjects.find(s=>s.id===row.subjectId);return subj?`<option value="${subj.id}">${subj.name}</option>`:''}).join('');
-  else msubj.innerHTML='<option value="">-- Select --</option>'+ST.subjects.filter(sub=>{if(!isTh&&sub.type==='theory')return false;if(isTh&&sub.type==='practical')return false;return true;}).map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
-  const cell=ST.timetables[cid]?.[day]?.[p];
-  if(cell){msubj.value=cell.subjectId||'';onSubjChange(cell.teacherId);document.getElementById('mdbl').checked=!!cell.isDouble;}
-  else{if(p===1&&ct)onSubjChange(ct.id);else onSubjChange(null);document.getElementById('mdbl').checked=false;}
-  checkMConflict();updDbl();
+  let opts='<option value="">-- Select --</option>';
+  if(preferred.length)opts+=`<optgroup label="✅ Preferred">${preferred.map(({subj})=>`<option value="${subj.id}">${subj.name}</option>`).join('')}</optgroup>`;
+  if(others.length)opts+=`<optgroup label="⚠️ Allowed (not preferred)">${others.map(({subj})=>`<option value="${subj.id}">${subj.name}</option>`).join('')}</optgroup>`;
+  if(!csl.length)opts+='<option value="">No subjects assigned — go to Subjects tab</option>';
+  msubj.innerHTML=opts;
+  const cell=D.TT[cid]?.[day]?.[p];
+  if(cell){msubj.value=cell.subjectId||'';onSC(cell.teacherId);document.getElementById('mdbl').checked=!!cell.isDouble;}
+  else{if(p===1&&ctobj)onSC(ctobj.id);else onSC(null);document.getElementById('mdbl').checked=false;}
+  chkMC();updDbl();
   document.getElementById('modP').classList.add('show');
 }
-function onSubjChange(presel){
+function onSC(presel){
   const sid=+document.getElementById('msubj').value;const cid=CM.cid;const sel=document.getElementById('mteach');
   let teachers=[];
-  if(sid&&cid){const row=(ST.classSubjects[cid]||[]).find(r=>r.subjectId===sid);if(row?.teacherId){const t=ST.teachers.find(x=>x.id===row.teacherId);if(t)teachers=[t];}}
-  if(!teachers.length&&sid)teachers=ST.teachers.filter(t=>(t.subjects||[]).includes(sid));
-  if(!teachers.length)teachers=ST.teachers;
+  if(sid&&cid){const row=(D.CS[cid]||[]).find(r=>r.subjectId===sid);if(row?.teacherId){const t=D.teachers.find(x=>x.id===row.teacherId);if(t)teachers=[t];}}
+  if(!teachers.length&&sid)teachers=D.teachers.filter(t=>(t.subjects||[]).includes(sid));
+  if(!teachers.length)teachers=D.teachers;
   sel.innerHTML='<option value="">-- Select --</option>'+teachers.map(t=>`<option value="${t.id}">${t.name} (${t.code})</option>`).join('');
-  if(presel)sel.value=presel;checkMConflict();
+  if(presel)sel.value=presel;chkMC();
 }
-function checkMConflict(){
+function chkMC(){
   const tid=+document.getElementById('mteach').value;const{cid,day,p}=CM;
-  const cflEl=document.getElementById('mcfl'),ldEl=document.getElementById('mload');
-  if(!tid){cflEl.style.display='none';ldEl.style.display='none';return;}
+  const cf=document.getElementById('mcfl'),ld=document.getElementById('mload');
+  if(!tid){cf.style.display='none';ld.style.display='none';return;}
   let cfl=null;
-  ST.classes.forEach(cls=>{if(cls.id===cid)return;const cell=ST.timetables[cls.id]?.[day]?.[p];
-    if(cell?.teacherId===tid){const t=ST.teachers.find(x=>x.id===tid);const c=ST.classes.find(x=>x.id===cls.id);cfl=`⛔ ${t?.name} आधीच ${c?.std}-${c?.division} मध्ये ${day} P${p} ला आहे!`;}});
-  if(cfl){cflEl.style.display='block';cflEl.className='wb';cflEl.innerHTML=cfl;}else cflEl.style.display='none';
-  const max=+(ST.settings.maxTeacherPeriods||36);const ld=getTLoad(tid);
-  if(ld>=max){ldEl.style.display='block';ldEl.className='wb';ldEl.innerHTML=`⚠️ ${ST.teachers.find(x=>x.id===tid)?.name} — ${ld}/${max} periods (limit exceeded!)`;}
-  else if(ld>=max*.9){ldEl.style.display='block';ldEl.className='wb';ldEl.innerHTML=`⚠️ ${ld}/${max} periods — जवळ limit!`;}
-  else ldEl.style.display='none';
+  D.classes.forEach(cls=>{if(cls.id===cid)return;const cell=D.TT[cls.id]?.[day]?.[p];
+    if(cell?.teacherId===tid){const t=D.teachers.find(x=>x.id===tid);const c=D.classes.find(x=>x.id===cls.id);cfl=`⛔ ${t?.name} — ${c?.std}-${c?.division} मध्ये ${day} P${p} ला!`;}});
+  if(cfl){cf.style.display='block';cf.className='wb';cf.innerHTML=cfl;}else cf.style.display='none';
+  const mx=+(D.cfg.maxTeacherPeriods||36);const l=getTLoad(tid);
+  if(l>mx){ld.style.display='block';ld.className='warn-b';ld.innerHTML=`⚠️ ${D.teachers.find(x=>x.id===tid)?.name} — ${l}/${mx} periods (warning only)`;}
+  else if(l>mx*.9){ld.style.display='block';ld.className='wb';ld.innerHTML=`⚠️ ${l}/${mx} — जवळ limit!`;}
+  else ld.style.display='none';
 }
 function updDbl(){
   const isDbl=document.getElementById('mdbl').checked;const msg=document.getElementById('dblmsg');
   if(!isDbl){msg.style.display='none';return;}
-  const{p}=CM;const s=ST.settings;const next=p+1;msg.style.display='block';
-  if(next>+(s.numPeriods||9)){msg.className='wb';msg.innerHTML='⛔ Next period नाही!';return;}
-  if(!sameGroup(p,next)){msg.className='wb';msg.innerHTML=`⛔ P${p}(Grp ${getGroup(p)}) + P${next}(Grp ${getGroup(next)}) — वेगळ्या group!`;return;}
-  if(p===+(s.shortBreakAfter||3)||p===+(s.lunchBreakAfter||6)){msg.className='wb';msg.innerHTML=`⛔ P${p} नंतर break — double शक्य नाही!`;return;}
-  msg.className='ob';msg.innerHTML=`✅ Double Period: P${p}+P${next} (Group ${getGroup(p)})`;
+  const{p}=CM;const c=D.cfg;const next=p+1;msg.style.display='block';
+  if(next>+(c.numPeriods||9)){msg.className='wb';msg.innerHTML='⛔ Next period नाही!';return;}
+  if(!sameGrp(p,next)){msg.className='wb';msg.innerHTML=`⛔ P${p}(Grp ${getGrp(p)}) + P${next}(Grp ${getGrp(next)}) — वेगळ्या group!`;return;}
+  if(p===+(c.shortBreakAfter||3)||p===+(c.lunchBreakAfter||6)){msg.className='wb';msg.innerHTML=`⛔ P${p} नंतर break — double शक्य नाही!`;return;}
+  msg.className='ob';msg.innerHTML=`✅ P${p}+P${next} Double (Group ${getGrp(p)})`;
 }
-function assignPeriod(){
+function assignP(){
   const sid=+document.getElementById('msubj').value,tid=+document.getElementById('mteach').value;
-  if(!sid||!tid)return toast('Subject आणि Teacher निवडा!','error');
-  const{cid,day,p}=CM;const s=ST.settings;
-  let cfl=false;ST.classes.forEach(cls=>{if(cls.id===cid)return;const cell=ST.timetables[cls.id]?.[day]?.[p];if(cell?.teacherId===tid)cfl=true;});
+  if(!sid||!tid)return toast('Subject & Teacher निवडा!','error');
+  const{cid,day,p}=CM;const c=D.cfg;
+  // Block only if teacher conflict
+  let cfl=false;D.classes.forEach(cls=>{if(cls.id===cid)return;const cell=D.TT[cls.id]?.[day]?.[p];if(cell?.teacherId===tid)cfl=true;});
   if(cfl)return toast('⛔ Teacher conflict!','error',5000);
-  const isDbl=document.getElementById('mdbl').checked;const next=p+1;
-  if(!ST.timetables[cid])ST.timetables[cid]={};if(!ST.timetables[cid][day])ST.timetables[cid][day]={};
-  if(isDbl){
-    if(!sameGroup(p,next)||next>+(s.numPeriods||9)||p===+(s.shortBreakAfter||3)||p===+(s.lunchBreakAfter||6))return toast('Double शक्य नाही!','error');
-    ST.timetables[cid][day][p]={subjectId:sid,teacherId:tid,isDouble:true};
-    ST.timetables[cid][day][next]={subjectId:sid,teacherId:tid,isDoubleCont:true};
-  } else ST.timetables[cid][day][p]={subjectId:sid,teacherId:tid};
-  const max=+(s.maxTeacherPeriods||36);const ld=getTLoad(tid);
-  if(ld>max){const t=ST.teachers.find(x=>x.id===tid);toast(`⚠️ ${t?.name} — ${ld} periods (limit: ${max})!`,'warn',5000);}
-  save();closeMod();renderEditor(cid);checkLoads();
+  const isDbl=document.getElementById('mdbl').checked;
+  if(!D.TT[cid])D.TT[cid]={};if(!D.TT[cid][day])D.TT[cid][day]={};
+  if(isDbl){const next=p+1;
+    if(!sameGrp(p,next)||next>+(c.numPeriods||9)||p===+(c.shortBreakAfter||3)||p===+(c.lunchBreakAfter||6))return toast('Double शक्य नाही!','error');
+    D.TT[cid][day][p]={subjectId:sid,teacherId:tid,isDouble:true};D.TT[cid][day][next]={subjectId:sid,teacherId:tid,isDoubleCont:true};
+  } else D.TT[cid][day][p]={subjectId:sid,teacherId:tid};
+  // Warn if load exceeded (no block)
+  const mx=+(c.maxTeacherPeriods||36);const l=getTLoad(tid);
+  if(l>mx){const t=D.teachers.find(x=>x.id===tid);toast(`⚠️ ${t?.name} — ${l} periods (warning, not blocked)`,'warn',4000);}
+  save();closeMod();loadEditor();checkLoads();
 }
-function clearPeriod(){
-  const{cid,day,p}=CM;const cell=ST.timetables[cid]?.[day]?.[p];
-  if(ST.timetables[cid]?.[day]){
-    if(cell?.isDouble&&ST.timetables[cid][day][p+1])delete ST.timetables[cid][day][p+1];
-    if(cell?.isDoubleCont&&ST.timetables[cid][day][p-1])delete ST.timetables[cid][day][p-1].isDouble;
-    delete ST.timetables[cid][day][p];
+function clearP(){
+  const{cid,day,p}=CM;const cell=D.TT[cid]?.[day]?.[p];
+  if(D.TT[cid]?.[day]){
+    if(cell?.isDouble&&D.TT[cid][day][p+1])delete D.TT[cid][day][p+1];
+    if(cell?.isDoubleCont&&D.TT[cid][day][p-1])delete D.TT[cid][day][p-1].isDouble;
+    delete D.TT[cid][day][p];
   }
-  save();closeMod();renderEditor(cid);checkLoads();
+  save();closeMod();loadEditor();checkLoads();
 }
 function closeMod(){document.getElementById('modP').classList.remove('show');}
-function saveTT(){save();toast('Timetable saved!');}
-function clearTT(){const cid=document.getElementById('ttsel').value;if(!cid||!confirm('Clear?'))return;ST.timetables[cid]={};save();renderEditor(cid);toast('Cleared','warn');}
+
+// ===== AUTO-FILL =====
 function autoFill(){
   const cid=document.getElementById('ttsel').value;if(!cid)return toast('Class select करा!','error');
-  const csl=ST.classSubjects[cid];if(!csl?.length)return toast('आधी subjects assign करा!','error');
-  if(!confirm('Auto-generate करायचे?'))return;
-  const s=ST.settings;const days=s.workingDays||[];const cls=ST.classes.find(c=>c.id===cid);const ct=cls?.classTeacherId;
-  if(!ST.timetables[cid])ST.timetables[cid]={};
+  const csl=D.CS[cid];if(!csl?.length)return toast('आधी subjects assign करा!','error');
+  if(!confirm('Auto-generate?'))return;
+  const c=D.cfg;const days=c.workingDays||[];const cls=D.classes.find(x=>x.id===cid);const ctId=cls?.classTeacherId;
+  if(!D.TT[cid])D.TT[cid]={};
+  // Build pool with smart placement
   let pool=[];
-  csl.forEach(row=>{const subj=ST.subjects.find(x=>x.id===row.subjectId);if(!subj)return;
-    for(let i=0;i<(row.periodsPerWeek||3);i++)pool.push({subjectId:row.subjectId,teacherId:row.teacherId,type:subj.type});});
+  csl.forEach(row=>{const subj=D.subjects.find(x=>x.id===row.subjectId);if(!subj)return;
+    for(let i=0;i<(row.periodsPerWeek||3);i++)pool.push({subjectId:row.subjectId,teacherId:row.teacherId,type:subj.type,priority:subj.priority||'normal'});});
+  // Shuffle
   for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
   let pi=0;
+  const limit=+(c.subjectPeriodLimit||6);
   days.forEach(day=>{
-    if(!ST.timetables[cid][day])ST.timetables[cid][day]={};
-    const maxP=getMaxP(day);
+    if(!D.TT[cid][day])D.TT[cid][day]={};const mp=maxP(day);
     // Class teacher P1
-    if(ct){const ctRow=csl.find(r=>r.teacherId===ct);if(ctRow&&!ST.timetables[cid][day][1]){let cfl=false;ST.classes.forEach(cls2=>{if(cls2.id===cid)return;const c2=ST.timetables[cls2.id]?.[day]?.[1];if(c2?.teacherId===ct)cfl=true;});if(!cfl)ST.timetables[cid][day][1]={subjectId:ctRow.subjectId,teacherId:ct};}}
-    for(let p=1;p<=maxP;p++){
-      if(ST.timetables[cid][day][p])continue;
-      const isTh=p<=+(s.subjectPeriodLimit||6);let cand=null;
-      for(let k=0;k<pool.length;k++){const item=pool[(pi+k)%pool.length];
-        if(isTh&&item.type==='practical')continue;if(!isTh&&item.type==='theory')continue;
-        let cfl=false;if(item.teacherId)ST.classes.forEach(cls2=>{if(cls2.id===cid)return;const c2=ST.timetables[cls2.id]?.[day]?.[p];if(c2?.teacherId===item.teacherId)cfl=true;});
-        if(!cfl){cand=item;pi=(pi+k+1)%pool.length;break;}}
-      if(!cand)for(let k=0;k<pool.length;k++){const item=pool[(pi+k)%pool.length];if(isTh&&item.type==='practical')continue;if(!isTh&&item.type==='theory')continue;cand=item;pi=(pi+k+1)%pool.length;break;}
+    if(ctId){const ctRow=csl.find(r=>r.teacherId===ctId);if(ctRow&&!D.TT[cid][day][1]){
+      let cfl=false;D.classes.forEach(cls2=>{if(cls2.id===cid)return;const c2=D.TT[cls2.id]?.[day]?.[1];if(c2?.teacherId===ctId)cfl=true;});
+      if(!cfl)D.TT[cid][day][1]={subjectId:ctRow.subjectId,teacherId:ctId};
+    }}
+    for(let p=1;p<=mp;p++){
+      if(D.TT[cid][day][p])continue;
+      const isLate=p>limit;
+      // Try preferred match first, then any
+      let cand=null;
+      for(let pass=0;pass<2;pass++){
+        for(let k=0;k<pool.length;k++){const item=pool[(pi+k)%pool.length];
+          // Pass 0: prefer type match; Pass 1: allow any
+          if(pass===0){if(isLate&&item.type==='theory')continue;if(!isLate&&item.type==='practical')continue;}
+          let cfl=false;if(item.teacherId)D.classes.forEach(cls2=>{if(cls2.id===cid)return;const c2=D.TT[cls2.id]?.[day]?.[p];if(c2?.teacherId===item.teacherId)cfl=true;});
+          if(!cfl){cand=item;pi=(pi+k+1)%pool.length;break;}
+        }
+        if(cand)break;
+      }
       if(!cand)continue;
-      const next=p+1;const canDbl=isTh&&next<=maxP&&sameGroup(p,next)&&p!==+(s.shortBreakAfter||3)&&p!==+(s.lunchBreakAfter||6)&&!ST.timetables[cid][day][next];
-      if(canDbl&&Math.random()<.22){ST.timetables[cid][day][p]={subjectId:cand.subjectId,teacherId:cand.teacherId,isDouble:true};ST.timetables[cid][day][next]={subjectId:cand.subjectId,teacherId:cand.teacherId,isDoubleCont:true};p++;}
-      else ST.timetables[cid][day][p]={subjectId:cand.subjectId,teacherId:cand.teacherId};
+      // Try double period
+      const next=p+1;const canDbl=next<=mp&&sameGrp(p,next)&&p!==+(c.shortBreakAfter||3)&&p!==+(c.lunchBreakAfter||6)&&!D.TT[cid][day][next];
+      if(canDbl&&Math.random()<.2){
+        D.TT[cid][day][p]={subjectId:cand.subjectId,teacherId:cand.teacherId,isDouble:true};
+        D.TT[cid][day][next]={subjectId:cand.subjectId,teacherId:cand.teacherId,isDoubleCont:true};p++;
+      } else D.TT[cid][day][p]={subjectId:cand.subjectId,teacherId:cand.teacherId};
     }
   });
-  save();renderEditor(cid);checkLoads();
-  const max=+(s.maxTeacherPeriods||36);const over=ST.teachers.filter(t=>getTLoad(t.id)>max);
-  if(over.length)toast(`⚠️ ${over.map(t=>t.name).join(', ')} — limit exceeded!`,'warn',6000);else toast('Generated!');
-}
-// ===== VIEW =====
-function renderCV(){const cid=document.getElementById('vcsel').value;if(!cid)return;const cls=ST.classes.find(c=>c.id===cid);const ct=ST.teachers.find(t=>t.id===cls.classTeacherId);document.getElementById('cva').innerHTML=buildTTGrid(cid,`${cls.std}-${cls.division} (${cls.medium})`,ct?.name);}
-function renderTV(){
-  const tid=+document.getElementById('vtsel').value;if(!tid)return;
-  const teacher=ST.teachers.find(t=>t.id===tid);const s=ST.settings;const days=s.workingDays||[];
-  const cols=buildCols();let h=`<div style="margin-bottom:9px;"><strong style="color:var(--pr);">👨‍🏫 ${teacher.name} (${teacher.code})</strong></div>
-  <div class="ttw"><table class="ttt"><thead><tr><th>Day</th>`;
-  cols.forEach(c=>{if(c.t==='p')h+=`<th>P${c.pt.p}<br><small>${m2t12(t2m(c.pt.s))}</small></th>`;
-    else if(c.t==='sb')h+=`<th style="background:#b7770d;">☕</th>`;else if(c.t==='lb')h+=`<th style="background:#d35400;">🍱</th>`;
-    else if(c.t==='ab')h+=`<th style="background:#2e7d32;">📖</th>`;else if(c.t==='abr')h+=`<th style="background:#7b1fa2;">☕</th>`;});
-  h+='</tr></thead><tbody>';
-  days.forEach(day=>{const isShort=isShortDay(day);const maxP=getMaxP(day);
-    h+=`<tr><td class="dc">${day.substring(0,3)}</td>`;
-    cols.forEach(c=>{
-      if(c.t==='sb'){h+=`<td class="tc bk-c" style="font-size:.62rem;">☕</td>`;return;}
-      if(c.t==='lb'){h+=`<td class="tc ln-c" style="font-size:.62rem;">🍱</td>`;return;}
-      if(c.t==='ab'){h+=isShort?`<td class="tc" style="background:#f3f3f3;color:#ccc;font-size:.6rem;">—</td>`:`<td class="tc st-c" style="font-size:.62rem;">📖</td>`;return;}
-      if(c.t==='abr'){h+=isShort?`<td class="tc" style="background:#f3f3f3;color:#ccc;font-size:.6rem;">—</td>`:`<td class="tc sb-c" style="font-size:.62rem;">☕</td>`;return;}
-      const p=c.pt.p;if(p>maxP){h+=`<td class="tc" style="background:#f0f0f0;color:#bbb;font-size:.6rem;">—</td>`;return;}
-      let found=null;ST.classes.forEach(cls=>{const cell=ST.timetables[cls.id]?.[day]?.[p];if(cell?.teacherId===tid)found={cls,sid:cell.subjectId,isDbl:cell.isDouble,isCont:cell.isDoubleCont};});
-      if(found){const subj=ST.subjects.find(x=>x.id===found.sid);
-        h+=`<td class="tc filled${found.isDbl?' dl':found.isCont?' dr':''}" style="border-top:2.5px solid ${subj?.color||'#3498db'}">
-          <span class="sl" style="color:${subj?.color||'#1a3a5c'}">${subj?.code||'?'}</span>
-          <span class="tl">${found.cls.std}-${found.cls.division}</span></td>`;
-      } else h+=`<td class="tc" style="color:#ddd;font-size:.62rem;">—</td>`;
-    });
-    h+='</tr>';
-  });
-  h+='</tbody></table></div>';
-  let pCount={};const s2=ST.settings;ST.classes.forEach(cls=>(s2.workingDays||[]).forEach(day=>{for(let p=1;p<=getMaxP(day);p++){const cell=ST.timetables[cls.id]?.[day]?.[p];if(cell?.teacherId===tid&&!cell.isDoubleCont){const sub=ST.subjects.find(x=>x.id===cell.subjectId);pCount[sub?.name||'?']=(pCount[sub?.name||'?']||0)+1;}}}));
-  const total=Object.values(pCount).reduce((a,b)=>a+b,0);const max=+(s2.maxTeacherPeriods||36);
-  h+=`<div style="margin-top:10px;padding:9px;background:var(--lt);border-radius:7px;font-size:.8rem;"><strong>Weekly Load: <span style="color:${total>max?'#e74c3c':'#27ae60'}">${total}/${max}</span></strong> &nbsp; ${Object.entries(pCount).map(([k,v])=>`<span class="chip">${k}:${v}</span>`).join(' ')}</div>`;
-  document.getElementById('tva').innerHTML=h;
-}
-function renderAV(){
-  if(!ST.classes.length)return;
-  document.getElementById('ava').innerHTML=ST.classes.map(cls=>`<div style="margin-bottom:20px;">${buildTTGrid(cls.id,`${cls.std}-${cls.division} (${cls.medium})`,ST.teachers.find(t=>t.id===cls.classTeacherId)?.name)}</div>`).join('');
-}
-function buildTTGrid(cid,title,ctName){
-  const s=ST.settings;const days=s.workingDays||[];const cols=buildCols();const tt=ST.timetables[cid]||{};
-  const csl=ST.classSubjects[cid]||[];
-  const subjTeachers=csl.map(row=>{const subj=ST.subjects.find(x=>x.id===row.subjectId);const t=ST.teachers.find(x=>x.id===row.teacherId);return subj&&t?`${subj.code}: ${t.name}`:''}).filter(Boolean);
-  let h=`<div style="margin-bottom:6px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:5px;">
-    <div><div style="font-size:.9rem;font-weight:700;color:var(--pr);">📅 ${title}</div>${ctName?`<div style="font-size:.73rem;color:var(--mu);">वर्गशिक्षक: <strong>${ctName}</strong></div>`:''}</div>
-    <div style="font-size:.68rem;color:#555;text-align:right;max-width:300px;"><strong>विषय शिक्षक:</strong> ${subjTeachers.join(' | ')||'—'}</div>
-  </div>
-  <div class="ttw"><table class="ttt"><thead><tr><th>Day</th>`;
-  cols.forEach(c=>{
-    if(c.t==='p')h+=`<th>P${c.pt.p}<br><small>${m2t12(t2m(c.pt.s))}</small><br><span style="font-size:.56rem;">${c.pt.p<=+(s.subjectPeriodLimit||6)?'📖':'🎨'}</span></th>`;
-    else if(c.t==='sb')h+=`<th style="background:#b7770d;">☕</th>`;else if(c.t==='lb')h+=`<th style="background:#d35400;">🍱</th>`;
-    else if(c.t==='ab')h+=`<th style="background:#2e7d32;">📖</th>`;else if(c.t==='abr')h+=`<th style="background:#7b1fa2;">☕</th>`;});
-  h+='</tr></thead><tbody>';
-  days.forEach(day=>{const isShort=isShortDay(day);const maxP=getMaxP(day);
-    h+=`<tr><td class="dc">${day.substring(0,3)}</td>`;
-    cols.forEach(c=>{
-      if(c.t==='sb'){h+=`<td class="tc bk-c">☕</td>`;return;}
-      if(c.t==='lb'){h+=`<td class="tc ln-c">🍱</td>`;return;}
-      if(c.t==='ab'){h+=isShort?`<td class="tc" style="background:#f3f3f3;color:#ccc;font-size:.6rem;">—</td>`:`<td class="tc st-c">📖</td>`;return;}
-      if(c.t==='abr'){h+=isShort?`<td class="tc" style="background:#f3f3f3;color:#ccc;font-size:.6rem;">—</td>`:`<td class="tc sb-c">☕</td>`;return;}
-      const p=c.pt.p;if(p>maxP){h+=`<td class="tc" style="background:#f0f0f0;color:#bbb;font-size:.6rem;">—</td>`;return;}
-      const cell=tt[day]?.[p];
-      if(cell?.isDoubleCont){h+=`<td class="tc dr"><span style="font-size:.6rem;color:#94b8d8;">↩</span></td>`;return;}
-      if(cell?.subjectId){const subj=ST.subjects.find(s=>s.id===cell.subjectId);const tchr=ST.teachers.find(t=>t.id===cell.teacherId);
-        h+=`<td class="tc filled${cell.isDouble?' dl':''}" style="border-top:2.5px solid ${subj?.color||'#3498db'}">
-          <span class="sl" style="color:${subj?.color||'#1a3a5c'}">${subj?.code||'?'}${cell.isDouble?'×2':''}</span>
-          <span class="tl">${tchr?.code||'?'}</span></td>`;
-      } else h+=`<td class="tc em-c">—</td>`;
-    });
-    h+='</tr>';
-  });
-  h+='</tbody></table></div>';return h;
+  save();loadEditor();checkLoads();
+  const mx=+(c.maxTeacherPeriods||36);const over=D.teachers.filter(t=>getTLoad(t.id)>mx);
+  if(over.length)toast(`⚠️ ${over.map(t=>t.name).join(', ')} — limit exceeded!`,'warn',5000);else toast('Generated!');
 }
 
+// ===== VIEW =====
+function renderCV(){const cid=document.getElementById('vcsel').value;if(!cid)return;document.getElementById('cva').innerHTML=buildTTGrid(cid,false);}
+function renderTV(){
+  const tid=+document.getElementById('vtsel').value;if(!tid)return;
+  const teacher=D.teachers.find(t=>t.id===tid);const c=D.cfg;const days=c.workingDays||[];
+  const rows=fullRows();
+  const aS=m2t12(t2m(c.assemblyTime||'07:15'));const aE=m2t12(t2m(c.assemblyTime||'07:15')+(+(c.assemblyDuration||15)));
+  let h=`<div style="margin-bottom:8px;font-weight:700;color:var(--pr);">👨‍🏫 ${teacher.name} (${teacher.code})</div>
+  <div class="ttw"><table class="ptt"><thead><tr><th>वेळ</th>`;
+  days.forEach(day=>{const iS=isShort(day);h+=`<th class="${iS?'sh-day':''}">${day}<br><span style="font-size:.58rem;">${iS?'6T':'9T'}</span></th>`;});
+  h+='</tr></thead><tbody>';
+  // Assembly
+  h+=`<tr><td class="time-col">🙏<br>${aS}<br>${aE}</td>`;
+  days.forEach(()=>h+=`<td class="assembly" style="font-size:.61rem;">Assembly</td>`);h+='</tr>';
+  rows.forEach(row=>{
+    if(row.type==='p'){
+      const p=row.pt.p;const tStr=`${m2t12(t2m(row.pt.s))} –<br>${m2t12(t2m(row.pt.e))}`;
+      h+=`<tr><td class="time-col">${tStr}<br><span style="color:#888;font-size:.58rem;">P${p}</span></td>`;
+      days.forEach(day=>{const mp=maxP(day);
+        if(p>mp){h+=`<td class="off">—</td>`;return;}
+        let found=null;D.classes.forEach(cls=>{const cell=D.TT[cls.id]?.[day]?.[p];if(cell?.teacherId===tid)found={cls,cell};});
+        // Also check Abhyasika for this teacher
+        if(found){const subj=D.subjects.find(x=>x.id===found.cell.subjectId);
+          h+=`<td class="filled${found.cell.isDouble?' dbl-l':found.cell.isDoubleCont?' dbl-r':''}" style="border-top:2px solid ${subj?.color||'#3498db'}">
+            <span class="cell-subj" style="color:${subj?.color||'#1a3a5c'}">${subj?.code||'?'}${found.cell.isDouble?'×2':''}</span>
+            <span class="cell-info">${found.cls.std}-${found.cls.division}</span></td>`;
+        } else h+=`<td style="color:#ddd;font-size:.6rem;">—</td>`;
+      });h+='</tr>';
+    } else {
+      let cl='brk',em='☕',lbl='';
+      if(row.type==='lb'){cl='lnch';em='🍱';lbl=`Lunch`;}
+      else if(row.type==='ab'){cl='abhy';em='📖';lbl='Abhyasika';}
+      else if(row.type==='abr'){cl='abhr';em='☕';lbl='Break';}
+      else lbl='Break';
+      const tStr=row.s?`${m2t12(t2m(row.s))} –<br>${m2t12(t2m(row.e))}`:'';
+      h+=`<tr><td class="time-col">${tStr}</td>`;
+      days.forEach(day=>{
+        if((row.type==='ab')&&!isShort(day)){
+          // Show which classes have Abhyasika supervised by this teacher
+          const abhyCls=D.classes.filter(cls=>cls.classTeacherId===tid);
+          if(abhyCls.length)h+=`<td class="${cl}">${em} ${lbl}<br><span style="font-size:.59rem;">${abhyCls.map(x=>`${x.std}-${x.division}`).join(', ')}</span></td>`;
+          else h+=`<td class="${cl}">${em} ${lbl}</td>`;
+        } else if((row.type==='ab'||row.type==='abr')&&isShort(day))h+=`<td class="off">—</td>`;
+        else h+=`<td class="${cl}">${em}<br><span style="font-size:.59rem;">${lbl}</span></td>`;
+      });h+='</tr>';
+    }
+  });
+  // Load summary
+  let pCnt={};let total=0;D.classes.forEach(cls=>(c.workingDays||[]).forEach(day=>{for(let p=1;p<=maxP(day);p++){const cell=D.TT[cls.id]?.[day]?.[p];if(cell?.teacherId===tid&&!cell.isDoubleCont){const s=D.subjects.find(x=>x.id===cell.subjectId);pCnt[s?.name||'?']=(pCnt[s?.name||'?']||0)+1;total++;}}}));
+  const mx=+(c.maxTeacherPeriods||36);
+  h+=`</tbody></table></div><div style="margin-top:9px;padding:8px;background:var(--lt);border-radius:6px;font-size:.78rem;"><strong>Weekly Load: <span style="color:${total>mx?'#e74c3c':'#27ae60'}">${total}/${mx}</span></strong> &nbsp; ${Object.entries(pCnt).map(([k,v])=>`<span class="chip">${k}:${v}</span>`).join(' ')}</div>`;
+  document.getElementById('tva').innerHTML=h;
+}
 // ===== PRINT ENGINE =====
-function pSchoolHdr(){
-  const s=ST.settings;const aS=m2t12(t2m(s.assemblyTime||'07:15'));const aE=m2t12(t2m(s.assemblyTime||'07:15')+(+(s.assemblyDuration||15)));
-  return`<div style="text-align:center;border:2px solid #1a3a5c;border-radius:6px;padding:8px 12px;margin-bottom:10px;">
-    <div style="font-size:15px;font-weight:900;color:#1a3a5c;">श्री वारणा विद्यालय (Shree Warana Vidyalaya)</div>
-    <div style="font-size:10px;color:#444;margin-top:2px;">वारणानगर, ता: पन्हाळा, जि: कोल्हापूर | Warananagar, Tal: Panhala, Dist: Kolhapur</div>
-    <div style="font-size:9px;color:#777;margin-top:2px;">🙏 Assembly: ${aS} – ${aE} | शाळा सुरू: ${m2t12(t2m(s.startTime||'07:30'))}</div>
+function pSchHdr(forPrint){
+  const c=D.cfg;const aS=m2t12(t2m(c.assemblyTime||'07:15'));const aE=m2t12(t2m(c.assemblyTime||'07:15')+(+(c.assemblyDuration||15)));
+  return`<div style="text-align:center;border:2px solid #1a3a5c;border-radius:5px;padding:7px 10px;margin-bottom:8px;">
+    <div style="font-size:${forPrint===3?'14px':'13px'};font-weight:900;color:#1a3a5c;">श्री वारणा विद्यालय (Shree Warana Vidyalaya)</div>
+    <div style="font-size:9px;color:#444;margin-top:1px;">वारणानगर, ता: पन्हाळा, जि: कोल्हापूर | Warananagar, Tal: Panhala, Dist: Kolhapur</div>
+    <div style="font-size:8px;color:#777;margin-top:1px;">🙏 Assembly: ${aS}–${aE} | शाळा सुरू: ${m2t12(t2m(c.startTime||'07:30'))}</div>
   </div>`;
 }
-function pSignRow(ctName){
-  const mp=ST.settings.mukhyadhyapakName||'मुख्याध्यापक';
-  return`<table style="width:100%;margin-top:16px;"><tr>
-    <td style="width:42%;vertical-align:bottom;padding:5px 0;">
-      <div style="font-size:9px;color:#444;">वर्गशिक्षक स्वाक्षरी / Class Teacher</div>
-      <div style="border-bottom:1px solid #333;margin-top:22px;width:85%;"></div>
-      <div style="font-size:9px;color:#666;margin-top:2px;">${ctName||'वर्गशिक्षक'}</div>
-    </td>
-    <td style="width:16%;"></td>
-    <td style="width:42%;vertical-align:bottom;padding:5px 0;text-align:right;">
-      <div style="font-size:9px;color:#444;">मुख्याध्यापक स्वाक्षरी / Headmaster</div>
-      <div style="border-bottom:1px solid #333;margin-top:22px;margin-left:auto;width:85%;"></div>
-      <div style="font-size:9px;color:#666;margin-top:2px;">${mp}</div>
+function pClsHdr(cls,ct){
+  return`<div style="text-align:center;margin-bottom:6px;">
+    <div style="font-size:12px;font-weight:900;color:#1a3a5c;">वर्ग: ${cls.std} | तुकडी: ${cls.division} | माध्यम: ${cls.medium}</div>
+    <div style="font-size:10px;color:#444;">${ct?`वर्गशिक्षक: ${ct.name}`:'वर्गशिक्षक: —'} &nbsp;|&nbsp; विद्यार्थी संख्या: ${cls.strength||'—'}</div>
+  </div>`;
+}
+function pSig(ctName){
+  const mp=D.cfg.mukhyadhyapakName||'मुख्याध्यापक';
+  return`<table style="width:100%;margin-top:14px;"><tr>
+    <td style="width:42%;vertical-align:bottom;padding:4px 0;">
+      <div style="font-size:8.5px;color:#444;">वर्गशिक्षक स्वाक्षरी / Class Teacher</div>
+      <div style="border-bottom:1px solid #333;margin-top:20px;width:85%;"></div>
+      <div style="font-size:8.5px;color:#666;margin-top:2px;">${ctName||'वर्गशिक्षक'}</div>
+    </td><td style="width:16%;"></td>
+    <td style="width:42%;vertical-align:bottom;padding:4px 0;text-align:right;">
+      <div style="font-size:8.5px;color:#444;">मुख्याध्यापक स्वाक्षरी / Headmaster</div>
+      <div style="border-bottom:1px solid #333;margin-top:20px;margin-left:auto;width:85%;"></div>
+      <div style="font-size:8.5px;color:#666;margin-top:2px;">${mp}</div>
     </td>
   </tr></table>`;
 }
 
-// THE KEY PRINT TABLE:
-// Rows = Period/Break rows | Col1 = Time (AM/PM) | Col2..7 = Mon–Sat | Last col = Subject Teachers
-function buildPrintTable(cid,ctName){
-  const s=ST.settings;const days=s.workingDays||[];const tt=ST.timetables[cid]||{};
-  const csl=ST.classSubjects[cid]||[];
-  const fullCols=buildCols(); // full schedule rows
-  const aS=m2t12(t2m(s.assemblyTime||'07:15'));const aE=m2t12(t2m(s.assemblyTime||'07:15')+(+(s.assemblyDuration||15)));
-  const fs='8.5px';const fss='7.5px';
-  // Subject-teacher list for last column
-  const subjTlines=csl.map(row=>{
-    const subj=ST.subjects.find(x=>x.id===row.subjectId);const t=ST.teachers.find(x=>x.id===row.teacherId);
-    return subj&&t?`<div style="font-size:${fss};line-height:1.5;margin-bottom:1px;"><span style="font-weight:700;color:${subj.color||'#1a3a5c'};">${subj.code}:</span> ${t.name}</div>`:''}).filter(Boolean).join('');
-  const totalDataRows=fullCols.length+1; // +1 for assembly row
-  let h=`<table style="width:100%;border-collapse:collapse;font-size:${fs};table-layout:fixed;">
-  <colgroup><col style="width:70px;"><col style="width:13%;" span="${days.length}"><col style="width:130px;"></colgroup>
-  <thead><tr>
-    <th style="background:#1a3a5c;color:white;padding:5px 4px;text-align:center;font-size:${fss};border:1px solid #ccc;">वेळ<br>Time</th>`;
-  days.forEach(day=>{const isShort=isShortDay(day);
-    h+=`<th style="background:${isShort?'#7f3d00':'#1a3a5c'};color:white;padding:5px 4px;text-align:center;font-size:${fss};border:1px solid #ccc;">${day}<br>${isShort?'(6 तास)':''}</th>`;});
-  h+=`<th style="background:#1a3a5c;color:white;padding:5px 6px;text-align:center;font-size:${fss};border:1px solid #ccc;">विषय शिक्षक<br>Subject Teachers</th>
-  </tr></thead><tbody>`;
-  // Assembly row
-  h+=`<tr style="background:#fff9c4;"><td style="text-align:center;border:1px solid #ccc;padding:4px 3px;font-size:${fss};font-weight:700;color:#856404;">🙏<br>${aS}<br>${aE}</td>`;
-  days.forEach(()=>h+=`<td style="text-align:center;border:1px solid #ccc;font-size:${fss};color:#856404;font-weight:700;padding:3px;">Assembly<br>प्रार्थना सभा</td>`);
-  h+=`<td rowspan="${totalDataRows}" style="border:1px solid #ccc;padding:5px 6px;vertical-align:top;background:#f8fafc;">${subjTlines||'—'}</td></tr>`;
-
-  fullCols.forEach(col=>{
-    if(col.t==='p'){
-      const p=col.pt.p;const tStr=`${m2t12(t2m(col.pt.s))} –<br>${m2t12(t2m(col.pt.e))}`;
-      h+=`<tr><td style="text-align:center;border:1px solid #ccc;padding:3px 2px;font-size:${fss};font-weight:700;background:#f8fafc;color:#1a3a5c;">${tStr}<br><span style="font-size:7px;color:#888;">P${p}</span></td>`;
-      days.forEach(day=>{
-        const maxP=getMaxP(day);const isShort=isShortDay(day);
-        if(p>maxP){h+=`<td style="background:#f0f0f0;border:1px solid #ccc;text-align:center;font-size:${fss};color:#bbb;">सुट्टी</td>`;return;}
+// A4 class timetable: rows=time, cols=days, last col=subject teachers
+function buildA4Cls(cid){
+  const c=D.cfg;const days=c.workingDays||[];const tt=D.TT[cid]||{};const cls=D.classes.find(x=>x.id===cid);
+  const ct=D.teachers.find(t=>t.id===cls?.classTeacherId);
+  const csl=D.CS[cid]||[];const rows=fullRows();
+  const aS=m2t12(t2m(c.assemblyTime||'07:15'));const aE=m2t12(t2m(c.assemblyTime||'07:15')+(+(c.assemblyDuration||15)));
+  const spT=csl.map(r=>{const s=D.subjects.find(x=>x.id===r.subjectId);const t=D.teachers.find(x=>x.id===r.teacherId);
+    return s&&t?`<div style="font-size:7.5px;line-height:1.5;"><span style="font-weight:700;color:${s.color||'#1a3a5c'};">${s.code}:</span> ${t.name}</div>`:''}).filter(Boolean).join('');
+  const totalR=rows.length+1;
+  let h=`<table style="width:100%;border-collapse:collapse;font-size:8.5px;table-layout:fixed;">
+  <colgroup><col style="width:65px;"><col style="width:11%;" span="${days.length}"><col style="width:120px;"></colgroup>
+  <thead><tr><th style="background:#1a3a5c;color:#fff;padding:4px 3px;text-align:center;border:1px solid #aaa;font-size:7.5px;">वेळ / Time</th>`;
+  days.forEach(day=>{const iS=isShort(day);
+    h+=`<th style="background:${iS?'#7f3d00':'#1a3a5c'};color:#fff;padding:4px 3px;text-align:center;border:1px solid #aaa;font-size:7.5px;">${day}<br>${iS?'(6T)':''}</th>`;});
+  h+=`<th style="background:#1a3a5c;color:#fff;padding:4px 5px;border:1px solid #aaa;font-size:7.5px;">विषय शिक्षक</th></tr></thead><tbody>`;
+  // Assembly
+  h+=`<tr style="background:#fff9c4;"><td style="text-align:center;border:1px solid #ccc;padding:3px 2px;font-size:7.5px;font-weight:700;color:#856404;">🙏<br>${aS}<br>${aE}</td>`;
+  days.forEach(()=>h+=`<td style="border:1px solid #ccc;text-align:center;font-size:7.5px;color:#856404;font-weight:700;">Assembly<br>प्रार्थना</td>`);
+  h+=`<td rowspan="${totalR}" style="border:1px solid #ccc;padding:4px 5px;vertical-align:top;background:#f8fafc;">${spT||'—'}</td></tr>`;
+  rows.forEach(row=>{
+    if(row.type==='p'){
+      const p=row.pt.p;const tStr=`${m2t12(t2m(row.pt.s))} –<br>${m2t12(t2m(row.pt.e))}`;
+      h+=`<tr><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:7.5px;font-weight:700;background:#f8fafc;color:#1a3a5c;">${tStr}<br><span style="font-size:6.5px;color:#888;">P${p}</span></td>`;
+      days.forEach(day=>{const mp=maxP(day);
+        if(p>mp){h+=`<td style="background:#f0f0f0;border:1px solid #ccc;text-align:center;font-size:7px;color:#bbb;">सुट्टी</td>`;return;}
         const cell=tt[day]?.[p];
-        if(cell?.isDoubleCont){h+=`<td style="background:#eff8ff;border:1px solid #ccc;text-align:center;font-size:${fss};color:#94b8d8;">↩</td>`;return;}
-        if(cell?.subjectId){const subj=ST.subjects.find(x=>x.id===cell.subjectId);const tchr=ST.teachers.find(x=>x.id===cell.teacherId);
-          h+=`<td style="background:#eaf5fb;border:1px solid #ccc;border-top:2px solid ${subj?.color||'#3498db'};text-align:center;padding:3px;">
-            <strong style="font-size:${fs};color:${subj?.color||'#1a3a5c'};">${subj?.code||'?'}${cell.isDouble?'×2':''}</strong><br>
-            <span style="font-size:7px;color:#555;">${tchr?.code||'?'}</span></td>`;
-        } else h+=`<td style="background:#fafafa;border:1px solid #ccc;text-align:center;font-size:${fss};color:#ccc;">—</td>`;
-      });
-      h+='</tr>';
+        if(cell?.isDoubleCont){h+=`<td style="background:#eff8ff;border:1px solid #ccc;text-align:center;font-size:7px;color:#94b8d8;">↩</td>`;return;}
+        if(cell?.subjectId){const subj=D.subjects.find(x=>x.id===cell.subjectId);const tchr=D.teachers.find(x=>x.id===cell.teacherId);
+          h+=`<td style="background:#eaf5fb;border:1px solid #ccc;border-top:2px solid ${subj?.color||'#3498db'};text-align:center;padding:2px;">
+            <strong style="font-size:8px;color:${subj?.color||'#1a3a5c'};">${subj?.code||'?'}${cell.isDouble?'×2':''}</strong><br>
+            <span style="font-size:6.5px;color:#555;">${tchr?.code||'?'}</span></td>`;
+        } else h+=`<td style="background:#fafafa;border:1px solid #ccc;text-align:center;font-size:7px;color:#ccc;">—</td>`;
+      });h+='</tr>';
     } else {
-      let lbl='',bg='',col2='',em='';
-      if(col.t==='sb'){lbl=`Short Break (${col.dur}m)`;bg='#fef9e7';col2='#b7770d';em='☕';}
-      else if(col.t==='lb'){lbl=`Lunch Break (${col.dur}m)`;bg='#fff3e0';col2='#d35400';em='🍱';}
-      else if(col.t==='ab'){lbl=`Abhyasika (${col.dur}m)`;bg='#e8f5e9';col2='#2e7d32';em='📖';}
-      else if(col.t==='abr'){lbl=`Break (${col.dur}m)`;bg='#f3e5f5';col2='#7b1fa2';em='☕';}
-      const tStr=col.s?`${m2t12(t2m(col.s))} –<br>${m2t12(t2m(col.e))}`:'';
-      h+=`<tr style="background:${bg};"><td style="text-align:center;border:1px solid #ccc;padding:3px 2px;font-size:${fss};font-weight:700;color:${col2};">${tStr}</td>`;
+      let bg='#fef9e7',col='#b7770d',em='☕',lbl='Break';
+      if(row.type==='lb'){bg='#fff3e0';col='#d35400';em='🍱';lbl=`Lunch ${row.dur}m`;}
+      else if(row.type==='ab'){bg='#e8f5e9';col='#2e7d32';em='📖';lbl=`Abhyasika ${row.dur}m`;}
+      else if(row.type==='abr'){bg='#f3e5f5';col='#7b1fa2';}
+      else lbl=`Break ${row.dur}m`;
+      const tStr=row.s?`${m2t12(t2m(row.s))} –<br>${m2t12(t2m(row.e))}`:'';
+      h+=`<tr style="background:${bg};"><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:7.5px;font-weight:700;color:${col};">${tStr}</td>`;
       days.forEach(day=>{
-        if((col.t==='ab'||col.t==='abr')&&isShortDay(day))h+=`<td style="background:#f0f0f0;border:1px solid #ccc;text-align:center;font-size:${fss};color:#bbb;">—</td>`;
-        else h+=`<td style="background:${bg};border:1px solid #ccc;text-align:center;font-size:${fss};color:${col2};font-weight:700;">${em} ${lbl}</td>`;
-      });
-      h+='</tr>';
+        if((row.type==='ab'||row.type==='abr')&&isShort(day))h+=`<td style="background:#f0f0f0;border:1px solid #ccc;text-align:center;font-size:7px;color:#bbb;">—</td>`;
+        else h+=`<td style="background:${bg};border:1px solid #ccc;text-align:center;font-size:7.5px;color:${col};font-weight:700;">${em}<br>${lbl}</td>`;
+      });h+='</tr>';
     }
   });
-  h+='</tbody></table>';return h;
+  return h+'</tbody></table>';
 }
 
-function openPW(body,title){
+// A4 Teacher timetable
+function buildA4Teacher(teacher){
+  const c=D.cfg;const days=c.workingDays||[];const rows=fullRows();
+  const aS=m2t12(t2m(c.assemblyTime||'07:15'));const aE=m2t12(t2m(c.assemblyTime||'07:15')+(+(c.assemblyDuration||15)));
+  let h=`<table style="width:100%;border-collapse:collapse;font-size:8.5px;table-layout:fixed;">
+  <colgroup><col style="width:65px;"><col style="width:11%;" span="${days.length}"></colgroup>
+  <thead><tr><th style="background:#1a3a5c;color:#fff;padding:4px 3px;border:1px solid #aaa;text-align:center;font-size:7.5px;">वेळ</th>`;
+  days.forEach(day=>{const iS=isShort(day);h+=`<th style="background:${iS?'#7f3d00':'#1a3a5c'};color:#fff;padding:4px 3px;border:1px solid #aaa;text-align:center;font-size:7.5px;">${day}${iS?'<br>(6T)':''}</th>`;});
+  h+=`</tr></thead><tbody>`;
+  h+=`<tr style="background:#fff9c4;"><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:7.5px;color:#856404;font-weight:700;">🙏<br>${aS}<br>${aE}</td>`;
+  days.forEach(()=>h+=`<td style="border:1px solid #ccc;text-align:center;font-size:7px;color:#856404;">Assembly</td>`);h+='</tr>';
+  rows.forEach(row=>{
+    if(row.type==='p'){
+      const p=row.pt.p;const tStr=`${m2t12(t2m(row.pt.s))} –<br>${m2t12(t2m(row.pt.e))}`;
+      h+=`<tr><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:7.5px;font-weight:700;background:#f8fafc;color:#1a3a5c;">${tStr}<br>P${p}</td>`;
+      days.forEach(day=>{const mp=maxP(day);
+        if(p>mp){h+=`<td style="background:#f0f0f0;border:1px solid #ccc;text-align:center;font-size:7px;color:#bbb;">सुट्टी</td>`;return;}
+        let found=null;D.classes.forEach(cls=>{const cell=D.TT[cls.id]?.[day]?.[p];if(cell?.teacherId===teacher.id)found={cls,cell};});
+        if(found){const subj=D.subjects.find(x=>x.id===found.cell.subjectId);
+          h+=`<td style="background:#eaf5fb;border:1px solid #ccc;border-top:2px solid ${subj?.color||'#3498db'};text-align:center;padding:2px;">
+            <strong style="font-size:8px;color:${subj?.color||'#1a3a5c'};">${subj?.code||'?'}${found.cell.isDouble?'×2':''}</strong><br>
+            <span style="font-size:6.5px;color:#555;">${found.cls.std}-${found.cls.division}</span></td>`;
+        } else h+=`<td style="background:#fafafa;border:1px solid #ccc;text-align:center;font-size:7px;color:#ccc;">—</td>`;
+      });h+='</tr>';
+    } else {
+      let bg='#fef9e7',col='#b7770d',em='☕',lbl='Break';
+      if(row.type==='lb'){bg='#fff3e0';col='#d35400';em='🍱';lbl='Lunch';}
+      else if(row.type==='ab'){bg='#e8f5e9';col='#2e7d32';em='📖';lbl='Abhyasika';
+        // Show which classes this teacher supervises in Abhyasika
+        const abhyCls=D.classes.filter(cls=>cls.classTeacherId===teacher.id);
+        const tStr=row.s?`${m2t12(t2m(row.s))} –<br>${m2t12(t2m(row.e))}`:'';
+        h+=`<tr style="background:${bg};"><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:7.5px;color:${col};font-weight:700;">${tStr}</td>`;
+        days.forEach(day=>{if(isShort(day))h+=`<td style="background:#f0f0f0;border:1px solid #ccc;text-align:center;font-size:7px;color:#bbb;">—</td>`;
+          else{const isCT=abhyCls.length>0;h+=`<td style="background:${bg};border:1px solid #ccc;text-align:center;font-size:7.5px;color:${col};font-weight:700;">📖 Abhyasika${isCT?`<br><span style='font-size:6.5px;'>${abhyCls.map(x=>`${x.std}-${x.division}`).join(', ')}</span>`:''}</td>`;}});
+        h+='</tr>';return;
+      } else if(row.type==='abr'){bg='#f3e5f5';col='#7b1fa2';}
+      const tStr=row.s?`${m2t12(t2m(row.s))} –<br>${m2t12(t2m(row.e))}`:'';
+      h+=`<tr style="background:${bg};"><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:7.5px;color:${col};font-weight:700;">${tStr}</td>`;
+      days.forEach(day=>{if((row.type==='abr')&&isShort(day))h+=`<td style="background:#f0f0f0;border:1px solid #ccc;text-align:center;font-size:7px;color:#bbb;">—</td>`;
+        else h+=`<td style="background:${bg};border:1px solid #ccc;text-align:center;font-size:7.5px;color:${col};">${em}<br>${lbl}</td>`;});h+='</tr>';
+    }
+  });
+  const load=getTLoad(teacher.id);const mx=+(c.maxTeacherPeriods||36);
+  h+=`</tbody></table><div style="margin-top:5px;font-size:8px;color:#555;">साप्ताहिक भार: <strong style="color:${load>mx?'#e74c3c':'#27ae60'}">${load}/${mx}</strong> तास</div>`;
+  return h;
+}
+
+// A3 SCHOOL TIMETABLE
+// Layout: Time | Mon(9 sub-cols) | Tue(9) | Wed(9) | Teachers col | Thu(9) | Fri(9) | Sat(9)
+function buildA3School(){
+  const c=D.cfg;const allDays=c.workingDays||[];const rows=fullRows();const cls=D.classes;
+  const grp1Days=allDays.filter(d=>['Monday','Tuesday','Wednesday'].includes(d));
+  const grp2Days=allDays.filter(d=>['Thursday','Friday','Saturday'].includes(d));
+  const aS=m2t12(t2m(c.assemblyTime||'07:15'));const aE=m2t12(t2m(c.assemblyTime||'07:15')+(+(c.assemblyDuration||15)));
+  const fss='6.5px';const fs='7px';
+  // Teachers column: list all teachers with codes
+  const teacherListHTML=D.teachers.map(t=>`<div style="font-size:${fss};line-height:1.5;border-bottom:1px dotted #ddd;padding:1px 0;"><strong>${t.code}</strong> ${t.name}</div>`).join('');
+  
+  function buildDayGroup(groupDays){
+    let h='';
+    groupDays.forEach(day=>{const iS=isShort(day);const mp=maxP(day);
+      // Day header spanning 9 (or n) sub-cols + class sub-headers
+      h+=`<th colspan="${cls.length}" style="background:${iS?'#7f3d00':'#1a3a5c'};color:#fff;border:1px solid #aaa;font-size:${fss};text-align:center;padding:3px 1px;">${day}${iS?' (6T)':''}</th>`;
+    });
+    return h;
+  }
+  function buildClassHdrs(groupDays){
+    let h='';
+    groupDays.forEach(day=>{cls.forEach(cl=>{
+      h+=`<th style="background:#1a3a5c;color:#fff;border:1px solid #aaa;font-size:6px;text-align:center;padding:2px 1px;min-width:28px;">${cl.std}-${cl.division}</th>`;
+    });});
+    return h;
+  }
+  let totalSubCols=allDays.length*cls.length;
+  let html=`<table style="width:100%;border-collapse:collapse;font-size:${fs};table-layout:fixed;">
+  <colgroup><col style="width:58px;"></colgroup>
+  <thead>
+  <tr>
+    <th rowspan="2" style="background:#1a3a5c;color:#fff;padding:3px 2px;border:1px solid #aaa;text-align:center;font-size:${fss};vertical-align:middle;">वेळ<br>Time</th>
+    ${buildDayGroup(grp1Days)}
+    <th rowspan="2" style="background:#2e7d32;color:#fff;padding:3px 3px;border:1px solid #aaa;font-size:${fss};text-align:center;min-width:90px;">शिक्षक<br>Teachers</th>
+    ${buildDayGroup(grp2Days)}
+  </tr>
+  <tr>${buildClassHdrs(grp1Days)}${buildClassHdrs(grp2Days)}</tr>
+  </thead><tbody>`;
+  
+  // Assembly row
+  html+=`<tr style="background:#fff9c4;"><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:${fss};color:#856404;font-weight:700;">🙏<br>${aS}<br>${aE}</td>`;
+  grp1Days.forEach(day=>cls.forEach(()=>html+=`<td style="border:1px solid #ccc;text-align:center;font-size:6px;color:#856404;">🙏</td>`));
+  const totalRows2=rows.length+1;
+  html+=`<td rowspan="${totalRows2}" style="border:1px solid #ccc;padding:3px 4px;vertical-align:top;background:#f8fafc;">${teacherListHTML}</td>`;
+  grp2Days.forEach(day=>cls.forEach(()=>html+=`<td style="border:1px solid #ccc;text-align:center;font-size:6px;color:#856404;">🙏</td>`));
+  html+='</tr>';
+
+  rows.forEach(row=>{
+    if(row.type==='p'){
+      const p=row.pt.p;const tStr=`${m2t12(t2m(row.pt.s))}<br>${m2t12(t2m(row.pt.e))}<br>P${p}`;
+      html+=`<tr><td style="text-align:center;border:1px solid #ccc;padding:2px 1px;font-size:${fss};font-weight:700;background:#f8fafc;color:#1a3a5c;">${tStr}</td>`;
+      [...grp1Days,...['__teachers__'],...grp2Days].forEach(day=>{
+        if(day==='__teachers__')return; // already rowspan-ed
+        const mp2=maxP(day);
+        cls.forEach(cl=>{
+          if(p>mp2){html+=`<td style="background:#f0f0f0;border:1px solid #ccc;text-align:center;font-size:6px;color:#bbb;">—</td>`;return;}
+          const cell=(D.TT[cl.id]||{})[day]?.[p];
+          if(cell?.isDoubleCont){html+=`<td style="background:#eff8ff;border:1px solid #ccc;text-align:center;font-size:6px;color:#94b8d8;">↩</td>`;return;}
+          if(cell?.subjectId){const subj=D.subjects.find(x=>x.id===cell.subjectId);const tchr=D.teachers.find(x=>x.id===cell.teacherId);
+            html+=`<td style="background:#eaf5fb;border:1px solid #ccc;border-top:1.5px solid ${subj?.color||'#3498db'};text-align:center;padding:1px;">
+              <strong style="font-size:6.5px;color:${subj?.color||'#1a3a5c'};">${subj?.code||'?'}</strong><br>
+              <span style="font-size:5.5px;color:#555;">${tchr?.code||'?'}</span></td>`;
+          } else html+=`<td style="background:#fafafa;border:1px solid #ccc;text-align:center;font-size:6px;color:#ccc;">—</td>`;
+        });
+      });
+      html+='</tr>';
+    } else {
+      let bg='#fef9e7',col='#b7770d',em='☕',lbl='Break';
+      if(row.type==='lb'){bg='#fff3e0';col='#d35400';em='🍱';lbl='Lunch';}
+      else if(row.type==='ab'){bg='#e8f5e9';col='#2e7d32';em='📖';lbl='Abhyasika';}
+      else if(row.type==='abr'){bg='#f3e5f5';col='#7b1fa2';}
+      const tStr=row.s?`${m2t12(t2m(row.s))}<br>${m2t12(t2m(row.e))}`:'';
+      html+=`<tr style="background:${bg};"><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:${fss};color:${col};font-weight:700;">${tStr}</td>`;
+      [...grp1Days,...grp2Days].forEach(day=>{
+        const isS=isShort(day);
+        if((row.type==='ab'||row.type==='abr')&&isS){html+=`<td colspan="${cls.length}" style="background:#f0f0f0;border:1px solid #ccc;text-align:center;font-size:6px;color:#bbb;">—</td>`;}
+        else{html+=`<td colspan="${cls.length}" style="background:${bg};border:1px solid #ccc;text-align:center;font-size:${fss};color:${col};font-weight:700;">${em} ${lbl}</td>`;}
+      });html+='</tr>';
+    }
+  });
+  return html+'</tbody></table>';
+}
+
+function openPW(body,title,size){
   const w=window.open('','_blank');
+  const pgSize=size===3?'A3 landscape':'A4 landscape';
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;900&display=swap" rel="stylesheet">
-  <style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'DM Sans',sans-serif;padding:10px;background:white;}
-  .pb{page-break-after:always;margin:12px 0;border-bottom:1px dashed #ccc;}
-  @page{size:A4 landscape;margin:8mm;}@media print{.pb{page-break-after:always!important;}body{padding:0;}}</style>
-  </head><body>${body}<script>window.onload=function(){setTimeout(function(){window.print();},500);};<\/script></body></html>`);
+  <style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'DM Sans',sans-serif;padding:8px;background:#fff;}
+  .pb{page-break-after:always;margin:10px 0;border-bottom:1px dashed #ccc;}
+  @page{size:${pgSize};margin:7mm;}@media print{.pb{page-break-after:always!important;}body{padding:0;}}
+  </style></head><body>${body}<script>window.onload=function(){setTimeout(function(){window.print();},500);};<\/script></body></html>`);
   w.document.close();
 }
 
-function printByClass(mode){
-  let classes=mode==='one'?[ST.classes.find(c=>c.id===document.getElementById('pClassSel').value)].filter(Boolean):ST.classes;
+function pClass(mode){
+  const classes=mode==='one'?[D.classes.find(c=>c.id===document.getElementById('pCSel').value)].filter(Boolean):D.classes;
   if(!classes.length)return toast('No classes!','error');
-  const html=classes.map((cls,i)=>{
-    const ct=ST.teachers.find(t=>t.id===cls.classTeacherId);
-    return`<div>${pSchoolHdr()}<div style="text-align:center;margin-bottom:7px;">
-      <div style="font-size:13px;font-weight:900;color:#1a3a5c;">वर्ग तासिका पत्रक — ${cls.std} - ${cls.division} (${cls.medium})</div>
-      ${ct?`<div style="font-size:10px;color:#444;">वर्गशिक्षक: ${ct.name}</div>`:''}
-    </div>
-    ${buildPrintTable(cls.id,ct?.name)}
-    ${pSignRow(ct?.name)}</div>${i<classes.length-1?'<div class="pb"></div>':''}`;}).join('');
-  openPW(html,'वर्गानुसार तासिका');
+  const html=classes.map((cls,i)=>{const ct=D.teachers.find(t=>t.id===cls.classTeacherId);
+    return`<div>${pSchHdr(4)}${pClsHdr(cls,ct)}${buildA4Cls(cls.id)}${pSig(ct?.name)}</div>${i<classes.length-1?'<div class="pb"></div>':''}`;}).join('');
+  openPW(html,'वर्गानुसार तासिका',4);
 }
-
-function printByTeacher(mode){
-  let teachers=mode==='one'?[ST.teachers.find(t=>t.id===+document.getElementById('pTeachSel').value)].filter(Boolean):ST.teachers;
+function pTeacher(mode){
+  const teachers=mode==='one'?[D.teachers.find(t=>t.id===+document.getElementById('pTSel').value)].filter(Boolean):D.teachers;
   if(!teachers.length)return toast('No teachers!','error');
-  const s=ST.settings;const days=s.workingDays||[];const fs='8.5px';const fss='7.5px';
-  const aS=m2t12(t2m(s.assemblyTime||'07:15'));const aE=m2t12(t2m(s.assemblyTime||'07:15')+(+(s.assemblyDuration||15)));
-  const html=teachers.map((teacher,idx)=>{
-    const fullCols=buildCols();const totalRows=fullCols.length+1;
-    let tbl=`<table style="width:100%;border-collapse:collapse;font-size:${fs};table-layout:fixed;">
-    <colgroup><col style="width:70px;"><col style="width:13%;" span="${days.length}"></colgroup>
-    <thead><tr><th style="background:#1a3a5c;color:white;padding:5px 4px;text-align:center;font-size:${fss};border:1px solid #ccc;">वेळ</th>`;
-    days.forEach(day=>{const isShort=isShortDay(day);tbl+=`<th style="background:${isShort?'#7f3d00':'#1a3a5c'};color:white;padding:5px 4px;text-align:center;font-size:${fss};border:1px solid #ccc;">${day}${isShort?'<br>(6T)':''}</th>`;});
-    tbl+=`</tr></thead><tbody>`;
-    // Assembly
-    tbl+=`<tr style="background:#fff9c4;"><td style="text-align:center;border:1px solid #ccc;padding:3px;font-size:${fss};color:#856404;font-weight:700;">🙏<br>${aS}<br>${aE}</td>`;
-    days.forEach(()=>tbl+=`<td style="text-align:center;border:1px solid #ccc;font-size:${fss};color:#856404;">Assembly</td>`);
-    tbl+='</tr>';
-    fullCols.forEach(col=>{
-      if(col.t==='p'){const p=col.pt.p;const tStr=`${m2t12(t2m(col.pt.s))} –<br>${m2t12(t2m(col.pt.e))}`;
-        tbl+=`<tr><td style="text-align:center;border:1px solid #ccc;padding:3px;font-size:${fss};font-weight:700;background:#f8fafc;color:#1a3a5c;">${tStr}<br>P${p}</td>`;
-        days.forEach(day=>{const maxP=getMaxP(day);const isShort=isShortDay(day);
-          if(p>maxP){tbl+=`<td style="background:#f0f0f0;border:1px solid #ccc;text-align:center;font-size:${fss};color:#bbb;">सुट्टी</td>`;return;}
-          let found=null;ST.classes.forEach(cls=>{const cell=ST.timetables[cls.id]?.[day]?.[p];if(cell?.teacherId===teacher.id)found={cls,sid:cell.subjectId,isDbl:cell.isDouble};});
-          if(found){const subj=ST.subjects.find(x=>x.id===found.sid);
-            tbl+=`<td style="background:#eaf5fb;border:1px solid #ccc;border-top:2px solid ${subj?.color||'#3498db'};text-align:center;padding:3px;">
-              <strong style="font-size:${fs};color:${subj?.color||'#1a3a5c'};">${subj?.code||'?'}${found.isDbl?'×2':''}</strong><br>
-              <span style="font-size:7px;color:#555;">${found.cls.std}-${found.cls.division}</span></td>`;
-          } else tbl+=`<td style="background:#fafafa;border:1px solid #ccc;text-align:center;font-size:${fss};color:#ccc;">—</td>`;
-        });
-        tbl+='</tr>';
-      } else {
-        let lbl='',bg='',col2='',em='';
-        if(col.t==='sb'){lbl=`Short Break`;bg='#fef9e7';col2='#b7770d';em='☕';}
-        else if(col.t==='lb'){lbl=`Lunch`;bg='#fff3e0';col2='#d35400';em='🍱';}
-        else if(col.t==='ab'){lbl=`Abhyasika`;bg='#e8f5e9';col2='#2e7d32';em='📖';}
-        else if(col.t==='abr'){lbl=`Break`;bg='#f3e5f5';col2='#7b1fa2';em='☕';}
-        const tStr=col.s?`${m2t12(t2m(col.s))} –<br>${m2t12(t2m(col.e))}`:'';
-        tbl+=`<tr style="background:${bg};"><td style="text-align:center;border:1px solid #ccc;padding:3px;font-size:${fss};color:${col2};font-weight:700;">${tStr}</td>`;
-        days.forEach(day=>{if((col.t==='ab'||col.t==='abr')&&isShortDay(day))tbl+=`<td style="background:#f0f0f0;border:1px solid #ccc;text-align:center;font-size:${fss};color:#bbb;">—</td>`;
-          else tbl+=`<td style="background:${bg};border:1px solid #ccc;text-align:center;font-size:${fss};color:${col2};">${em} ${lbl}</td>`;});
-        tbl+='</tr>';
-      }
-    });
-    tbl+='</tbody></table>';
-    const load=getTLoad(teacher.id);const max=+(s.maxTeacherPeriods||36);
-    return`<div>${pSchoolHdr()}<div style="text-align:center;margin-bottom:7px;">
+  const html=teachers.map((t,i)=>{
+    const load=getTLoad(t.id);const mx=+(D.cfg.maxTeacherPeriods||36);
+    return`<div>${pSchHdr(4)}<div style="text-align:center;margin-bottom:6px;">
       <div style="font-size:13px;font-weight:900;color:#1a3a5c;">शिक्षक तासिका पत्रक</div>
-      <div style="font-size:11px;color:#444;">नाव: <strong>${teacher.name}</strong> (${teacher.code}) | साप्ताहिक भार: <strong style="color:${load>max?'#e74c3c':'#27ae60'}">${load}/${max}</strong> तास</div>
-    </div>${tbl}${pSignRow(teacher.name)}</div>${idx<teachers.length-1?'<div class="pb"></div>':''}`;
-  }).join('');
-  openPW(html,'शिक्षकानुसार तासिका');
+      <div style="font-size:10px;color:#444;">नाव: <strong>${t.name}</strong> (${t.code}) | साप्ताहिक भार: <strong style="color:${load>mx?'#e74c3c':'#27ae60'}">${load}/${mx}</strong></div>
+    </div>${buildA4Teacher(t)}${pSig(t.name)}</div>${i<teachers.length-1?'<div class="pb"></div>':''}`;}).join('');
+  openPW(html,'शिक्षकानुसार तासिका',4);
 }
-
-function printFullSchool(){
-  const s=ST.settings;const days=s.workingDays||[];
-  const fs='7.5px';const fss='7px';
-  const aS=m2t12(t2m(s.assemblyTime||'07:15'));const aE=m2t12(t2m(s.assemblyTime||'07:15')+(+(s.assemblyDuration||15)));
-  let html=pSchoolHdr()+`<div style="text-align:center;font-size:13px;font-weight:900;color:#1a3a5c;margin-bottom:10px;">संपूर्ण शाळा — एकत्रित तासिका पत्रक</div>`;
-  days.forEach(day=>{
-    const isShort=isShortDay(day);const dayCols=buildCols(day);
-    html+=`<div style="margin-bottom:14px;"><div style="background:${isShort?'#7f3d00':'#1a3a5c'};color:white;padding:3px 8px;font-size:10px;font-weight:700;border-radius:3px 3px 0 0;">${day}${isShort?' — Short Day (6 तास, Abhyasika नाही)':''}</div>
-    <table style="width:100%;border-collapse:collapse;font-size:${fs};"><thead><tr>
-    <th style="background:#1a3a5c;color:white;padding:4px 3px;font-size:${fss};border:1px solid #ccc;min-width:65px;">वेळ</th>`;
-    ST.classes.forEach(cls=>{const ct=ST.teachers.find(t=>t.id===cls.classTeacherId);
-      html+=`<th style="background:#1a3a5c;color:white;padding:4px 3px;text-align:center;font-size:${fss};border:1px solid #ccc;">${cls.std}-${cls.division}<br><span style="font-weight:400;opacity:.8;font-size:6.5px;">${ct?ct.name.split(' ')[0]:''}</span></th>`;});
-    html+=`</tr></thead><tbody>`;
-    // Assembly row
-    html+=`<tr style="background:#fff9c4;"><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:${fss};color:#856404;font-weight:700;">🙏<br>${aS}–${aE}</td>`;
-    ST.classes.forEach(()=>html+=`<td style="border:1px solid #ccc;text-align:center;font-size:${fss};color:#856404;background:#fff9c4;">Assembly</td>`);
-    html+='</tr>';
-    dayCols.forEach(col=>{
-      if(col.t==='p'){const p=col.pt.p;
-        html+=`<tr><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:${fss};font-weight:700;background:#f8fafc;color:#1a3a5c;">${m2t12(t2m(col.pt.s))}<br>${m2t12(t2m(col.pt.e))}<br>P${p}</td>`;
-        ST.classes.forEach(cls=>{const cell=(ST.timetables[cls.id]||{})[day]?.[p];
-          if(cell?.isDoubleCont){html+=`<td style="background:#eff8ff;border:1px solid #ccc;text-align:center;font-size:${fss};color:#94b8d8;">↩</td>`;return;}
-          if(cell?.subjectId){const subj=ST.subjects.find(x=>x.id===cell.subjectId);const tchr=ST.teachers.find(x=>x.id===cell.teacherId);
-            html+=`<td style="background:#eaf5fb;border:1px solid #ccc;border-top:1.5px solid ${subj?.color||'#3498db'};text-align:center;padding:2px;">
-              <strong style="font-size:${fs};color:${subj?.color||'#1a3a5c'};">${subj?.code||'?'}</strong><br>
-              <span style="font-size:6.5px;color:#555;">${tchr?.code||'?'}</span></td>`;
-          } else html+=`<td style="background:#fafafa;border:1px solid #ccc;text-align:center;font-size:${fss};color:#ccc;">—</td>`;
-        });
-        html+='</tr>';
-      } else {
-        let lbl='',bg='',col2='',em='';
-        if(col.t==='sb'){lbl='Short Break';bg='#fef9e7';col2='#b7770d';em='☕';}
-        else if(col.t==='lb'){lbl='Lunch';bg='#fff3e0';col2='#d35400';em='🍱';}
-        const tStr=col.s?`${m2t12(t2m(col.s))}–${m2t12(t2m(col.e))}`:'';
-        html+=`<tr style="background:${bg};"><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:${fss};color:${col2};font-weight:700;">${tStr}</td>`;
-        ST.classes.forEach(()=>html+=`<td style="background:${bg};border:1px solid #ccc;text-align:center;font-size:${fss};color:${col2};">${em} ${lbl}</td>`);
-        html+='</tr>';
-      }
-    });
-    html+='</tbody></table></div>';
-  });
-  html+=pSignRow(null);
-  openPW(html,'संपूर्ण शाळा तासिका');
+function pSchool(){
+  if(!D.classes.length)return toast('No classes!','error');
+  const html=pSchHdr(3)+`<div style="text-align:center;font-size:13px;font-weight:900;color:#1a3a5c;margin-bottom:8px;">संपूर्ण शाळा — एकत्रित तासिका पत्रक</div>`+buildA3School()+pSig(null);
+  openPW(html,'संपूर्ण शाळा तासिका',3);
 }
 
 // ===== REPORTS =====
-function renderLoadRep(){
-  const s=ST.settings;const max=+(s.maxTeacherPeriods||36);const days=s.workingDays||[];
-  if(!ST.teachers.length){document.getElementById('loadRep').innerHTML='<div class="es"><div class="bi2">👨‍🏫</div><p>No teachers.</p></div>';return;}
+function rLoad(){
+  const c=D.cfg;const mx=+(c.maxTeacherPeriods||36);const days=c.workingDays||[];
+  if(!D.teachers.length){document.getElementById('loadRep').innerHTML='<div class="es"><p>No teachers.</p></div>';return;}
   let h='<div class="ttw"><table class="dt"><thead><tr><th>#</th><th>Teacher</th><th>Code</th>';
   days.forEach(d=>h+=`<th>${d.substring(0,3)}</th>`);h+=`<th>Total</th><th>Status</th></tr></thead><tbody>`;
-  ST.teachers.forEach((t,i)=>{
-    let dl={};let total=0;days.forEach(day=>{dl[day]=0;});
-    ST.classes.forEach(cls=>{days.forEach(day=>{for(let p=1;p<=getMaxP(day);p++){const cell=ST.timetables[cls.id]?.[day]?.[p];if(cell?.teacherId===t.id&&!cell.isDoubleCont){dl[day]++;total++;}}});});
-    const pct=Math.min(100,Math.round(total/max*100));const col=total>max?'#e74c3c':total>max*.85?'#f39c12':'#27ae60';
+  D.teachers.forEach((t,i)=>{
+    let dl={};let total=0;days.forEach(day=>dl[day]=0);
+    D.classes.forEach(cls=>days.forEach(day=>{for(let p=1;p<=maxP(day);p++){const cell=D.TT[cls.id]?.[day]?.[p];if(cell?.teacherId===t.id&&!cell.isDoubleCont){dl[day]++;total++;}}}));
+    const col=total>mx?'#e74c3c':total>mx*.85?'#f39c12':'#27ae60';
     h+=`<tr><td>${i+1}</td><td><strong>${t.name}</strong></td><td><span class="badge bgg">${t.code}</span></td>`;
     days.forEach(d=>h+=`<td style="text-align:center;">${dl[d]||0}</td>`);
-    h+=`<td style="font-weight:700;color:${col};text-align:center;">${total}/${max}</td>
-    <td>${total>max?'<span class="badge br">⚠️ Over</span>':total>max*.85?'<span class="badge bo2">⚡ High</span>':'<span class="badge bgg">✓ OK</span>'}</td></tr>`;
-  });
-  h+='</tbody></table></div>';document.getElementById('loadRep').innerHTML=h;
+    h+=`<td style="font-weight:700;color:${col};text-align:center;">${total}/${mx}</td>
+    <td>${total>mx?'<span class="badge br">⚠️ Over</span>':total>mx*.85?'<span class="badge bo2">⚡ High</span>':'<span class="badge bgg">✓ OK</span>'}</td></tr>`;
+  });h+='</tbody></table></div>';document.getElementById('loadRep').innerHTML=h;
 }
-function renderSubjRep(){
-  const s=ST.settings;const days=s.workingDays||[];
-  let h='<div class="ttw"><table class="dt"><thead><tr><th>Class</th><th>Subject</th><th>Target</th><th>Assigned</th><th>Status</th></tr></thead><tbody>';
-  ST.classes.forEach(cls=>{(ST.classSubjects[cls.id]||[]).forEach(row=>{
-    const subj=ST.subjects.find(s=>s.id===row.subjectId);let asgn=0;
-    days.forEach(day=>{for(let p=1;p<=getMaxP(day);p++){const cell=ST.timetables[cls.id]?.[day]?.[p];if(cell?.subjectId===row.subjectId&&!cell.isDoubleCont)asgn++;}});
+function rSubj(){
+  const c=D.cfg;const days=c.workingDays||[];
+  let h='<div class="ttw"><table class="dt"><thead><tr><th>Class</th><th>Subject</th><th>Target</th><th>Assigned</th><th></th></tr></thead><tbody>';
+  D.classes.forEach(cls=>{(D.CS[cls.id]||[]).forEach(row=>{
+    const subj=D.subjects.find(s=>s.id===row.subjectId);let asgn=0;
+    days.forEach(day=>{for(let p=1;p<=maxP(day);p++){const cell=D.TT[cls.id]?.[day]?.[p];if(cell?.subjectId===row.subjectId&&!cell.isDoubleCont)asgn++;}});
     const tgt=row.periodsPerWeek||3;const ok=asgn>=tgt;
-    h+=`<tr><td><strong>${cls.std}-${cls.division}</strong></td><td>${subj?.name||'?'} <span class="badge" style="background:${subj?.color||'#eee'}20;color:${subj?.color||'#333'};">${subj?.code}</span></td>
+    h+=`<tr><td><strong>${cls.std}-${cls.division}</strong></td><td>${subj?.name||'?'} <span class="badge" style="background:${subj?.color||'#eee'}18;color:${subj?.color||'#333'};">${subj?.code}</span></td>
     <td style="text-align:center;">${tgt}</td><td style="text-align:center;font-weight:700;color:${ok?'#27ae60':'#e74c3c'};">${asgn}</td>
-    <td>${ok?'<span class="badge bgg">✓</span>':'<span class="badge br">⚠️</span>'}</td></tr>`;});});
+    <td>${ok?'<span class="badge bgg">✓</span>':'<span class="badge br">⚠️ Short</span>'}</td></tr>`;});});
   h+='</tbody></table></div>';document.getElementById('subjRep').innerHTML=h;
 }
-function renderFreeRep(){
-  const s=ST.settings;const days=s.workingDays||[];let total=0;
+function rFree(){
+  const c=D.cfg;const days=c.workingDays||[];let total=0;
   let h='<div class="ttw"><table class="dt"><thead><tr><th>Class</th><th>Day</th><th>Empty Periods</th><th>Count</th></tr></thead><tbody>';
-  ST.classes.forEach(cls=>{days.forEach(day=>{const empty=[];for(let p=1;p<=getMaxP(day);p++){const cell=ST.timetables[cls.id]?.[day]?.[p];if(!cell||!cell.subjectId)empty.push(`P${p}`);}
-    if(empty.length){h+=`<tr><td><strong>${cls.std}-${cls.division}</strong></td><td>${day}</td><td>${empty.join(', ')}</td><td><span class="badge br">${empty.length}</span></td></tr>`;total+=empty.length;}});});
-  h+=`</tbody></table></div><div style="margin-top:8px;font-size:.8rem;color:var(--mu);">Total empty: <strong style="color:#e74c3c;">${total}</strong></div>`;
+  D.classes.forEach(cls=>days.forEach(day=>{const empty=[];for(let p=1;p<=maxP(day);p++){const cell=D.TT[cls.id]?.[day]?.[p];if(!cell?.subjectId)empty.push(`P${p}`);}
+    if(empty.length){h+=`<tr><td><strong>${cls.std}-${cls.division}</strong></td><td>${day}</td><td>${empty.join(', ')}</td><td><span class="badge br">${empty.length}</span></td></tr>`;total+=empty.length;}}));
+  h+=`</tbody></table></div><div style="margin-top:7px;font-size:.78rem;color:var(--mu);">Total empty: <strong style="color:#e74c3c;">${total}</strong></div>`;
   document.getElementById('freeRep').innerHTML=h;
 }
 
 // ===== EXPORT/IMPORT =====
-function exportJSON(){const blob=new Blob([JSON.stringify(ST,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`wvs_${new Date().toISOString().slice(0,10)}.json`;a.click();toast('Exported!');}
-function exportCSV(){
-  const s=ST.settings;const days=s.workingDays||[];const ptimes=getPTimes();
-  let csv='Class,Division,Day,Period,Time,Subject,Teacher\n';
-  ST.classes.forEach(cls=>{days.forEach(day=>{for(let p=1;p<=getMaxP(day);p++){const cell=ST.timetables[cls.id]?.[day]?.[p];const t=ptimes.find(x=>x.p===p);const subj=ST.subjects.find(x=>x.id===cell?.subjectId);const tchr=ST.teachers.find(x=>x.id===cell?.teacherId);csv+=`${cls.std},${cls.division},${day},P${p},${t?m2t12(t2m(t.s)):''}–${t?m2t12(t2m(t.e)):''},${subj?.name||''},${tchr?.name||''}\n`;}});});
+function expJSON(){const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`wvs_${new Date().toISOString().slice(0,10)}.json`;a.click();toast('Exported!');}
+function expCSV(){const c=D.cfg;const days=c.workingDays||[];const pt=getPTimes();let csv='Class,Division,Day,Period,Time,Subject,Teacher\n';
+  D.classes.forEach(cls=>days.forEach(day=>{for(let p=1;p<=maxP(day);p++){const cell=D.TT[cls.id]?.[day]?.[p];const t=pt.find(x=>x.p===p);const subj=D.subjects.find(x=>x.id===cell?.subjectId);const tchr=D.teachers.find(x=>x.id===cell?.teacherId);csv+=`${cls.std},${cls.division},${day},P${p},${t?m2t12(t2m(t.s)):''}–${t?m2t12(t2m(t.e)):''},${subj?.name||''},${tchr?.name||''}\n`;}}));
   const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`wvs_${new Date().toISOString().slice(0,10)}.csv`;a.click();toast('CSV exported!');
 }
-function importJSON(){document.getElementById('impFile').click();}
-function doImport(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(!d.teachers||!d.classes)return toast('Invalid!','error');ST=d;save();load();toast('Imported!');}catch(err){toast('Failed: '+err.message,'error');}};r.readAsText(file);e.target.value='';}
+function impJSON(){document.getElementById('impF').click();}
+function doImp(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(!d.teachers||!d.classes)return toast('Invalid!','error');D=d;save();load();toast('Imported!');}catch(err){toast('Failed: '+err.message,'error');}};r.readAsText(file);e.target.value='';}
 
 // ===== INIT =====
-load();
-renderPreview();renderSubjects();renderTeachers();renderClasses();popSubjSel();popCTSel();
-if(!ST.subjects.length){
-  [{name:'Marathi',code:'MAR',color:'#e74c3c',type:'theory'},{name:'Hindi',code:'HIN',color:'#e67e22',type:'theory'},
-  {name:'English',code:'ENG',color:'#3498db',type:'theory'},{name:'Mathematics',code:'MATH',color:'#9b59b6',type:'theory'},
-  {name:'Science',code:'SCI',color:'#27ae60',type:'theory'},{name:'Social Science',code:'SS',color:'#1abc9c',type:'theory'},
-  {name:'History',code:'HIST',color:'#c0392b',type:'theory'},{name:'Geography',code:'GEO',color:'#2980b9',type:'theory'},
-  {name:'Civics',code:'CIV',color:'#16a085',type:'theory'},{name:'PE',code:'PE',color:'#f39c12',type:'practical'},
-  {name:'Art',code:'ART',color:'#d35400',type:'practical'},{name:'Computer',code:'COMP',color:'#2c3e50',type:'practical'},
-  {name:'Lab / Practical',code:'LAB',color:'#7f8c8d',type:'practical'}].forEach((s,i)=>ST.subjects.push({id:Date.now()+i,...s}));
+load();renderPrev();renderSubjects();renderTeachers();renderClasses();popSubjSel();popCTSel();
+if(!D.subjects.length){
+  [{name:'Marathi',code:'MAR',color:'#e74c3c',type:'theory',priority:'normal'},
+  {name:'Hindi',code:'HIN',color:'#e67e22',type:'theory',priority:'normal'},
+  {name:'English',code:'ENG',color:'#3498db',type:'theory',priority:'high'},
+  {name:'Mathematics',code:'MATH',color:'#9b59b6',type:'theory',priority:'high'},
+  {name:'Science',code:'SCI',color:'#27ae60',type:'theory',priority:'high'},
+  {name:'Social Science',code:'SS',color:'#1abc9c',type:'theory',priority:'normal'},
+  {name:'History',code:'HIST',color:'#c0392b',type:'theory',priority:'normal'},
+  {name:'Geography',code:'GEO',color:'#2980b9',type:'theory',priority:'normal'},
+  {name:'Civics',code:'CIV',color:'#16a085',type:'theory',priority:'normal'},
+  {name:'PE / Sha.Shi.',code:'PE',color:'#f39c12',type:'practical',priority:'normal'},
+  {name:'Chitra Kala',code:'ART',color:'#d35400',type:'practical',priority:'normal'},
+  {name:'Jal Suraksha',code:'JAL',color:'#0984e3',type:'practical',priority:'normal'},
+  {name:'Sanganak',code:'COMP',color:'#2c3e50',type:'practical',priority:'normal'},
+  {name:'Karya Kaushalya',code:'KK',color:'#6c5ce7',type:'practical',priority:'normal'},
+  {name:'Lab / Practical',code:'LAB',color:'#7f8c8d',type:'practical',priority:'normal'}
+  ].forEach((s,i)=>D.subjects.push({id:Date.now()+i,...s}));
   save();renderSubjects();popSubjSel();
 }
 </script>
