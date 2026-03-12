@@ -4,1557 +4,1219 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shree Warana Vidyalaya - Timetable System</title>
-<link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Marathi&family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Marathi&family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--primary:#1a3a5c;--accent:#e67e22;--gold:#f39c12;--light:#f0f4f8;--text:#2c3e50;--muted:#7f8c8d;--danger:#e74c3c;--success:#27ae60;--border:#dce3ea;--shadow:0 4px 24px rgba(26,58,92,0.10);--radius:14px;}
+:root{--pr:#1a3a5c;--ac:#e67e22;--gd:#f39c12;--lt:#f0f4f8;--tx:#2c3e50;--mu:#7f8c8d;--dn:#e74c3c;--ok:#27ae60;--bd:#dce3ea;--sh:0 4px 24px rgba(26,58,92,0.10);--rd:14px;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'DM Sans',sans-serif;background:#eaf0f6;color:var(--text);min-height:100vh;}
-.header{background:linear-gradient(135deg,var(--primary) 60%,#2471a3 100%);color:white;position:sticky;top:0;z-index:200;box-shadow:0 4px 20px rgba(26,58,92,0.3);}
-.header-inner{max-width:1600px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:10px 20px;}
-.logo-circle{width:44px;height:44px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:900;color:var(--primary);flex-shrink:0;}
-.header-text h1{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;line-height:1.2;}
-.header-text p{font-size:0.7rem;opacity:0.75;margin-top:1px;}
-.header-nav{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap;}
-.nav-btn{padding:6px 12px;border-radius:7px;border:none;cursor:pointer;font-size:0.77rem;font-weight:600;font-family:'DM Sans',sans-serif;transition:all 0.2s;background:rgba(255,255,255,0.12);color:white;}
-.nav-btn:hover,.nav-btn.active{background:var(--gold);color:var(--primary);}
-.app{max-width:1600px;margin:0 auto;padding:20px 15px;}
-.card{background:white;border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-bottom:16px;}
-.card-title{font-size:.95rem;font-weight:700;color:var(--primary);margin-bottom:13px;display:flex;align-items:center;gap:6px;}
-.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:11px;}
-.form-group label{display:block;font-size:.72rem;font-weight:600;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px;}
-.form-group input,.form-group select{width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:.86rem;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--light);outline:none;transition:border .2s;}
-.form-group input:focus,.form-group select:focus{border-color:var(--primary);background:white;}
-.btn{padding:7px 16px;border-radius:7px;border:none;cursor:pointer;font-size:.82rem;font-weight:600;font-family:'DM Sans',sans-serif;transition:all .2s;display:inline-flex;align-items:center;gap:5px;}
-.btn-primary{background:var(--primary);color:white;}.btn-primary:hover{background:#154572;transform:translateY(-1px);}
-.btn-gold{background:var(--gold);color:var(--primary);}.btn-gold:hover{background:#e67e22;}
-.btn-danger{background:var(--danger);color:white;}.btn-danger:hover{background:#c0392b;}
-.btn-success{background:var(--success);color:white;}.btn-success:hover{background:#1e8449;}
-.btn-info{background:#2980b9;color:white;}.btn-info:hover{background:#1f618d;}
-.btn-sm{padding:3px 9px;font-size:.71rem;}
-.btn-outline{background:transparent;border:1.5px solid var(--primary);color:var(--primary);}.btn-outline:hover{background:var(--primary);color:white;}
-.tab-bar{display:flex;gap:3px;border-bottom:2px solid var(--border);margin-bottom:16px;flex-wrap:wrap;}
-.tab{padding:7px 14px;cursor:pointer;border-radius:7px 7px 0 0;font-size:.81rem;font-weight:600;color:var(--muted);transition:all .2s;border:none;background:transparent;font-family:'DM Sans',sans-serif;position:relative;bottom:-2px;}
-.tab.active{color:var(--primary);background:white;border:2px solid var(--border);border-bottom:2px solid white;}
-.tab:hover:not(.active){color:var(--primary);background:var(--light);}
-.data-table{width:100%;border-collapse:collapse;font-size:.83rem;}
-.data-table th{background:var(--primary);color:white;padding:8px 11px;text-align:left;font-weight:600;font-size:.71rem;text-transform:uppercase;letter-spacing:.3px;}
-.data-table th:first-child{border-radius:7px 0 0 0;}.data-table th:last-child{border-radius:0 7px 0 0;}
-.data-table td{padding:7px 11px;border-bottom:1px solid var(--border);vertical-align:middle;}
-.data-table tr:hover td{background:var(--light);}.data-table tr:last-child td{border-bottom:none;}
-.tt-wrapper{overflow-x:auto;}
-.tt-table{border-collapse:collapse;font-size:.75rem;}
-.tt-table th{background:var(--primary);color:white;padding:6px 7px;text-align:center;font-weight:600;font-size:.68rem;white-space:nowrap;}
-.tt-table .day-col{background:var(--primary);color:white;font-weight:700;padding:6px 9px;white-space:nowrap;font-size:.77rem;min-width:50px;}
-.tt-cell{padding:5px 5px;border:1px solid var(--border);text-align:center;vertical-align:middle;min-width:78px;cursor:pointer;transition:background .15s;}
-.tt-cell:hover{background:#dbeafe;}
-.tt-cell.filled{background:#eaf5fb;}
-.tt-cell.double-left{border-right:2.5px dashed #94b8d8!important;}
-.tt-cell.double-right{background:#eff8ff;border-left:none!important;}
-.tt-cell .subj-label{font-weight:700;font-size:.76rem;display:block;}
-.tt-cell .teacher-label{font-size:.64rem;color:var(--muted);display:block;}
-.tt-cell.break-cell{background:#fef9e7;color:#b7770d;font-weight:700;font-size:.72rem;cursor:default;}
-.tt-cell.lunch-cell{background:#fff3e0;color:#d35400;font-weight:700;font-size:.72rem;cursor:default;}
-.tt-cell.study-cell{background:#e8f5e9;color:#2e7d32;font-weight:700;font-size:.68rem;cursor:default;}
-.tt-cell.study-break-cell{background:#f3e5f5;color:#7b1fa2;font-weight:700;font-size:.68rem;cursor:default;}
-.tt-cell.empty-cell{background:#fafafa;color:#ccc;font-size:.68rem;}
-.badge{display:inline-block;padding:2px 6px;border-radius:20px;font-size:.67rem;font-weight:700;}
-.badge-blue{background:#d6eaf8;color:#1a5276;}.badge-green{background:#d5f5e3;color:#1e8449;}
-.badge-orange{background:#fdebd0;color:#a04000;}.badge-red{background:#fdecea;color:#922b21;}
-.badge-purple{background:#e8daef;color:#6c3483;}.badge-grey{background:#eee;color:#555;}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center;}
-.modal-overlay.show{display:flex;}
-.modal{background:white;border-radius:var(--radius);padding:22px;width:92%;max-width:520px;box-shadow:0 20px 60px rgba(0,0,0,.3);position:relative;max-height:92vh;overflow-y:auto;}
-.modal h3{font-size:.98rem;font-weight:700;color:var(--primary);margin-bottom:13px;}
-.modal-close{position:absolute;top:10px;right:10px;background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--muted);}
+body{font-family:'DM Sans',sans-serif;background:#eaf0f6;color:var(--tx);min-height:100vh;}
+.hdr{background:linear-gradient(135deg,var(--pr) 60%,#2471a3);color:white;position:sticky;top:0;z-index:200;box-shadow:0 4px 20px rgba(26,58,92,.3);}
+.hdr-in{max-width:1600px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:9px 18px;}
+.logo{width:42px;height:42px;border-radius:50%;background:var(--gd);display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:900;color:var(--pr);flex-shrink:0;}
+.hdr-txt h1{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;}
+.hdr-txt p{font-size:.68rem;opacity:.75;margin-top:1px;}
+.hdr-nav{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap;}
+.nb{padding:5px 11px;border-radius:6px;border:none;cursor:pointer;font-size:.74rem;font-weight:600;font-family:'DM Sans',sans-serif;transition:all .2s;background:rgba(255,255,255,.12);color:white;}
+.nb:hover,.nb.active{background:var(--gd);color:var(--pr);}
+.app{max-width:1600px;margin:0 auto;padding:18px 14px;}
+.card{background:white;border-radius:var(--rd);box-shadow:var(--sh);padding:18px;margin-bottom:14px;}
+.ct{font-size:.93rem;font-weight:700;color:var(--pr);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px;}
+.fg label{display:block;font-size:.7rem;font-weight:600;color:var(--mu);margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px;}
+.fg input,.fg select{width:100%;padding:6px 9px;border:1.5px solid var(--bd);border-radius:6px;font-size:.84rem;font-family:'DM Sans',sans-serif;color:var(--tx);background:var(--lt);outline:none;transition:border .2s;}
+.fg input:focus,.fg select:focus{border-color:var(--pr);background:white;}
+.btn{padding:6px 14px;border-radius:6px;border:none;cursor:pointer;font-size:.8rem;font-weight:600;font-family:'DM Sans',sans-serif;transition:all .2s;display:inline-flex;align-items:center;gap:4px;}
+.bp{background:var(--pr);color:white;}.bp:hover{background:#154572;}
+.bg2{background:var(--gd);color:var(--pr);}.bg2:hover{background:#e67e22;}
+.bd2{background:var(--dn);color:white;}.bd2:hover{background:#c0392b;}
+.bk{background:var(--ok);color:white;}.bk:hover{background:#1e8449;}
+.bi{background:#2980b9;color:white;}.bi:hover{background:#1f618d;}
+.bo{background:transparent;border:1.5px solid var(--pr);color:var(--pr);}.bo:hover{background:var(--pr);color:white;}
+.bs{padding:3px 8px;font-size:.69rem;}
+.tab-bar{display:flex;gap:3px;border-bottom:2px solid var(--bd);margin-bottom:14px;flex-wrap:wrap;}
+.tab{padding:6px 13px;cursor:pointer;border-radius:6px 6px 0 0;font-size:.79rem;font-weight:600;color:var(--mu);transition:all .2s;border:none;background:transparent;font-family:'DM Sans',sans-serif;position:relative;bottom:-2px;}
+.tab.active{color:var(--pr);background:white;border:2px solid var(--bd);border-bottom:2px solid white;}
+.tab:hover:not(.active){color:var(--pr);background:var(--lt);}
+.dt{width:100%;border-collapse:collapse;font-size:.82rem;}
+.dt th{background:var(--pr);color:white;padding:7px 10px;text-align:left;font-weight:600;font-size:.69rem;text-transform:uppercase;letter-spacing:.3px;}
+.dt th:first-child{border-radius:6px 0 0 0;}.dt th:last-child{border-radius:0 6px 0 0;}
+.dt td{padding:6px 10px;border-bottom:1px solid var(--bd);vertical-align:middle;}
+.dt tr:hover td{background:var(--lt);}.dt tr:last-child td{border-bottom:none;}
+.ttw{overflow-x:auto;}
+.ttt{border-collapse:collapse;font-size:.74rem;}
+.ttt th{background:var(--pr);color:white;padding:5px 6px;text-align:center;font-weight:600;font-size:.66rem;white-space:nowrap;}
+.ttt .dc{background:var(--pr);color:white;font-weight:700;padding:5px 8px;white-space:nowrap;font-size:.75rem;min-width:48px;}
+.tc{padding:4px 4px;border:1px solid var(--bd);text-align:center;vertical-align:middle;min-width:76px;cursor:pointer;transition:background .15s;}
+.tc:hover{background:#dbeafe;}
+.tc.filled{background:#eaf5fb;}
+.tc.dl{border-right:2.5px dashed #94b8d8!important;}
+.tc.dr{background:#eff8ff;border-left:none!important;}
+.tc .sl{font-weight:700;font-size:.74rem;display:block;}
+.tc .tl{font-size:.62rem;color:var(--mu);display:block;}
+.tc.bk-c{background:#fef9e7;color:#b7770d;font-weight:700;font-size:.7rem;cursor:default;}
+.tc.ln-c{background:#fff3e0;color:#d35400;font-weight:700;font-size:.7rem;cursor:default;}
+.tc.st-c{background:#e8f5e9;color:#2e7d32;font-weight:700;font-size:.68rem;cursor:default;}
+.tc.sb-c{background:#f3e5f5;color:#7b1fa2;font-weight:700;font-size:.68rem;cursor:default;}
+.tc.em-c{background:#fafafa;color:#ccc;font-size:.66rem;}
+.tc.as-c{background:#fff9c4;color:#856404;font-weight:700;font-size:.66rem;cursor:default;}
+.badge{display:inline-block;padding:2px 6px;border-radius:20px;font-size:.65rem;font-weight:700;}
+.bb{background:#d6eaf8;color:#1a5276;}.bgg{background:#d5f5e3;color:#1e8449;}
+.bo2{background:#fdebd0;color:#a04000;}.br{background:#fdecea;color:#922b21;}
+.bp2{background:#e8daef;color:#6c3483;}.bgy{background:#eee;color:#555;}
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center;}
+.mo.show{display:flex;}
+.md{background:white;border-radius:var(--rd);padding:20px;width:92%;max-width:500px;box-shadow:0 20px 60px rgba(0,0,0,.3);position:relative;max-height:92vh;overflow-y:auto;}
+.md h3{font-size:.95rem;font-weight:700;color:var(--pr);margin-bottom:12px;}
+.mc{position:absolute;top:9px;right:9px;background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--mu);}
 .page{display:none;}.page.active{display:block;}
-.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:7px;}
-.chip{padding:2px 9px;border-radius:20px;background:#d6eaf8;color:#1a5276;font-size:.73rem;font-weight:600;display:inline-flex;align-items:center;gap:3px;}
-.empty-state{text-align:center;padding:30px 20px;color:var(--muted);}
-.empty-state .big-icon{font-size:2.5rem;margin-bottom:6px;}
-.tt-ctrl{display:flex;gap:9px;align-items:flex-end;flex-wrap:wrap;margin-bottom:13px;}
-.tt-ctrl select{padding:7px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:.85rem;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--light);outline:none;}
-.conflict-banner{background:#fdecea;color:#c0392b;border:1px solid #f5c6cb;border-radius:8px;padding:6px 11px;font-size:.77rem;font-weight:600;margin-bottom:8px;}
-.info-box{background:#e8f4fd;color:#1a5276;border:1px solid #aed6f1;border-radius:8px;padding:7px 12px;font-size:.78rem;margin-bottom:10px;}
-.warn-box{background:#fdecea;color:#922b21;border:1px solid #f5c6cb;border-radius:8px;padding:6px 11px;font-size:.77rem;margin-bottom:8px;}
-.ok-box{background:#d5f5e3;color:#1e8449;border:1px solid #82e0aa;border-radius:8px;padding:6px 11px;font-size:.77rem;margin-bottom:8px;}
-.warn-banner{background:#fff3cd;color:#856404;border:1px solid #ffc107;border-radius:8px;padding:10px 14px;font-size:.82rem;font-weight:600;margin-bottom:10px;}
-.legend{display:flex;gap:9px;flex-wrap:wrap;margin-top:6px;font-size:.71rem;}
-.legend-item{display:flex;align-items:center;gap:3px;}
-.legend-dot{width:10px;height:10px;border-radius:3px;}
-
-/* TOAST */
-.toast{position:fixed;bottom:24px;right:24px;background:#1a3a5c;color:white;padding:12px 20px;border-radius:10px;font-size:.85rem;font-weight:600;z-index:9999;transform:translateY(100px);opacity:0;transition:all .35s;box-shadow:0 8px 30px rgba(0,0,0,.25);}
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;flex-wrap:wrap;gap:6px;}
+.chip{padding:2px 8px;border-radius:20px;background:#d6eaf8;color:#1a5276;font-size:.71rem;font-weight:600;display:inline-flex;align-items:center;gap:3px;}
+.es{text-align:center;padding:28px 18px;color:var(--mu);}
+.es .bi2{font-size:2.4rem;margin-bottom:5px;}
+.ttc{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:12px;}
+.ttc select{padding:6px 9px;border:1.5px solid var(--bd);border-radius:6px;font-size:.83rem;font-family:'DM Sans',sans-serif;color:var(--tx);background:var(--lt);outline:none;}
+.cb{background:#fdecea;color:#c0392b;border:1px solid #f5c6cb;border-radius:7px;padding:5px 10px;font-size:.75rem;font-weight:600;margin-bottom:7px;}
+.ib{background:#e8f4fd;color:#1a5276;border:1px solid #aed6f1;border-radius:7px;padding:6px 11px;font-size:.76rem;margin-bottom:9px;}
+.wb{background:#fdecea;color:#922b21;border:1px solid #f5c6cb;border-radius:7px;padding:5px 10px;font-size:.75rem;margin-bottom:7px;}
+.ob{background:#d5f5e3;color:#1e8449;border:1px solid #82e0aa;border-radius:7px;padding:5px 10px;font-size:.75rem;margin-bottom:7px;}
+.warn-b{background:#fff3cd;color:#856404;border:1px solid #ffc107;border-radius:7px;padding:9px 13px;font-size:.8rem;font-weight:600;margin-bottom:9px;}
+.ld-bar{height:7px;border-radius:4px;background:#e0e0e0;overflow:hidden;margin-top:2px;}
+.ld-fill{height:100%;border-radius:4px;transition:width .3s;}
+.toast{position:fixed;bottom:22px;right:22px;background:#1a3a5c;color:white;padding:11px 18px;border-radius:9px;font-size:.83rem;font-weight:600;z-index:9999;transform:translateY(100px);opacity:0;transition:all .35s;box-shadow:0 8px 30px rgba(0,0,0,.25);}
 .toast.show{transform:translateY(0);opacity:1;}
-.toast.warn{background:#e67e22;}
-.toast.error{background:#e74c3c;}
-.toast.success{background:#27ae60;}
-
-/* TEACHER LOAD WARNING */
-.load-bar{height:8px;border-radius:4px;background:#e0e0e0;overflow:hidden;margin-top:3px;}
-.load-fill{height:100%;border-radius:4px;transition:width .3s;}
-
-/* PRINT STYLES */
-@media print{
-  .header,.tab-bar,.btn,.tt-ctrl,.section-header .btn,.no-print{display:none!important;}
-  body{background:white;}
-  .app{padding:0;}
-  .card{box-shadow:none;border:1px solid #ccc;page-break-inside:avoid;margin-bottom:8px;padding:10px;}
-  .print-header{display:block!important;}
-  .tt-cell{min-width:60px!important;padding:3px!important;}
-  .tt-table th{padding:4px 5px!important;font-size:.62rem!important;}
-  .tt-cell .subj-label{font-size:.68rem!important;}
-  .tt-cell .teacher-label{font-size:.58rem!important;}
-}
-.print-header{display:none;}
-/* Print layout: day on right, time on left, teachers on right */
-@media print{
-  .print-tt-wrapper{display:block;}
-  .print-school-header{text-align:center;margin-bottom:10px;}
-  .print-school-header h2{font-size:1.1rem;font-weight:900;color:#1a3a5c;}
-  .print-school-header p{font-size:.8rem;color:#555;}
-  .print-class-title{font-size:.9rem;font-weight:700;color:#1a3a5c;margin:6px 0 3px;}
-  .print-teacher-list{font-size:.7rem;color:#555;margin-bottom:5px;}
-  .print-day-label{text-align:right!important;font-weight:700;}
-  .print-time-label{text-align:left!important;color:#555;font-size:.65rem;}
-}
-
-@media(max-width:600px){
-  .header-inner{padding:7px 9px;gap:6px;}
-  .nav-btn{padding:4px 7px;font-size:.68rem;}
-  .app{padding:9px 6px;}
-}
+.toast.warn{background:#e67e22;}.toast.error{background:#e74c3c;}.toast.success{background:#27ae60;}
+@media(max-width:600px){.hdr-in{padding:6px 8px;gap:5px;}.nb{padding:4px 6px;font-size:.66rem;}.app{padding:8px 5px;}}
 </style>
 </head>
 <body>
 <div class="toast" id="toast"></div>
-
-<header class="header">
-  <div class="header-inner">
-    <div class="logo-circle">श्री</div>
-    <div class="header-text">
+<header class="hdr">
+  <div class="hdr-in">
+    <div class="logo">श्री</div>
+    <div class="hdr-txt">
       <h1>Shree Warana Vidyalaya, Warananagar</h1>
       <p>Tal: Panhala, Dist: Kolhapur &nbsp;|&nbsp; Timetable Management System</p>
     </div>
-    <nav class="header-nav">
-      <button class="nav-btn active" onclick="showPage('setup',this)">⚙️ Setup</button>
-      <button class="nav-btn" onclick="showPage('assign',this)">📋 Class Subjects</button>
-      <button class="nav-btn" onclick="showPage('timetable',this)">📅 Timetable</button>
-      <button class="nav-btn" onclick="showPage('view',this)">👁️ View</button>
-      <button class="nav-btn" onclick="showPage('reports',this)">📊 Reports</button>
+    <nav class="hdr-nav">
+      <button class="nb active" onclick="showPage('setup',this)">⚙️ Setup</button>
+      <button class="nb" onclick="showPage('assign',this)">📋 Subjects</button>
+      <button class="nb" onclick="showPage('timetable',this)">📅 Timetable</button>
+      <button class="nb" onclick="showPage('view',this)">👁️ View</button>
+      <button class="nb" onclick="showPage('print',this)">🖨️ Print</button>
+      <button class="nb" onclick="showPage('reports',this)">📊 Reports</button>
     </nav>
   </div>
 </header>
-
 <div class="app">
 
-<!-- ===== SETUP ===== -->
+<!-- SETUP -->
 <div id="page-setup" class="page active">
   <div class="tab-bar">
-    <button class="tab active" onclick="showTab('tab-school',this)">🏫 School Settings</button>
-    <button class="tab" onclick="showTab('tab-teachers',this)">👨‍🏫 Teachers</button>
-    <button class="tab" onclick="showTab('tab-classes',this)">🏛️ Classes</button>
-    <button class="tab" onclick="showTab('tab-subjects',this)">📚 Subjects</button>
+    <button class="tab active" onclick="showTab('ts',this)">🏫 Settings</button>
+    <button class="tab" onclick="showTab('tt',this)">👨‍🏫 Teachers</button>
+    <button class="tab" onclick="showTab('tc',this)">🏛️ Classes</button>
+    <button class="tab" onclick="showTab('tsub',this)">📚 Subjects</button>
   </div>
-
-  <!-- SCHOOL SETTINGS -->
-  <div id="tab-school">
+  <div id="ts">
     <div class="card">
-      <div class="card-title">⏰ Period & Schedule Settings</div>
-      <div class="form-grid">
-        <div class="form-group"><label>School Start Time</label><input type="time" id="startTime" value="07:30"></div>
-        <div class="form-group"><label>Periods per Day</label><input type="number" id="numPeriods" value="9" min="4" max="12"></div>
-        <div class="form-group"><label>Period Duration (min)</label><input type="number" id="periodDuration" value="45" min="30" max="90"></div>
-        <div class="form-group"><label>Short Break After Period #</label><input type="number" id="shortBreakAfter" value="3" min="1" max="10"></div>
-        <div class="form-group"><label>Short Break (min)</label><input type="number" id="shortBreakDuration" value="15" min="5" max="30"></div>
-        <div class="form-group"><label>Lunch Break After Period #</label><input type="number" id="lunchBreakAfter" value="6" min="1" max="12"></div>
-        <div class="form-group"><label>Lunch Break (min) <span style="color:var(--accent);font-size:.66rem;">90–100 शिफारस</span></label><input type="number" id="lunchBreakDuration" value="90" min="15" max="120"></div>
-        <div class="form-group"><label>Abhyasika (Study Hall) Duration (min)</label><input type="number" id="studyDuration" value="65" min="0" max="120"></div>
-        <div class="form-group"><label>Abhyasika नंतर Break (min)</label><input type="number" id="studyBreakDuration" value="10" min="0" max="30"></div>
-        <div class="form-group"><label>Theory Periods (पहिले N)</label><input type="number" id="subjectPeriodLimit" value="6" min="1" max="12"></div>
-        <div class="form-group"><label>Max Periods per Teacher/Week</label><input type="number" id="maxTeacherPeriods" value="36" min="10" max="60"></div>
+      <div class="ct">⏰ Schedule Settings</div>
+      <div class="fg">
+        <div><label>Assembly Time (12-hr)</label><input type="time" id="assemblyTime" value="07:15"><small style="color:var(--mu);font-size:.66rem;">12-hr format मध्ये दाखवेल</small></div>
+        <div><label>Assembly Duration (min)</label><input type="number" id="assemblyDuration" value="15" min="5" max="30"></div>
+        <div><label>School Start Time</label><input type="time" id="startTime" value="07:30"></div>
+        <div><label>Periods per Day (Mon/Tue/Thu/Fri)</label><input type="number" id="numPeriods" value="9" min="4" max="12"></div>
+        <div><label>Wed & Sat Periods</label><input type="number" id="shortDayPeriods" value="6" min="4" max="9"><small style="color:var(--mu);font-size:.66rem;">बुध/शनि — Abhyasika नाही</small></div>
+        <div><label>Period Duration (min)</label><input type="number" id="periodDuration" value="45" min="30" max="90"></div>
+        <div><label>Short Break After P#</label><input type="number" id="shortBreakAfter" value="3" min="1" max="9"></div>
+        <div><label>Short Break (min)</label><input type="number" id="shortBreakDuration" value="15" min="5" max="30"></div>
+        <div><label>Lunch After P#</label><input type="number" id="lunchBreakAfter" value="6" min="1" max="12"></div>
+        <div><label>Lunch Duration (min) <span style="color:var(--ac);font-size:.63rem;">90–100 शिफारस</span></label><input type="number" id="lunchBreakDuration" value="90" min="15" max="120"></div>
+        <div><label>Abhyasika (min)</label><input type="number" id="studyDuration" value="65" min="0" max="120"></div>
+        <div><label>Abhyasika नंतर Break (min)</label><input type="number" id="studyBreakDuration" value="10" min="0" max="30"></div>
+        <div><label>Theory Periods (P1 to P#)</label><input type="number" id="subjectPeriodLimit" value="6" min="1" max="12"></div>
+        <div><label>Max Periods/Teacher/Week</label><input type="number" id="maxTeacherPeriods" value="36" min="10" max="60"></div>
+        <div><label>मुख्याध्यापक नाव</label><input type="text" id="mukhyadhyapakName" placeholder="मुख्याध्यापक नाव"></div>
       </div>
-      <div style="margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-        <button class="btn btn-primary" onclick="saveSchoolSettings()">💾 Save Settings</button>
-        <span id="settingsSaved" style="color:var(--success);font-size:.78rem;display:none;">✓ Saved!</span>
+      <div style="margin-top:11px;display:flex;gap:7px;align-items:center;flex-wrap:wrap;">
+        <button class="btn bp" onclick="saveSettings()">💾 Save Settings</button>
+        <span id="sv" style="color:var(--ok);font-size:.76rem;display:none;">✓ Saved!</span>
       </div>
-      <div id="periodPreview" style="margin-top:13px;"></div>
+      <div id="prevArea" style="margin-top:12px;"></div>
     </div>
     <div class="card">
-      <div class="card-title">📅 Working Days</div>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;" id="workingDays">
-        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:.86rem;"><input type="checkbox" value="Monday" checked> Monday</label>
-        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:.86rem;"><input type="checkbox" value="Tuesday" checked> Tuesday</label>
-        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:.86rem;"><input type="checkbox" value="Wednesday" checked> Wednesday</label>
-        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:.86rem;"><input type="checkbox" value="Thursday" checked> Thursday</label>
-        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:.86rem;"><input type="checkbox" value="Friday" checked> Friday</label>
-        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:.86rem;"><input type="checkbox" value="Saturday" checked> Saturday</label>
+      <div class="ct">📅 Working Days</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;" id="wdDays">
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:.85rem;"><input type="checkbox" value="Monday" checked> Monday</label>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:.85rem;"><input type="checkbox" value="Tuesday" checked> Tuesday</label>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:.85rem;"><input type="checkbox" value="Wednesday" checked> Wednesday</label>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:.85rem;"><input type="checkbox" value="Thursday" checked> Thursday</label>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:.85rem;"><input type="checkbox" value="Friday" checked> Friday</label>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:.85rem;"><input type="checkbox" value="Saturday" checked> Saturday</label>
       </div>
-    </div>
-    <div class="card">
-      <div class="card-title">🔢 Rules Summary</div>
-      <div class="info-box" id="rulesSummary"></div>
     </div>
   </div>
-
-  <!-- TEACHERS -->
-  <div id="tab-teachers" style="display:none;">
+  <div id="tt" style="display:none;">
     <div class="card">
-      <div class="card-title">➕ Add Teacher</div>
-      <div class="form-grid">
-        <div class="form-group"><label>Teacher Name</label><input type="text" id="teacherName" placeholder="e.g. Rajesh Patil"></div>
-        <div class="form-group"><label>Short Code (max 5)</label><input type="text" id="teacherCode" placeholder="RP" maxlength="5"></div>
-        <div class="form-group"><label>Phone (optional)</label><input type="text" id="teacherPhone" placeholder="9876543210"></div>
-        <div class="form-group"><label>Subjects (multi-select)</label><select id="teacherSubjects" multiple style="height:74px;"></select></div>
+      <div class="ct">➕ Add Teacher</div>
+      <div class="fg">
+        <div><label>Name</label><input type="text" id="tname" placeholder="Rajesh Patil"></div>
+        <div><label>Code (max 5)</label><input type="text" id="tcode" placeholder="RP" maxlength="5"></div>
+        <div><label>Phone</label><input type="text" id="tphone" placeholder="9876543210"></div>
+        <div><label>Subjects</label><select id="tsubjs" multiple style="height:70px;"></select></div>
       </div>
-      <div style="margin-top:9px;"><button class="btn btn-primary" onclick="addTeacher()">➕ Add Teacher</button></div>
+      <div style="margin-top:8px;"><button class="btn bp" onclick="addTeacher()">➕ Add</button></div>
     </div>
     <div class="card">
-      <div class="section-header">
-        <div class="card-title" style="margin-bottom:0;">📋 Teacher List (<span id="teacherCount">0</span>)</div>
-        <input type="text" id="teacherSearch" onkeyup="renderTeachers()" placeholder="Search..." style="padding:5px 9px;border:1.5px solid var(--border);border-radius:7px;font-size:.79rem;outline:none;">
-      </div>
-      <div class="tt-wrapper">
-        <table class="data-table"><thead><tr><th>#</th><th>Name</th><th>Code</th><th>Subjects</th><th>Weekly Load</th><th>Action</th></tr></thead>
-        <tbody id="teacherTableBody"></tbody></table>
-      </div>
-      <div id="teacherEmpty" class="empty-state"><div class="big-icon">👨‍🏫</div><p>No teachers added yet.</p></div>
+      <div class="sh"><div class="ct" style="margin-bottom:0;">Teachers (<span id="tcount">0</span>)</div>
+        <input type="text" id="tsearch" onkeyup="renderTeachers()" placeholder="Search..." style="padding:5px 8px;border:1.5px solid var(--bd);border-radius:6px;font-size:.77rem;outline:none;"></div>
+      <div class="ttw"><table class="dt"><thead><tr><th>#</th><th>Name</th><th>Code</th><th>Subjects</th><th>Load</th><th></th></tr></thead>
+      <tbody id="tbody-t"></tbody></table></div>
+      <div id="empty-t" class="es"><div class="bi2">👨‍🏫</div><p>No teachers yet.</p></div>
     </div>
   </div>
-
-  <!-- CLASSES -->
-  <div id="tab-classes" style="display:none;">
+  <div id="tc" style="display:none;">
     <div class="card">
-      <div class="card-title">➕ Add Class / Division (Tukdi)</div>
-      <div class="info-box">📌 प्रत्येक वर्गाच्या 6 तुकड्या: A, B, C, D, E, F — प्रत्येक स्वतंत्रपणे add करा.</div>
-      <div class="form-grid">
-        <div class="form-group"><label>Class / Standard</label>
-          <select id="classStd">
-            <option>Nursery</option><option>Jr. KG</option><option>Sr. KG</option>
-            <option>1st</option><option>2nd</option><option>3rd</option><option>4th</option>
-            <option>5th</option><option>6th</option><option>7th</option><option>8th</option>
-            <option selected>9th</option><option>10th</option><option>11th</option><option>12th</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Division (Tukdi)</label><input type="text" id="classDivision" placeholder="A, B, C, D, E, F"></div>
-        <div class="form-group"><label>Medium</label><select id="classMedium"><option>Marathi</option><option>Semi-English</option><option>English</option></select></div>
-        <div class="form-group"><label>Class Teacher (Vargshikshak)</label><select id="classTeacher"></select></div>
-        <div class="form-group"><label>Total Students</label><input type="number" id="classStrength" placeholder="40" min="1"></div>
+      <div class="ct">➕ Add Class / Division</div>
+      <div class="ib">📌 प्रत्येक वर्गाच्या 6 तुकड्या: A B C D E F — प्रत्येक स्वतंत्र add करा.</div>
+      <div class="fg">
+        <div><label>Standard</label><select id="cstd"><option>Nursery</option><option>Jr. KG</option><option>Sr. KG</option><option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option><option>6th</option><option>7th</option><option>8th</option><option selected>9th</option><option>10th</option><option>11th</option><option>12th</option></select></div>
+        <div><label>Division (Tukdi)</label><input type="text" id="cdiv" placeholder="A"></div>
+        <div><label>Medium</label><select id="cmed"><option>Marathi</option><option>Semi-English</option><option>English</option></select></div>
+        <div><label>Class Teacher</label><select id="cct"></select></div>
+        <div><label>Students</label><input type="number" id="cstr" placeholder="40" min="1"></div>
       </div>
-      <div style="display:flex;gap:8px;margin-top:9px;flex-wrap:wrap;">
-        <button class="btn btn-primary" onclick="addClass()">➕ Add Class</button>
-        <button class="btn btn-info" onclick="addAllDivisions()">⚡ Add All 6 Divisions (A–F)</button>
+      <div style="display:flex;gap:7px;margin-top:8px;flex-wrap:wrap;">
+        <button class="btn bp" onclick="addClass()">➕ Add</button>
+        <button class="btn bi" onclick="addAllDivs()">⚡ Add A–F (6 Divisions)</button>
       </div>
     </div>
     <div class="card">
-      <div class="card-title">📋 Class List (<span id="classCount">0</span>)</div>
-      <div class="tt-wrapper">
-        <table class="data-table"><thead><tr><th>#</th><th>Class</th><th>Division</th><th>Medium</th><th>Class Teacher</th><th>Students</th><th>Action</th></tr></thead>
-        <tbody id="classTableBody"></tbody></table>
-      </div>
-      <div id="classEmpty" class="empty-state"><div class="big-icon">🏛️</div><p>No classes added yet.</p></div>
+      <div class="ct">Classes (<span id="ccount">0</span>)</div>
+      <div class="ttw"><table class="dt"><thead><tr><th>#</th><th>Std</th><th>Div</th><th>Medium</th><th>Class Teacher</th><th>Students</th><th></th></tr></thead>
+      <tbody id="tbody-c"></tbody></table></div>
+      <div id="empty-c" class="es"><div class="bi2">🏛️</div><p>No classes yet.</p></div>
     </div>
   </div>
-
-  <!-- SUBJECTS -->
-  <div id="tab-subjects" style="display:none;">
+  <div id="tsub" style="display:none;">
     <div class="card">
-      <div class="card-title">➕ Add Subject</div>
-      <div class="form-grid">
-        <div class="form-group"><label>Subject Name</label><input type="text" id="subjectName" placeholder="e.g. Mathematics"></div>
-        <div class="form-group"><label>Short Code</label><input type="text" id="subjectCode" placeholder="MATH" maxlength="6"></div>
-        <div class="form-group"><label>Type</label>
-          <select id="subjectType">
-            <option value="theory">📖 Theory (पहिल्या 6 तासांत)</option>
-            <option value="practical">🎨 Practical/Activity (शेवटचे 3 तास)</option>
-            <option value="any">📌 Any Period</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Color</label><input type="color" id="subjectColor" value="#3498db"></div>
+      <div class="ct">➕ Add Subject</div>
+      <div class="fg">
+        <div><label>Name</label><input type="text" id="sname" placeholder="Mathematics"></div>
+        <div><label>Code</label><input type="text" id="scode" placeholder="MATH" maxlength="6"></div>
+        <div><label>Type</label><select id="stype"><option value="theory">📖 Theory (P1–6)</option><option value="practical">🎨 Practical (P7+)</option><option value="any">📌 Any</option></select></div>
+        <div><label>Color</label><input type="color" id="scolor" value="#3498db"></div>
       </div>
-      <div style="margin-top:9px;"><button class="btn btn-primary" onclick="addSubject()">➕ Add Subject</button></div>
+      <div style="margin-top:8px;"><button class="btn bp" onclick="addSubject()">➕ Add</button></div>
     </div>
     <div class="card">
-      <div class="card-title">📋 Subject List</div>
-      <div id="subjectList" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
-      <div id="subjectEmpty" class="empty-state"><div class="big-icon">📚</div><p>No subjects added yet.</p></div>
+      <div class="ct">Subjects</div>
+      <div id="subj-list" style="display:flex;flex-wrap:wrap;gap:7px;"></div>
+      <div id="empty-s" class="es"><div class="bi2">📚</div><p>No subjects yet.</p></div>
     </div>
   </div>
 </div>
 
-<!-- ===== CLASS SUBJECTS ===== -->
+<!-- CLASS SUBJECTS -->
 <div id="page-assign" class="page">
   <div class="card">
-    <div class="card-title">📋 Class-wise Subject & Teacher Assignment</div>
-    <div class="info-box">🎯 प्रत्येक वर्ग-तुकडीसाठी विषय, <strong>विषय शिक्षक</strong> आणि <strong>वर्गशिक्षक</strong> इथे assign करा. Auto-generate याच माहितीवर आधारित होईल.</div>
-    <div class="tt-ctrl" style="margin-bottom:11px;">
-      <div><label style="font-size:.71rem;font-weight:600;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:3px;">Select Class</label>
-      <select id="assignClassSelect" onchange="renderAssignPage()"><option value="">-- Select Class --</option></select></div>
-      <button class="btn btn-primary" onclick="saveAssignment()" style="margin-top:17px;">💾 Save</button>
-      <button class="btn btn-info" onclick="copyAssignmentFrom()" style="margin-top:17px;">📋 Copy from...</button>
-      <span id="assignSaved" style="color:var(--success);font-size:.78rem;display:none;margin-top:19px;">✓ Saved!</span>
+    <div class="ct">📋 Class-wise Subject & Teacher Assignment</div>
+    <div class="ib">प्रत्येक वर्ग-तुकडीसाठी विषय, विषय शिक्षक आणि periods/week इथे assign करा.</div>
+    <div class="ttc">
+      <div><label style="font-size:.69rem;font-weight:600;color:var(--mu);text-transform:uppercase;display:block;margin-bottom:2px;">Class</label>
+      <select id="asel" onchange="renderAssign()"><option value="">-- Select --</option></select></div>
+      <button class="btn bp" onclick="saveAssign()" style="margin-top:16px;">💾 Save</button>
+      <button class="btn bi" onclick="copyFrom()" style="margin-top:16px;">📋 Copy from...</button>
+      <span id="asv" style="color:var(--ok);font-size:.76rem;display:none;margin-top:18px;">✓ Saved!</span>
     </div>
-    <div id="assignArea"><div class="empty-state"><div class="big-icon">📋</div><p>Select a class to assign subjects and teachers.</p></div></div>
+    <div id="aarea"><div class="es"><div class="bi2">📋</div><p>Select a class.</p></div></div>
   </div>
 </div>
 
-<!-- ===== TIMETABLE EDITOR ===== -->
+<!-- TIMETABLE -->
 <div id="page-timetable" class="page">
   <div class="card">
-    <div class="card-title">📅 Timetable Editor</div>
-    <div id="teacherLoadWarnings"></div>
-    <div class="tt-ctrl">
-      <div><label style="font-size:.71rem;font-weight:600;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:3px;">Select Class</label>
-      <select id="ttClassSelect" onchange="loadTimetableEditor()"><option value="">-- Select Class --</option></select></div>
-      <button class="btn btn-gold" onclick="autoFillTimetable()" style="margin-top:17px;">⚡ Auto-Generate</button>
-      <button class="btn btn-outline" onclick="clearTimetable()" style="margin-top:17px;">🗑️ Clear</button>
-      <button class="btn btn-primary" onclick="saveTimetable()" style="margin-top:17px;">💾 Save</button>
-      <button class="btn btn-info" onclick="printCurrentTT()" style="margin-top:17px;">🖨️ Print</button>
+    <div class="ct">📅 Timetable Editor</div>
+    <div id="tlw"></div>
+    <div class="ttc">
+      <div><label style="font-size:.69rem;font-weight:600;color:var(--mu);text-transform:uppercase;display:block;margin-bottom:2px;">Class</label>
+      <select id="ttsel" onchange="loadEditor()"><option value="">-- Select --</option></select></div>
+      <button class="btn bg2" onclick="autoFill()" style="margin-top:16px;">⚡ Auto-Generate</button>
+      <button class="btn bo" onclick="clearTT()" style="margin-top:16px;">🗑️ Clear</button>
+      <button class="btn bp" onclick="saveTT()" style="margin-top:16px;">💾 Save</button>
     </div>
-    <div id="conflictWarnings"></div>
-    <div id="ttEditorArea"><div class="empty-state"><div class="big-icon">📅</div><p>Select a class to edit timetable.</p></div></div>
-    <div class="legend" id="ttLegend" style="display:none;">
-      <div class="legend-item"><div class="legend-dot" style="background:#eaf5fb;border:1px solid #aed6f1;"></div>Assigned</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#eff8ff;border:1px solid #94b8d8;"></div>Double(2nd)</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#fef9e7;"></div>Short Break</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#fff3e0;"></div>Lunch Break</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#e8f5e9;"></div>Abhyasika</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#f3e5f5;"></div>Study Break</div>
-    </div>
+    <div id="cflts"></div>
+    <div id="ttarea"><div class="es"><div class="bi2">📅</div><p>Select a class.</p></div></div>
   </div>
 </div>
 
-<!-- ===== VIEW ===== -->
+<!-- VIEW -->
 <div id="page-view" class="page">
   <div class="tab-bar">
-    <button class="tab active" onclick="showViewTab('view-class',this)">🏛️ Class-wise</button>
-    <button class="tab" onclick="showViewTab('view-teacher',this)">👨‍🏫 Teacher-wise</button>
-    <button class="tab" onclick="showViewTab('view-all',this)">📊 All Classes</button>
+    <button class="tab active" onclick="showVTab('vc',this)">🏛️ Class-wise</button>
+    <button class="tab" onclick="showVTab('vt',this)">👨‍🏫 Teacher-wise</button>
+    <button class="tab" onclick="showVTab('va',this)">📊 All</button>
   </div>
-  <div id="view-class">
-    <div class="card">
-      <div class="tt-ctrl">
-        <div><label style="font-size:.71rem;font-weight:600;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:3px;">Select Class</label>
-        <select id="viewClassSelect" onchange="renderClassView()"><option value="">-- Select --</option></select></div>
-        <button class="btn btn-outline" onclick="printCurrentView('classViewArea')" style="margin-top:17px;">🖨️ Print</button>
-      </div>
-      <div id="classViewArea"><div class="empty-state"><div class="big-icon">🏛️</div><p>Select a class.</p></div></div>
+  <div id="vc"><div class="card">
+    <div class="ttc"><div><label style="font-size:.69rem;font-weight:600;color:var(--mu);text-transform:uppercase;display:block;margin-bottom:2px;">Class</label>
+    <select id="vcsel" onchange="renderCV()"><option value="">-- Select --</option></select></div></div>
+    <div id="cva"><div class="es"><div class="bi2">🏛️</div><p>Select a class.</p></div></div>
+  </div></div>
+  <div id="vt" style="display:none;"><div class="card">
+    <div class="ttc"><div><label style="font-size:.69rem;font-weight:600;color:var(--mu);text-transform:uppercase;display:block;margin-bottom:2px;">Teacher</label>
+    <select id="vtsel" onchange="renderTV()"><option value="">-- Select --</option></select></div></div>
+    <div id="tva"><div class="es"><div class="bi2">👨‍🏫</div><p>Select a teacher.</p></div></div>
+  </div></div>
+  <div id="va" style="display:none;"><div class="card">
+    <div class="sh"><div class="ct" style="margin-bottom:0;">All Timetables</div></div>
+    <div id="ava"><div class="es"><div class="bi2">📊</div><p>No timetables.</p></div></div>
+  </div></div>
+</div>
+
+<!-- PRINT -->
+<div id="page-print" class="page">
+  <div class="card">
+    <div class="ct">🖨️ Print Options</div>
+    <div class="ib" style="margin-bottom:14px;">
+      <strong>Print Layout:</strong> पहिला column = वेळ (AM/PM) | मध्ये = Mon–Sat | शेवटचा column = विषय शिक्षक यादी<br>
+      वर = शाळेचे नाव व पत्ता | खाली = वर्गशिक्षक सही (डावीकडे) + मुख्याध्यापक सही (उजवीकडे)
     </div>
-  </div>
-  <div id="view-teacher" style="display:none;">
-    <div class="card">
-      <div class="tt-ctrl">
-        <div><label style="font-size:.71rem;font-weight:600;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:3px;">Select Teacher</label>
-        <select id="viewTeacherSelect" onchange="renderTeacherView()"><option value="">-- Select --</option></select></div>
-        <button class="btn btn-outline" onclick="printCurrentView('teacherViewArea')" style="margin-top:17px;">🖨️ Print</button>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;">
+      <div style="border:1.5px solid var(--bd);border-radius:10px;padding:15px;">
+        <div style="font-weight:700;color:var(--pr);font-size:.88rem;margin-bottom:6px;">🏫 वर्गानुसार Print</div>
+        <div style="font-size:.76rem;color:var(--mu);margin-bottom:10px;">प्रत्येक वर्ग-तुकडीसाठी स्वतंत्र page — वेळ, दिवस, विषय शिक्षक, स्वाक्षरी</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;">
+          <button class="btn bp" onclick="printByClass('all')">🖨️ सर्व वर्ग</button>
+          <div style="margin-top:0;">
+            <select id="pClassSel" style="padding:5px 8px;border:1.5px solid var(--bd);border-radius:6px;font-size:.78rem;"><option value="">एक वर्ग...</option></select>
+            <button class="btn bo bs" onclick="printByClass('one')" style="margin-top:4px;">🖨️ Print</button>
+          </div>
+        </div>
       </div>
-      <div id="teacherViewArea"><div class="empty-state"><div class="big-icon">👨‍🏫</div><p>Select a teacher.</p></div></div>
-    </div>
-  </div>
-  <div id="view-all" style="display:none;">
-    <div class="card">
-      <div class="section-header">
-        <div class="card-title" style="margin-bottom:0;">📊 All Class Timetables</div>
-        <button class="btn btn-outline" onclick="window.print()">🖨️ Print All</button>
+      <div style="border:1.5px solid var(--bd);border-radius:10px;padding:15px;">
+        <div style="font-weight:700;color:var(--pr);font-size:.88rem;margin-bottom:6px;">👨‍🏫 विषय शिक्षकानुसार Print</div>
+        <div style="font-size:.76rem;color:var(--mu);margin-bottom:10px;">प्रत्येक शिक्षकाचे स्वतंत्र page — कोणत्या वर्गात कोणत्या वेळी — स्वाक्षरी</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;">
+          <button class="btn bi" onclick="printByTeacher('all')">🖨️ सर्व शिक्षक</button>
+          <div>
+            <select id="pTeachSel" style="padding:5px 8px;border:1.5px solid var(--bd);border-radius:6px;font-size:.78rem;"><option value="">एक शिक्षक...</option></select>
+            <button class="btn bo bs" onclick="printByTeacher('one')" style="margin-top:4px;">🖨️ Print</button>
+          </div>
+        </div>
       </div>
-      <div id="allViewArea"><div class="empty-state"><div class="big-icon">📊</div><p>No timetables yet.</p></div></div>
+      <div style="border:1.5px solid var(--bd);border-radius:10px;padding:15px;">
+        <div style="font-weight:700;color:var(--pr);font-size:.88rem;margin-bottom:6px;">📊 एकत्रित शाळा Print</div>
+        <div style="font-size:.76rem;color:var(--mu);margin-bottom:10px;">दिवसानुसार — सर्व वर्ग एका table मध्ये — संपूर्ण शाळेचे overview</div>
+        <button class="btn bg2" onclick="printFullSchool()">🖨️ Print संपूर्ण शाळा</button>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ===== REPORTS ===== -->
+<!-- REPORTS -->
 <div id="page-reports" class="page">
   <div class="tab-bar">
-    <button class="tab active" onclick="showReportTab('rep-teacher-load',this)">👨‍🏫 Teacher Load</button>
-    <button class="tab" onclick="showReportTab('rep-subject-cover',this)">📚 Subject Coverage</button>
-    <button class="tab" onclick="showReportTab('rep-free-periods',this)">🕐 Free Periods</button>
-    <button class="tab" onclick="showReportTab('rep-export',this)">📤 Export</button>
+    <button class="tab active" onclick="showRTab('rl',this)">👨‍🏫 Teacher Load</button>
+    <button class="tab" onclick="showRTab('rs',this)">📚 Subject Cover</button>
+    <button class="tab" onclick="showRTab('rf',this)">🕐 Free Periods</button>
+    <button class="tab" onclick="showRTab('re',this)">📤 Export</button>
   </div>
-  <div id="rep-teacher-load">
-    <div class="card">
-      <div class="section-header">
-        <div class="card-title" style="margin-bottom:0;">👨‍🏫 Teacher Period Load (Weekly)</div>
-        <button class="btn btn-success" onclick="renderTeacherLoadReport()">🔄 Refresh</button>
-      </div>
-      <div id="teacherLoadReport"></div>
+  <div id="rl"><div class="card"><div class="sh"><div class="ct" style="margin-bottom:0;">Teacher Load</div><button class="btn bk" onclick="renderLoadRep()">🔄 Refresh</button></div><div id="loadRep"></div></div></div>
+  <div id="rs" style="display:none;"><div class="card"><div class="sh"><div class="ct" style="margin-bottom:0;">Subject Coverage</div><button class="btn bk" onclick="renderSubjRep()">🔄 Refresh</button></div><div id="subjRep"></div></div></div>
+  <div id="rf" style="display:none;"><div class="card"><div class="sh"><div class="ct" style="margin-bottom:0;">Free Periods</div><button class="btn bk" onclick="renderFreeRep()">🔄 Refresh</button></div><div id="freeRep"></div></div></div>
+  <div id="re" style="display:none;"><div class="card"><div class="ct">📤 Export</div>
+    <div style="display:flex;gap:9px;flex-wrap:wrap;">
+      <button class="btn bp" onclick="exportJSON()">📥 Export JSON</button>
+      <button class="btn bk" onclick="exportCSV()">📊 Export CSV</button>
+      <button class="btn bg2" onclick="importJSON()">📤 Import JSON</button>
     </div>
-  </div>
-  <div id="rep-subject-cover" style="display:none;">
-    <div class="card">
-      <div class="section-header">
-        <div class="card-title" style="margin-bottom:0;">📚 Subject Coverage per Class</div>
-        <button class="btn btn-success" onclick="renderSubjectCoverReport()">🔄 Refresh</button>
-      </div>
-      <div id="subjectCoverReport"></div>
-    </div>
-  </div>
-  <div id="rep-free-periods" style="display:none;">
-    <div class="card">
-      <div class="section-header">
-        <div class="card-title" style="margin-bottom:0;">🕐 Empty / Unfilled Periods</div>
-        <button class="btn btn-success" onclick="renderFreePeriodsReport()">🔄 Refresh</button>
-      </div>
-      <div id="freePeriodsReport"></div>
-    </div>
-  </div>
-  <div id="rep-export" style="display:none;">
-    <div class="card">
-      <div class="card-title">📤 Export Options</div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <button class="btn btn-primary" onclick="exportJSON()">📥 Export JSON (Backup)</button>
-        <button class="btn btn-success" onclick="exportCSV()">📊 Export CSV (All Timetables)</button>
-        <button class="btn btn-info" onclick="exportPrintAll()">🖨️ Print All Timetables</button>
-        <button class="btn btn-gold" onclick="importJSON()">📤 Import JSON</button>
-      </div>
-      <input type="file" id="importFile" accept=".json" style="display:none;" onchange="doImport(event)">
-      <div id="exportStatus" style="margin-top:12px;"></div>
-    </div>
-  </div>
+    <input type="file" id="impFile" accept=".json" style="display:none;" onchange="doImport(event)">
+  </div></div>
 </div>
 
 </div><!-- .app -->
 
-<!-- MODAL: Assign Period -->
-<div class="modal-overlay" id="assignModal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal()">✕</button>
+<!-- MODAL: Period -->
+<div class="mo" id="modP">
+  <div class="md">
+    <button class="mc" onclick="closeMod()">✕</button>
     <h3>📝 Assign Period</h3>
-    <div id="modalInfo" style="margin-bottom:10px;font-size:.79rem;color:var(--muted);background:var(--light);padding:6px 10px;border-radius:7px;"></div>
-    <div id="modalRestriction" style="display:none;margin-bottom:8px;"></div>
-    <div id="modalClassTeacherHint" style="display:none;margin-bottom:8px;" class="info-box"></div>
-    <div class="form-group" style="margin-bottom:10px;"><label>Subject</label>
-      <select id="modalSubject" onchange="onModalSubjectChange()"><option value="">-- Select Subject --</option></select></div>
-    <div class="form-group" style="margin-bottom:10px;"><label>Teacher</label>
-      <select id="modalTeacher" onchange="checkTeacherConflict()"><option value="">-- Select Teacher --</option></select></div>
-    <div id="modalConflictMsg" style="display:none;margin-bottom:8px;"></div>
-    <div id="modalLoadMsg" style="display:none;margin-bottom:8px;"></div>
-    <div class="form-group" style="margin-bottom:12px;">
-      <label style="display:flex;align-items:center;gap:7px;cursor:pointer;text-transform:none;font-size:.82rem;letter-spacing:0;">
-        <input type="checkbox" id="modalDouble" onchange="updateDoubleWarning()"> 🔗 Double Period (2 consecutive)
+    <div id="minfo" style="margin-bottom:9px;font-size:.77rem;color:var(--mu);background:var(--lt);padding:5px 9px;border-radius:6px;"></div>
+    <div id="mrest" style="display:none;margin-bottom:7px;"></div>
+    <div id="mcth" style="display:none;margin-bottom:7px;" class="ib"></div>
+    <div style="margin-bottom:9px;"><label style="font-size:.7rem;font-weight:600;color:var(--mu);text-transform:uppercase;display:block;margin-bottom:3px;">Subject</label>
+      <select id="msubj" onchange="onSubjChange()"><option value="">-- Select --</option></select></div>
+    <div style="margin-bottom:9px;"><label style="font-size:.7rem;font-weight:600;color:var(--mu);text-transform:uppercase;display:block;margin-bottom:3px;">Teacher</label>
+      <select id="mteach" onchange="checkMConflict()"><option value="">-- Select --</option></select></div>
+    <div id="mcfl" style="display:none;margin-bottom:7px;"></div>
+    <div id="mload" style="display:none;margin-bottom:7px;"></div>
+    <div style="margin-bottom:11px;">
+      <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:.8rem;">
+        <input type="checkbox" id="mdbl" onchange="updDbl()"> 🔗 Double Period
       </label>
     </div>
-    <div id="doubleMsg" style="display:none;margin-bottom:9px;"></div>
-    <div style="display:flex;gap:7px;flex-wrap:wrap;">
-      <button class="btn btn-primary" onclick="assignPeriod()">✅ Assign</button>
-      <button class="btn btn-danger" onclick="clearPeriod()">🗑️ Clear</button>
-      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+    <div id="dblmsg" style="display:none;margin-bottom:8px;"></div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <button class="btn bp" onclick="assignPeriod()">✅ Assign</button>
+      <button class="btn bd2" onclick="clearPeriod()">🗑️ Clear</button>
+      <button class="btn bo" onclick="closeMod()">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: Copy Assignment -->
-<div class="modal-overlay" id="copyModal">
-  <div class="modal" style="max-width:400px;">
-    <button class="modal-close" onclick="document.getElementById('copyModal').classList.remove('show')">✕</button>
-    <h3>📋 Copy Subject Assignment</h3>
-    <div class="form-group" style="margin-bottom:12px;"><label>Copy FROM this class</label>
-      <select id="copyFromSelect"><option value="">-- Select source class --</option></select></div>
-    <div style="display:flex;gap:7px;">
-      <button class="btn btn-primary" onclick="doCopyAssignment()">✅ Copy</button>
-      <button class="btn btn-outline" onclick="document.getElementById('copyModal').classList.remove('show')">Cancel</button>
+<!-- MODAL: Copy -->
+<div class="mo" id="modCopy">
+  <div class="md" style="max-width:380px;">
+    <button class="mc" onclick="document.getElementById('modCopy').classList.remove('show')">✕</button>
+    <h3>📋 Copy Assignment</h3>
+    <div style="margin-bottom:11px;"><label style="font-size:.7rem;font-weight:600;color:var(--mu);text-transform:uppercase;display:block;margin-bottom:3px;">Copy FROM</label>
+    <select id="cpFrom"><option value="">-- Source class --</option></select></div>
+    <div style="display:flex;gap:6px;">
+      <button class="btn bp" onclick="doCopy()">✅ Copy</button>
+      <button class="btn bo" onclick="document.getElementById('modCopy').classList.remove('show')">Cancel</button>
     </div>
   </div>
 </div>
 <script>
-// ==================== STATE ====================
-let ST={
-  teachers:[],classes:[],subjects:[],
-  timetables:{},
-  classSubjects:{},
-  settings:{
-    startTime:'07:30',numPeriods:9,periodDuration:45,
-    shortBreakAfter:3,shortBreakDuration:15,
-    lunchBreakAfter:6,lunchBreakDuration:90,
-    studyDuration:65,studyBreakDuration:10,
-    subjectPeriodLimit:6,maxTeacherPeriods:36,
-    workingDays:['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
-  }
-};
-let CM={classId:null,day:null,period:null};
+// ===== STATE =====
+let ST={teachers:[],classes:[],subjects:[],timetables:{},classSubjects:{},
+  settings:{assemblyTime:'07:15',assemblyDuration:15,mukhyadhyapakName:'',
+    startTime:'07:30',numPeriods:9,shortDayPeriods:6,periodDuration:45,
+    shortBreakAfter:3,shortBreakDuration:15,lunchBreakAfter:6,lunchBreakDuration:90,
+    studyDuration:65,studyBreakDuration:10,subjectPeriodLimit:6,maxTeacherPeriods:36,
+    workingDays:['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']}};
+let CM={cid:null,day:null,p:null};
 
-function loadST(){const s=localStorage.getItem('warana_v5');if(s)try{ST=JSON.parse(s);}catch(e){}applySettings();}
-function saveST(){localStorage.setItem('warana_v5',JSON.stringify(ST));}
+function load(){const d=localStorage.getItem('wvs6');if(d)try{ST=JSON.parse(d);}catch(e){}applyS();}
+function save(){localStorage.setItem('wvs6',JSON.stringify(ST));}
 
-// ==================== TOAST ====================
-function toast(msg,type='success',dur=3500){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.className='toast '+type;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),dur);
-}
+// ===== TOAST =====
+function toast(m,t='success',d=3200){const el=document.getElementById('toast');el.textContent=m;el.className='toast '+t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),d);}
 
-// ==================== NAV ====================
-function showPage(n,b){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+n).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
-  if(b)b.classList.add('active');
-  if(n==='assign'){popAssignSel();}
-  if(n==='timetable'){popTTSel();checkAllTeacherLoads();}
-  if(n==='view'){popViewSels();renderAllView();}
-  if(n==='reports'){renderTeacherLoadReport();}
-}
-function showTab(id,b){
-  ['tab-school','tab-teachers','tab-classes','tab-subjects'].forEach(t=>{const el=document.getElementById(t);if(el)el.style.display='none';});
-  document.getElementById(id).style.display='block';
-  document.querySelectorAll('#page-setup .tab-bar .tab').forEach(t=>t.classList.remove('active'));
-  if(b)b.classList.add('active');
-  if(id==='tab-teachers'){popSubjSelForTeacher();renderTeachers();}
-  if(id==='tab-classes'){popTeacherSel();renderClasses();}
-  if(id==='tab-subjects')renderSubjects();
-}
-function showViewTab(id,b){
-  ['view-class','view-teacher','view-all'].forEach(t=>document.getElementById(t).style.display='none');
-  document.getElementById(id).style.display='block';
-  document.querySelectorAll('#page-view .tab').forEach(t=>t.classList.remove('active'));
-  if(b)b.classList.add('active');
-  if(id==='view-all')renderAllView();
-}
-function showReportTab(id,b){
-  ['rep-teacher-load','rep-subject-cover','rep-free-periods','rep-export'].forEach(t=>document.getElementById(t).style.display='none');
-  document.getElementById(id).style.display='block';
-  document.querySelectorAll('#page-reports .tab').forEach(t=>t.classList.remove('active'));
-  if(b)b.classList.add('active');
-  if(id==='rep-teacher-load')renderTeacherLoadReport();
-  if(id==='rep-subject-cover')renderSubjectCoverReport();
-  if(id==='rep-free-periods')renderFreePeriodsReport();
-}
-
-// ==================== SETTINGS ====================
-function applySettings(){
-  const s=ST.settings;
-  ['startTime','numPeriods','periodDuration','shortBreakAfter','shortBreakDuration',
-   'lunchBreakAfter','lunchBreakDuration','studyDuration','studyBreakDuration',
-   'subjectPeriodLimit','maxTeacherPeriods'].forEach(id=>{
-    const el=document.getElementById(id);if(el&&s[id]!==undefined)el.value=s[id];
-  });
-  renderRulesSummary();
-}
-function saveSchoolSettings(){
-  const s=ST.settings;
-  ['startTime','numPeriods','periodDuration','shortBreakAfter','shortBreakDuration',
-   'lunchBreakAfter','lunchBreakDuration','studyDuration','studyBreakDuration',
-   'subjectPeriodLimit','maxTeacherPeriods'].forEach(id=>{
-    const el=document.getElementById(id);if(el)s[id]=id==='startTime'?el.value:Math.max(0,+el.value);
-  });
-  s.lunchBreakDuration=Math.min(120,Math.max(15,s.lunchBreakDuration));
-  s.workingDays=[];
-  document.querySelectorAll('#workingDays input:checked').forEach(cb=>s.workingDays.push(cb.value));
-  saveST();
-  const sv=document.getElementById('settingsSaved');sv.style.display='inline';setTimeout(()=>sv.style.display='none',2000);
-  renderPeriodPreview();renderRulesSummary();
-  toast('Settings saved!');
-}
-
-function t2m(t){const[h,m]=t.split(':').map(Number);return h*60+m;}
+// ===== TIME HELPERS =====
+function t2m(t){if(!t)return 0;const[h,mn]=t.split(':').map(Number);return h*60+mn;}
 function m2t(m){return`${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;}
+function m2t12(m){let h=Math.floor(m/60),mn=m%60,ap=h>=12?'PM':'AM';h=h%12||12;return`${h}:${String(mn).padStart(2,'0')} ${ap}`;}
+function isShortDay(d){return d==='Wednesday'||d==='Saturday';}
+function getMaxP(day){const s=ST.settings;return isShortDay(day)?+(s.shortDayPeriods||6):+(s.numPeriods||9);}
 function getGroup(p){return p<=3?'A':p<=6?'B':'C';}
 function sameGroup(a,b){return getGroup(a)===getGroup(b);}
 
-function getPeriodTimes(){
-  const s=ST.settings;const times=[];let cur=t2m(s.startTime);
-  for(let i=1;i<=s.numPeriods;i++){
-    times.push({period:i,start:m2t(cur),end:m2t(cur+s.periodDuration)});
-    cur+=s.periodDuration;
-    if(i===s.shortBreakAfter)cur+=s.shortBreakDuration;
-    if(i===s.lunchBreakAfter){
-      cur+=s.lunchBreakDuration;
-      if(s.studyDuration>0)cur+=s.studyDuration;
-      if(s.studyBreakDuration>0)cur+=s.studyBreakDuration;
+// ===== PERIOD TIMES (full day) =====
+function getPTimes(){
+  const s=ST.settings;const n=+(s.numPeriods||9);
+  let cur=t2m(s.startTime||'07:30');const arr=[];
+  for(let i=1;i<=n;i++){
+    arr.push({p:i,s:m2t(cur),e:m2t(cur+(+s.periodDuration||45))});
+    cur+=+(s.periodDuration||45);
+    if(i===+(s.shortBreakAfter||3))cur+=+(s.shortBreakDuration||15);
+    if(i===+(s.lunchBreakAfter||6)){
+      cur+=+(s.lunchBreakDuration||90);
+      cur+=+(s.studyDuration||65);
+      cur+=+(s.studyBreakDuration||10);
     }
   }
-  return times;
+  return arr;
 }
 
-// Build schedule columns including all breaks/study
-function buildCols(){
-  const s=ST.settings;const periods=getPeriodTimes();let cols=[];
-  let cur=t2m(s.startTime);
-  for(let i=0;i<periods.length;i++){
-    const p=periods[i];
-    cols.push({type:'period',period:p});
-    cur=t2m(p.end);
-    if(p.period===s.shortBreakAfter){
-      cols.push({type:'short',label:`☕ Break`,start:m2t(cur),end:m2t(cur+s.shortBreakDuration),duration:s.shortBreakDuration});
-      cur+=s.shortBreakDuration;
+// Build schedule cols for a given day (short days skip study/studybreak)
+function buildCols(day){
+  const s=ST.settings;const maxP=day?getMaxP(day):(+(s.numPeriods||9));
+  const isShort=day?isShortDay(day):false;
+  const lb=+(s.lunchBreakAfter||6);const ptimes=getPTimes().filter(x=>x.p<=maxP);
+  let cols=[];
+  ptimes.forEach(pt=>{
+    cols.push({t:'p',pt});
+    if(pt.p===+(s.shortBreakAfter||3)&&pt.p<maxP){
+      const st=m2t(t2m(pt.e));const en=m2t(t2m(pt.e)+(+s.shortBreakDuration||15));
+      cols.push({t:'sb',s:st,e:en,dur:+(s.shortBreakDuration||15)});
     }
-    if(p.period===s.lunchBreakAfter){
-      cols.push({type:'lunch',label:`🍱 Lunch`,start:m2t(cur),end:m2t(cur+s.lunchBreakDuration),duration:s.lunchBreakDuration});
-      cur+=s.lunchBreakDuration;
-      if(s.studyDuration>0){
-        cols.push({type:'study',label:`📖 Abhyasika`,start:m2t(cur),end:m2t(cur+s.studyDuration),duration:s.studyDuration});
-        cur+=s.studyDuration;
+    if(pt.p===lb&&pt.p<=maxP){
+      const lst=m2t(t2m(pt.e));const len=m2t(t2m(pt.e)+(+s.lunchBreakDuration||90));
+      cols.push({t:'lb',s:lst,e:len,dur:+(s.lunchBreakDuration||90)});
+      if(!isShort&&+(s.studyDuration||0)>0){
+        const sst=len;const sen=m2t(t2m(len)+(+s.studyDuration||65));
+        cols.push({t:'ab',s:sst,e:sen,dur:+(s.studyDuration||65)});
       }
-      if(s.studyBreakDuration>0){
-        cols.push({type:'studybreak',label:`☕ Break`,start:m2t(cur),end:m2t(cur+s.studyBreakDuration),duration:s.studyBreakDuration});
-        cur+=s.studyBreakDuration;
+      if(!isShort&&+(s.studyBreakDuration||0)>0){
+        const bst=m2t(t2m(pt.e)+(+s.lunchBreakDuration||90)+(+s.studyDuration||65));
+        cols.push({t:'abr',s:bst,e:m2t(t2m(bst)+(+s.studyBreakDuration||10)),dur:+(s.studyBreakDuration||10)});
       }
     }
-  }
+  });
   return cols;
 }
 
-function renderPeriodPreview(){
-  const cols=buildCols();const s=ST.settings;
-  const gc=['#d6eaf8','#d5f5e3','#fdebd0'];
-  let html='<div><strong style="font-size:.79rem;color:var(--primary);">Full Day Schedule:</strong><div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;">';
-  cols.forEach(c=>{
-    if(c.type==='period'){
-      const g=Math.floor((c.period.period-1)/3);
-      html+=`<span class="badge" style="background:${gc[g]||'#eee'};color:#333;">P${c.period.period}: ${c.period.start}–${c.period.end}</span>`;
-    } else if(c.type==='short') html+=`<span class="badge badge-orange">☕ Break ${c.duration}m</span>`;
-    else if(c.type==='lunch') html+=`<span class="badge badge-orange" style="background:#fff3e0;">🍱 Lunch ${c.duration}m (${c.start}–${c.end})</span>`;
-    else if(c.type==='study') html+=`<span class="badge" style="background:#e8f5e9;color:#2e7d32;">📖 Abhyasika ${c.duration}m</span>`;
-    else if(c.type==='studybreak') html+=`<span class="badge" style="background:#f3e5f5;color:#7b1fa2;">☕ Break ${c.duration}m</span>`;
-  });
-  html+=`</div><div style="margin-top:6px;font-size:.74rem;color:var(--muted);">📖 Theory: P1–${s.subjectPeriodLimit} | 🎨 Activity: P${s.subjectPeriodLimit+1}–${s.numPeriods} | Groups: A(1–3) B(4–6) C(7–9)</div></div>`;
-  document.getElementById('periodPreview').innerHTML=html;
+// ===== NAV =====
+function showPage(n,b){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+n).classList.add('active');
+  document.querySelectorAll('.nb').forEach(x=>x.classList.remove('active'));if(b)b.classList.add('active');
+  if(n==='assign')popSel('asel',true);
+  if(n==='timetable'){popSel('ttsel');checkLoads();}
+  if(n==='view'){popSel('vcsel',true);popSel('vtsel',false,true);renderAV();}
+  if(n==='print'){popPrintSels();}
+  if(n==='reports')renderLoadRep();
+}
+function showTab(id,b){['ts','tt','tc','tsub'].forEach(x=>{const el=document.getElementById(x);if(el)el.style.display='none';});
+  document.getElementById(id).style.display='block';
+  document.querySelectorAll('#page-setup .tab-bar .tab').forEach(t=>t.classList.remove('active'));if(b)b.classList.add('active');
+  if(id==='tt'){popSubjSel();renderTeachers();}if(id==='tc'){popCTSel();renderClasses();}if(id==='tsub')renderSubjects();}
+function showVTab(id,b){['vc','vt','va'].forEach(x=>document.getElementById(x).style.display='none');
+  document.getElementById(id).style.display='block';
+  document.querySelectorAll('#page-view .tab').forEach(t=>t.classList.remove('active'));if(b)b.classList.add('active');
+  if(id==='va')renderAV();}
+function showRTab(id,b){['rl','rs','rf','re'].forEach(x=>document.getElementById(x).style.display='none');
+  document.getElementById(id).style.display='block';
+  document.querySelectorAll('#page-reports .tab').forEach(t=>t.classList.remove('active'));if(b)b.classList.add('active');
+  if(id==='rl')renderLoadRep();if(id==='rs')renderSubjRep();if(id==='rf')renderFreeRep();}
+
+function popSel(id,isClass,isTeacher){
+  const el=document.getElementById(id);if(!el)return;
+  if(isTeacher){el.innerHTML='<option value="">-- Select --</option>'+ST.teachers.map(t=>`<option value="${t.id}">${t.name} (${t.code})</option>`).join('');}
+  else el.innerHTML='<option value="">-- Select --</option>'+ST.classes.map(c=>`<option value="${c.id}">${c.std}-${c.division} (${c.medium})</option>`).join('');
+}
+function popSubjSel(){const el=document.getElementById('tsubjs');if(el)el.innerHTML=ST.subjects.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');}
+function popCTSel(){const el=document.getElementById('cct');if(el)el.innerHTML='<option value="">-- Select --</option>'+ST.teachers.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');}
+function popPrintSels(){
+  const pc=document.getElementById('pClassSel');if(pc)pc.innerHTML='<option value="">एक वर्ग...</option>'+ST.classes.map(c=>`<option value="${c.id}">${c.std}-${c.division}</option>`).join('');
+  const pt=document.getElementById('pTeachSel');if(pt)pt.innerHTML='<option value="">एक शिक्षक...</option>'+ST.teachers.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
 }
 
-function renderRulesSummary(){
+// ===== SETTINGS =====
+function applyS(){
   const s=ST.settings;
-  document.getElementById('rulesSummary').innerHTML=`
-    📖 <strong>Theory subjects</strong> → पहिल्या ${s.subjectPeriodLimit} तासांत (P1–P${s.subjectPeriodLimit})<br>
-    🎨 <strong>Practical/Activity</strong> → शेवटच्या ${s.numPeriods-s.subjectPeriodLimit} तासांत (P${s.subjectPeriodLimit+1}–P${s.numPeriods})<br>
-    🔗 <strong>Double period</strong> → एकाच group मध्ये: Group A (P1–3) | Group B (P4–6) | Group C (P7–9)<br>
-    🍱 <strong>Lunch</strong> ${s.lunchBreakDuration} min → 📖 <strong>Abhyasika</strong> ${s.studyDuration} min → ☕ <strong>Break</strong> ${s.studyBreakDuration} min<br>
-    👨‍🏫 <strong>Vargshikshak</strong> → शक्यतो त्यांच्या वर्गाचा P1<br>
-    ⚠️ एक शिक्षक एकाच वेळी दोन वर्गांना नसावा | Max ${s.maxTeacherPeriods} periods/week नंतर warning`;
+  ['assemblyTime','startTime','mukhyadhyapakName'].forEach(id=>{const el=document.getElementById(id);if(el&&s[id]!==undefined)el.value=s[id];});
+  ['assemblyDuration','numPeriods','shortDayPeriods','periodDuration','shortBreakAfter','shortBreakDuration',
+   'lunchBreakAfter','lunchBreakDuration','studyDuration','studyBreakDuration','subjectPeriodLimit','maxTeacherPeriods'].forEach(id=>{
+    const el=document.getElementById(id);if(el&&s[id]!==undefined)el.value=s[id];});
+  if(s.workingDays)document.querySelectorAll('#wdDays input').forEach(cb=>cb.checked=s.workingDays.includes(cb.value));
+  renderPreview();
+}
+function saveSettings(){
+  const s=ST.settings;
+  ['assemblyTime','startTime','mukhyadhyapakName'].forEach(id=>{const el=document.getElementById(id);if(el)s[id]=el.value;});
+  ['assemblyDuration','numPeriods','shortDayPeriods','periodDuration','shortBreakAfter','shortBreakDuration',
+   'lunchBreakAfter','lunchBreakDuration','studyDuration','studyBreakDuration','subjectPeriodLimit','maxTeacherPeriods'].forEach(id=>{
+    const el=document.getElementById(id);if(el)s[id]=Math.max(0,+el.value);});
+  s.lunchBreakDuration=Math.min(120,Math.max(15,s.lunchBreakDuration));
+  s.workingDays=[];document.querySelectorAll('#wdDays input:checked').forEach(cb=>s.workingDays.push(cb.value));
+  save();const sv=document.getElementById('sv');sv.style.display='inline';setTimeout(()=>sv.style.display='none',2000);
+  renderPreview();toast('Settings saved!');
+}
+function renderPreview(){
+  const s=ST.settings;
+  const aStart=m2t12(t2m(s.assemblyTime||'07:15'));
+  const aEnd=m2t12(t2m(s.assemblyTime||'07:15')+(+(s.assemblyDuration||15)));
+  const cols=buildCols();const gc=['#d6eaf8','#d5f5e3','#fdebd0'];
+  let h=`<div style="font-size:.77rem;color:var(--pr);font-weight:700;margin-bottom:6px;">📅 Full Day Schedule (Normal Days):</div>
+  <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px;">
+  <span class="badge" style="background:#fff3cd;color:#856404;">🙏 Assembly: ${aStart}–${aEnd}</span>`;
+  cols.forEach(c=>{
+    if(c.t==='p'){const g=Math.floor((c.pt.p-1)/3);h+=`<span class="badge" style="background:${gc[g]||'#eee'};color:#333;">P${c.pt.p}: ${m2t12(t2m(c.pt.s))}–${m2t12(t2m(c.pt.e))}</span>`;}
+    else if(c.t==='sb')h+=`<span class="badge bo2">☕ Break ${c.dur}m</span>`;
+    else if(c.t==='lb')h+=`<span class="badge bo2" style="background:#fff3e0;">🍱 Lunch ${c.dur}m</span>`;
+    else if(c.t==='ab')h+=`<span class="badge" style="background:#e8f5e9;color:#2e7d32;">📖 Abhyasika ${c.dur}m</span>`;
+    else if(c.t==='abr')h+=`<span class="badge" style="background:#f3e5f5;color:#7b1fa2;">☕ Break ${c.dur}m</span>`;
+  });
+  const shortCols=buildCols('Wednesday');
+  h+=`</div><div style="font-size:.77rem;color:#7f3d00;font-weight:700;margin-bottom:5px;">🗓️ Wed & Sat (Short Day — ${s.shortDayPeriods} periods, Abhyasika नाही):</div>
+  <div style="display:flex;flex-wrap:wrap;gap:5px;">
+  <span class="badge" style="background:#fff3cd;color:#856404;">🙏 Assembly: ${aStart}–${aEnd}</span>`;
+  shortCols.forEach(c=>{
+    if(c.t==='p')h+=`<span class="badge" style="background:#fdebd0;color:#7f3d00;">P${c.pt.p}: ${m2t12(t2m(c.pt.s))}–${m2t12(t2m(c.pt.e))}</span>`;
+    else if(c.t==='sb')h+=`<span class="badge bo2">☕ Break ${c.dur}m</span>`;
+    else if(c.t==='lb')h+=`<span class="badge bo2" style="background:#fff3e0;">🍱 Lunch ${c.dur}m</span>`;
+  });
+  h+=`</div><div style="margin-top:6px;font-size:.72rem;color:var(--mu);">📖 Theory: P1–P${s.subjectPeriodLimit} | 🎨 Activity: P${+s.subjectPeriodLimit+1}+ | Groups: A(1–3) B(4–6) C(7–9) | Max ${s.maxTeacherPeriods} periods/teacher/week</div></div>`;
+  document.getElementById('prevArea').innerHTML=h;
 }
 
-// ==================== SUBJECTS ====================
+// ===== SUBJECTS =====
 function addSubject(){
-  const name=document.getElementById('subjectName').value.trim();
-  const code=document.getElementById('subjectCode').value.trim().toUpperCase();
-  const color=document.getElementById('subjectColor').value;
-  const type=document.getElementById('subjectType').value;
-  if(!name||!code)return toast('Name and code required!','error');
-  if(ST.subjects.find(s=>s.code===code))return toast('Code already exists!','error');
-  ST.subjects.push({id:Date.now(),name,code,color,type});
-  saveST();document.getElementById('subjectName').value='';document.getElementById('subjectCode').value='';
-  renderSubjects();popSubjSelForTeacher();toast(`${name} added`);
+  const name=document.getElementById('sname').value.trim(),code=document.getElementById('scode').value.trim().toUpperCase();
+  const color=document.getElementById('scolor').value,type=document.getElementById('stype').value;
+  if(!name||!code)return toast('Name & code required!','error');
+  if(ST.subjects.find(s=>s.code===code))return toast('Code exists!','error');
+  ST.subjects.push({id:Date.now(),name,code,color,type});save();
+  document.getElementById('sname').value='';document.getElementById('scode').value='';
+  renderSubjects();popSubjSel();toast(`${name} added`);
 }
 function renderSubjects(){
-  const list=document.getElementById('subjectList');const empty=document.getElementById('subjectEmpty');
+  const list=document.getElementById('subj-list'),empty=document.getElementById('empty-s');
   if(!ST.subjects.length){list.innerHTML='';empty.style.display='block';return;}
   empty.style.display='none';
-  list.innerHTML=ST.subjects.map(s=>`
-    <div style="display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:7px;background:${s.color}22;border:1.5px solid ${s.color};">
-      <div style="width:9px;height:9px;border-radius:50%;background:${s.color};flex-shrink:0;"></div>
-      <span style="font-weight:700;color:${s.color};font-size:.78rem;">${s.code}</span>
-      <span style="font-size:.84rem;">${s.name}</span>
-      <span class="badge" style="background:${s.type==='theory'?'#d6eaf8':s.type==='practical'?'#fdebd0':'#e8daef'};color:#555;font-size:.6rem;">${s.type}</span>
-      <button class="btn btn-danger btn-sm" onclick="delSubject(${s.id})" style="margin-left:2px;">✕</button>
-    </div>`).join('');
+  list.innerHTML=ST.subjects.map(s=>`<div style="display:flex;align-items:center;gap:5px;padding:4px 9px;border-radius:6px;background:${s.color}20;border:1.5px solid ${s.color};">
+    <div style="width:8px;height:8px;border-radius:50%;background:${s.color};flex-shrink:0;"></div>
+    <span style="font-weight:700;color:${s.color};font-size:.76rem;">${s.code}</span>
+    <span style="font-size:.82rem;">${s.name}</span>
+    <span class="badge ${s.type==='theory'?'bb':s.type==='practical'?'bo2':'bgy'}" style="font-size:.58rem;">${s.type}</span>
+    <button class="btn bd2 bs" onclick="delSubj(${s.id})">✕</button>
+  </div>`).join('');
 }
-function delSubject(id){if(!confirm('Delete?'))return;ST.subjects=ST.subjects.filter(s=>s.id!==id);saveST();renderSubjects();popSubjSelForTeacher();}
-function popSubjSelForTeacher(){const sel=document.getElementById('teacherSubjects');if(!sel)return;sel.innerHTML=ST.subjects.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');}
+function delSubj(id){if(!confirm('Delete?'))return;ST.subjects=ST.subjects.filter(s=>s.id!==id);save();renderSubjects();popSubjSel();}
 
-// ==================== TEACHERS ====================
-function getTeacherWeeklyLoad(tid){
-  const s=ST.settings;const days=s.workingDays||[];let count=0;
-  ST.classes.forEach(cls=>{days.forEach(day=>{for(let p=1;p<=s.numPeriods;p++){const cell=ST.timetables[cls.id]?.[day]?.[p];if(cell?.teacherId===tid&&!cell.isDoubleCont)count++;}});});
-  return count;
+// ===== TEACHERS =====
+function getTLoad(tid){
+  const s=ST.settings;let c=0;
+  ST.classes.forEach(cls=>(s.workingDays||[]).forEach(day=>{for(let p=1;p<=getMaxP(day);p++){const cell=ST.timetables[cls.id]?.[day]?.[p];if(cell?.teacherId===tid&&!cell.isDoubleCont)c++;}}));
+  return c;
 }
-
 function addTeacher(){
-  const name=document.getElementById('teacherName').value.trim();
-  const code=document.getElementById('teacherCode').value.trim().toUpperCase();
-  if(!name||!code)return toast('Name and code required!','error');
-  if(ST.teachers.find(t=>t.code===code))return toast('Code already exists!','error');
-  const subjects=Array.from(document.getElementById('teacherSubjects').selectedOptions).map(o=>+o.value);
-  ST.teachers.push({id:Date.now(),name,code,phone:document.getElementById('teacherPhone').value.trim(),subjects});
-  saveST();document.getElementById('teacherName').value='';document.getElementById('teacherCode').value='';document.getElementById('teacherPhone').value='';
-  renderTeachers();popTeacherSel();toast(`${name} added`);
+  const name=document.getElementById('tname').value.trim(),code=document.getElementById('tcode').value.trim().toUpperCase();
+  if(!name||!code)return toast('Name & code required!','error');
+  if(ST.teachers.find(t=>t.code===code))return toast('Code exists!','error');
+  const subjs=Array.from(document.getElementById('tsubjs').selectedOptions).map(o=>+o.value);
+  ST.teachers.push({id:Date.now(),name,code,phone:document.getElementById('tphone').value.trim(),subjects:subjs});
+  save();document.getElementById('tname').value='';document.getElementById('tcode').value='';document.getElementById('tphone').value='';
+  renderTeachers();popCTSel();toast(`${name} added`);
 }
 function renderTeachers(){
-  const q=(document.getElementById('teacherSearch')?.value||'').toLowerCase();
-  const tbody=document.getElementById('teacherTableBody');const empty=document.getElementById('teacherEmpty');
-  const filtered=ST.teachers.filter(t=>t.name.toLowerCase().includes(q)||t.code.toLowerCase().includes(q));
-  document.getElementById('teacherCount').textContent=ST.teachers.length;
-  if(!filtered.length){tbody.innerHTML='';empty.style.display='block';return;}
-  empty.style.display='none';
-  const max=ST.settings.maxTeacherPeriods||36;
-  tbody.innerHTML=filtered.map((t,i)=>{
-    const sn=(t.subjects||[]).map(sid=>{const s=ST.subjects.find(x=>x.id===sid);return s?`<span class="badge" style="background:${s.color}22;color:${s.color};">${s.code}</span>`:''}).join(' ');
-    const load=getTeacherWeeklyLoad(t.id);
-    const pct=Math.min(100,Math.round(load/max*100));
-    const color=load>max?'#e74c3c':load>max*0.8?'#f39c12':'#27ae60';
-    return`<tr>
-      <td>${i+1}</td><td><strong>${t.name}</strong></td>
-      <td><span class="badge badge-green">${t.code}</span></td>
-      <td>${sn||'-'}</td>
-      <td>
-        <span style="font-size:.77rem;font-weight:700;color:${color};">${load}/${max}</span>
-        <div class="load-bar" style="width:80px;"><div class="load-fill" style="width:${pct}%;background:${color};"></div></div>
-        ${load>max?'<span class="badge badge-red">⚠️ Over</span>':''}
-      </td>
-      <td><button class="btn btn-danger btn-sm" onclick="delTeacher(${t.id})">Delete</button></td>
-    </tr>`;
+  const q=(document.getElementById('tsearch')?.value||'').toLowerCase();
+  const tbody=document.getElementById('tbody-t'),empty=document.getElementById('empty-t');
+  const fl=ST.teachers.filter(t=>t.name.toLowerCase().includes(q)||t.code.toLowerCase().includes(q));
+  document.getElementById('tcount').textContent=ST.teachers.length;
+  if(!fl.length){tbody.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';const max=+(ST.settings.maxTeacherPeriods||36);
+  tbody.innerHTML=fl.map((t,i)=>{
+    const sn=(t.subjects||[]).map(sid=>{const s=ST.subjects.find(x=>x.id===sid);return s?`<span class="badge" style="background:${s.color}20;color:${s.color};">${s.code}</span>`:''}).join(' ');
+    const ld=getTLoad(t.id);const pct=Math.min(100,Math.round(ld/max*100));const col=ld>max?'#e74c3c':ld>max*.8?'#f39c12':'#27ae60';
+    return`<tr><td>${i+1}</td><td><strong>${t.name}</strong></td><td><span class="badge bgg">${t.code}</span></td><td>${sn||'—'}</td>
+    <td><span style="font-size:.75rem;font-weight:700;color:${col};">${ld}/${max}</span>
+    <div class="ld-bar" style="width:78px;"><div class="ld-fill" style="width:${pct}%;background:${col};"></div></div>
+    ${ld>max?'<span class="badge br">⚠️ Over</span>':''}</td>
+    <td><button class="btn bd2 bs" onclick="delTeacher(${t.id})">Del</button></td></tr>`;
   }).join('');
 }
-function delTeacher(id){if(!confirm('Delete?'))return;ST.teachers=ST.teachers.filter(t=>t.id!==id);saveST();renderTeachers();popTeacherSel();}
-function popTeacherSel(){const sel=document.getElementById('classTeacher');if(!sel)return;sel.innerHTML='<option value="">-- Select --</option>'+ST.teachers.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');}
-
-function checkAllTeacherLoads(){
-  const max=ST.settings.maxTeacherPeriods||36;
-  const overloaded=ST.teachers.filter(t=>getTeacherWeeklyLoad(t.id)>max);
-  const el=document.getElementById('teacherLoadWarnings');
-  if(!el)return;
-  if(overloaded.length){
-    el.innerHTML=`<div class="warn-banner">⚠️ ${overloaded.length} teacher(s) have exceeded ${max} periods/week: ${overloaded.map(t=>`<strong>${t.name}</strong>(${getTeacherWeeklyLoad(t.id)})`).join(', ')}</div>`;
-  } else el.innerHTML='';
+function delTeacher(id){if(!confirm('Delete?'))return;ST.teachers=ST.teachers.filter(t=>t.id!==id);save();renderTeachers();popCTSel();}
+function checkLoads(){
+  const max=+(ST.settings.maxTeacherPeriods||36);
+  const over=ST.teachers.filter(t=>getTLoad(t.id)>max);
+  const el=document.getElementById('tlw');if(!el)return;
+  el.innerHTML=over.length?`<div class="warn-b">⚠️ ${over.map(t=>`<strong>${t.name}</strong>(${getTLoad(t.id)})`).join(', ')} — ${max} periods/week limit ओलांडला!</div>`:'';
 }
 
-// ==================== CLASSES ====================
+// ===== CLASSES =====
 function addClass(){
-  const std=document.getElementById('classStd').value;
-  const div=document.getElementById('classDivision').value.trim().toUpperCase();
-  const medium=document.getElementById('classMedium').value;
-  const tid=+document.getElementById('classTeacher').value||null;
-  const str=+document.getElementById('classStrength').value||0;
+  const std=document.getElementById('cstd').value,div=document.getElementById('cdiv').value.trim().toUpperCase();
   if(!div)return toast('Division required!','error');
-  const id=`${std}-${div}`;
-  if(ST.classes.find(c=>c.id===id))return toast('Already exists!','error');
-  ST.classes.push({id,std,division:div,medium,classTeacherId:tid,strength:str});
-  saveST();renderClasses();toast(`${id} added`);
+  const id=`${std}-${div}`;if(ST.classes.find(c=>c.id===id))return toast('Already exists!','error');
+  ST.classes.push({id,std,division:div,medium:document.getElementById('cmed').value,classTeacherId:+document.getElementById('cct').value||null,strength:+document.getElementById('cstr').value||0});
+  save();renderClasses();toast(`${id} added`);
 }
-function addAllDivisions(){
-  const std=document.getElementById('classStd').value;
-  const medium=document.getElementById('classMedium').value;
-  const tid=+document.getElementById('classTeacher').value||null;
-  const str=+document.getElementById('classStrength').value||0;
-  const divs=['A','B','C','D','E','F'];
-  let added=0;
-  divs.forEach(div=>{
-    const id=`${std}-${div}`;
-    if(!ST.classes.find(c=>c.id===id)){
-      ST.classes.push({id,std,division:div,medium,classTeacherId:null,strength:str});added++;
-    }
-  });
-  saveST();renderClasses();toast(`${added} divisions added for ${std}`);
+function addAllDivs(){
+  const std=document.getElementById('cstd').value,med=document.getElementById('cmed').value;
+  const str=+document.getElementById('cstr').value||0;let added=0;
+  ['A','B','C','D','E','F'].forEach(div=>{const id=`${std}-${div}`;
+    if(!ST.classes.find(c=>c.id===id)){ST.classes.push({id,std,division:div,medium:med,classTeacherId:null,strength:str});added++;}});
+  save();renderClasses();toast(`${added} divisions added`);
 }
 function renderClasses(){
-  const tbody=document.getElementById('classTableBody');const empty=document.getElementById('classEmpty');
-  document.getElementById('classCount').textContent=ST.classes.length;
+  const tbody=document.getElementById('tbody-c'),empty=document.getElementById('empty-c');
+  document.getElementById('ccount').textContent=ST.classes.length;
   if(!ST.classes.length){tbody.innerHTML='';empty.style.display='block';return;}
   empty.style.display='none';
-  tbody.innerHTML=ST.classes.map((c,i)=>{
-    const ct=ST.teachers.find(t=>t.id===c.classTeacherId);
-    return`<tr><td>${i+1}</td><td><strong>${c.std}</strong></td><td><span class="badge badge-blue">${c.division}</span></td><td>${c.medium}</td><td>${ct?ct.name:'-'}</td><td>${c.strength||'-'}</td><td><button class="btn btn-danger btn-sm" onclick="delClass('${c.id}')">Del</button></td></tr>`;
-  }).join('');
+  tbody.innerHTML=ST.classes.map((c,i)=>{const ct=ST.teachers.find(t=>t.id===c.classTeacherId);
+    return`<tr><td>${i+1}</td><td><strong>${c.std}</strong></td><td><span class="badge bb">${c.division}</span></td><td>${c.medium}</td><td>${ct?ct.name:'—'}</td><td>${c.strength||'—'}</td>
+    <td><button class="btn bd2 bs" onclick="delClass('${c.id}')">Del</button></td></tr>`;}).join('');
 }
-function delClass(id){if(!confirm('Delete?'))return;ST.classes=ST.classes.filter(c=>c.id!==id);delete ST.timetables[id];delete ST.classSubjects[id];saveST();renderClasses();}
+function delClass(id){if(!confirm('Delete?'))return;ST.classes=ST.classes.filter(c=>c.id!==id);delete ST.timetables[id];delete ST.classSubjects[id];save();renderClasses();}
 
-// ==================== CLASS SUBJECT ASSIGNMENT ====================
-function popAssignSel(){
-  const sel=document.getElementById('assignClassSelect');
-  sel.innerHTML='<option value="">-- Select Class --</option>'+ST.classes.map(c=>`<option value="${c.id}">${c.std} - ${c.division} (${c.medium})</option>`).join('');
-}
-function renderAssignPage(){
-  const classId=document.getElementById('assignClassSelect').value;
-  if(!classId){document.getElementById('assignArea').innerHTML='<div class="empty-state"><div class="big-icon">📋</div><p>Select a class.</p></div>';return;}
-  const cls=ST.classes.find(c=>c.id===classId);
-  const ct=ST.teachers.find(t=>t.id===cls.classTeacherId);
-  const existing=ST.classSubjects[classId]||[];
-  let html=`<div class="info-box" style="margin-bottom:11px;"><strong>${cls.std} - ${cls.division} (${cls.medium})</strong>${ct?` | वर्गशिक्षक: <strong>${ct.name}</strong>`:' | ⚠️ No class teacher assigned'}</div>`;
-  html+='<div class="tt-wrapper"><table class="data-table" style="min-width:500px;"><thead><tr><th>#</th><th>Subject</th><th>Type</th><th>Subject Teacher</th><th>Periods/Week</th><th></th></tr></thead><tbody id="aRows">';
-  existing.forEach((row,idx)=>{
+// ===== ASSIGN =====
+function renderAssign(){
+  const cid=document.getElementById('asel').value;
+  if(!cid){document.getElementById('aarea').innerHTML='<div class="es"><div class="bi2">📋</div><p>Select a class.</p></div>';return;}
+  const cls=ST.classes.find(c=>c.id===cid);const ct=ST.teachers.find(t=>t.id===cls.classTeacherId);
+  const rows=ST.classSubjects[cid]||[];
+  let h=`<div class="ib" style="margin-bottom:10px;"><strong>${cls.std}-${cls.division} (${cls.medium})</strong>${ct?` | वर्गशिक्षक: <strong>${ct.name}</strong>`:' | ⚠️ No class teacher'}</div>`;
+  h+=`<div class="ttw"><table class="dt" style="min-width:480px;"><thead><tr><th>#</th><th>Subject</th><th>Type</th><th>Teacher</th><th>Periods/Wk</th><th></th></tr></thead><tbody id="arows">`;
+  rows.forEach((row,idx)=>{
     const subj=ST.subjects.find(s=>s.id===row.subjectId);
-    const tOpts=ST.teachers.map(t=>`<option value="${t.id}" ${t.id===row.teacherId?'selected':''}>${t.name} (${t.code})</option>`).join('');
-    html+=`<tr>
-      <td>${idx+1}</td>
-      <td><span class="badge" style="background:${subj?.color||'#eee'}22;color:${subj?.color||'#333'};">${subj?.code||'?'}</span> ${subj?.name||'?'}</td>
-      <td><span class="badge ${subj?.type==='theory'?'badge-blue':subj?.type==='practical'?'badge-orange':'badge-grey'}">${subj?.type||'any'}</span></td>
-      <td><select data-row="${idx}" class="at-sel" style="padding:4px 7px;font-size:.79rem;border:1px solid var(--border);border-radius:6px;min-width:155px;"><option value="">-- Select --</option>${tOpts}</select></td>
-      <td><input type="number" data-row="${idx}" class="ap-inp" value="${row.periodsPerWeek||3}" min="1" max="20" style="width:52px;padding:3px 6px;font-size:.79rem;border:1px solid var(--border);border-radius:6px;text-align:center;"></td>
-      <td><button class="btn btn-danger btn-sm" onclick="removeARow(${idx},'${classId}')">✕</button></td>
-    </tr>`;
+    const tOpts=ST.teachers.map(t=>`<option value="${t.id}" ${t.id===row.teacherId?'selected':''}>${t.name}</option>`).join('');
+    h+=`<tr><td>${idx+1}</td><td><span class="badge" style="background:${subj?.color||'#eee'}20;color:${subj?.color||'#333'};">${subj?.code||'?'}</span> ${subj?.name||'?'}</td>
+    <td><span class="badge ${subj?.type==='theory'?'bb':subj?.type==='practical'?'bo2':'bgy'}" style="font-size:.6rem;">${subj?.type||'?'}</span></td>
+    <td><select data-r="${idx}" class="ar-t" style="padding:3px 6px;font-size:.77rem;border:1px solid var(--bd);border-radius:5px;min-width:145px;"><option value="">-- Select --</option>${tOpts}</select></td>
+    <td><input type="number" data-r="${idx}" class="ar-p" value="${row.periodsPerWeek||3}" min="1" max="20" style="width:50px;padding:3px;font-size:.77rem;border:1px solid var(--bd);border-radius:5px;text-align:center;"></td>
+    <td><button class="btn bd2 bs" onclick="rmARow(${idx},'${cid}')">✕</button></td></tr>`;
   });
-  html+='</tbody></table></div>';
+  h+=`</tbody></table></div>`;
   const sOpts=ST.subjects.map(s=>`<option value="${s.id}">${s.name} [${s.type}]</option>`).join('');
-  html+=`<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;padding:12px;background:var(--light);border-radius:9px;">
-    <div class="form-group" style="min-width:160px;"><label>Add Subject</label><select id="nAS"><option value="">-- Select --</option>${sOpts}</select></div>
-    <div class="form-group" style="min-width:160px;"><label>Teacher</label><select id="nAT"><option value="">-- Select --</option>${ST.teachers.map(t=>`<option value="${t.id}">${t.name}</option>`).join('')}</select></div>
-    <div class="form-group" style="width:80px;"><label>Periods/Wk</label><input type="number" id="nAP" value="3" min="1" max="20" style="text-align:center;"></div>
-    <button class="btn btn-success" onclick="addARow('${classId}')">➕ Add</button>
+  h+=`<div style="margin-top:11px;display:flex;gap:7px;flex-wrap:wrap;align-items:flex-end;padding:11px;background:var(--lt);border-radius:8px;">
+    <div><label style="font-size:.69rem;font-weight:600;color:var(--mu);text-transform:uppercase;display:block;margin-bottom:2px;">Subject</label><select id="nas" style="padding:5px 8px;border:1.5px solid var(--bd);border-radius:6px;font-size:.8rem;min-width:155px;"><option value="">-- Select --</option>${sOpts}</select></div>
+    <div><label style="font-size:.69rem;font-weight:600;color:var(--mu);text-transform:uppercase;display:block;margin-bottom:2px;">Teacher</label><select id="nat" style="padding:5px 8px;border:1.5px solid var(--bd);border-radius:6px;font-size:.8rem;min-width:155px;"><option value="">-- Select --</option>${ST.teachers.map(t=>`<option value="${t.id}">${t.name}</option>`).join('')}</select></div>
+    <div><label style="font-size:.69rem;font-weight:600;color:var(--mu);text-transform:uppercase;display:block;margin-bottom:2px;">Periods/Wk</label><input type="number" id="nap" value="3" min="1" max="20" style="width:55px;padding:5px;border:1.5px solid var(--bd);border-radius:6px;text-align:center;"></div>
+    <button class="btn bk" onclick="addARow('${cid}')">➕ Add</button>
   </div>`;
-  document.getElementById('assignArea').innerHTML=html;
+  document.getElementById('aarea').innerHTML=h;
 }
-function addARow(classId){
-  const subjId=+document.getElementById('nAS').value;
-  const tid=+document.getElementById('nAT').value||null;
-  const ppw=+document.getElementById('nAP').value||3;
-  if(!subjId)return toast('Select a subject!','error');
-  if(!ST.classSubjects[classId])ST.classSubjects[classId]=[];
-  if(ST.classSubjects[classId].find(r=>r.subjectId===subjId))return toast('Subject already assigned!','warn');
-  ST.classSubjects[classId].push({subjectId:subjId,teacherId:tid,periodsPerWeek:ppw});
-  saveST();renderAssignPage();document.getElementById('assignClassSelect').value=classId;toast('Subject added');
+function addARow(cid){
+  const sid=+document.getElementById('nas').value,tid=+document.getElementById('nat').value||null,ppw=+document.getElementById('nap').value||3;
+  if(!sid)return toast('Select subject!','error');
+  if(!ST.classSubjects[cid])ST.classSubjects[cid]=[];
+  if(ST.classSubjects[cid].find(r=>r.subjectId===sid))return toast('Already assigned!','warn');
+  ST.classSubjects[cid].push({subjectId:sid,teacherId:tid,periodsPerWeek:ppw});
+  save();renderAssign();document.getElementById('asel').value=cid;
 }
-function removeARow(idx,classId){
-  if(!ST.classSubjects[classId])return;
-  ST.classSubjects[classId].splice(idx,1);saveST();renderAssignPage();document.getElementById('assignClassSelect').value=classId;
+function rmARow(idx,cid){if(!ST.classSubjects[cid])return;ST.classSubjects[cid].splice(idx,1);save();renderAssign();document.getElementById('asel').value=cid;}
+function saveAssign(){
+  const cid=document.getElementById('asel').value;if(!cid)return;
+  if(!ST.classSubjects[cid])ST.classSubjects[cid]=[];
+  document.querySelectorAll('.ar-t').forEach(sel=>{const idx=+sel.dataset.r;if(ST.classSubjects[cid][idx])ST.classSubjects[cid][idx].teacherId=+sel.value||null;});
+  document.querySelectorAll('.ar-p').forEach(inp=>{const idx=+inp.dataset.r;if(ST.classSubjects[cid][idx])ST.classSubjects[cid][idx].periodsPerWeek=+inp.value||3;});
+  save();const el=document.getElementById('asv');el.style.display='inline';setTimeout(()=>el.style.display='none',2000);toast('Saved!');
 }
-function saveAssignment(){
-  const classId=document.getElementById('assignClassSelect').value;if(!classId)return;
-  if(!ST.classSubjects[classId])ST.classSubjects[classId]=[];
-  document.querySelectorAll('.at-sel').forEach(sel=>{const idx=+sel.dataset.row;if(ST.classSubjects[classId][idx])ST.classSubjects[classId][idx].teacherId=+sel.value||null;});
-  document.querySelectorAll('.ap-inp').forEach(inp=>{const idx=+inp.dataset.row;if(ST.classSubjects[classId][idx])ST.classSubjects[classId][idx].periodsPerWeek=+inp.value||3;});
-  saveST();const el=document.getElementById('assignSaved');el.style.display='inline';setTimeout(()=>el.style.display='none',2000);toast('Assignment saved!');
+function copyFrom(){
+  const cid=document.getElementById('asel').value;if(!cid)return toast('Select target class first!','warn');
+  const sel=document.getElementById('cpFrom');
+  sel.innerHTML='<option value="">-- Source --</option>'+ST.classes.filter(c=>c.id!==cid).map(c=>`<option value="${c.id}">${c.std}-${c.division}</option>`).join('');
+  document.getElementById('modCopy').classList.add('show');
 }
-function copyAssignmentFrom(){
-  const classId=document.getElementById('assignClassSelect').value;if(!classId)return toast('Select target class first!','warn');
-  const sel=document.getElementById('copyFromSelect');
-  sel.innerHTML='<option value="">-- Select source --</option>'+ST.classes.filter(c=>c.id!==classId).map(c=>`<option value="${c.id}">${c.std}-${c.division}</option>`).join('');
-  document.getElementById('copyModal').classList.add('show');
-}
-function doCopyAssignment(){
-  const from=document.getElementById('copyFromSelect').value;
-  const to=document.getElementById('assignClassSelect').value;
+function doCopy(){
+  const from=document.getElementById('cpFrom').value,to=document.getElementById('asel').value;
   if(!from||!to)return;
   ST.classSubjects[to]=JSON.parse(JSON.stringify(ST.classSubjects[from]||[]));
-  saveST();document.getElementById('copyModal').classList.remove('show');
-  renderAssignPage();document.getElementById('assignClassSelect').value=to;toast('Assignment copied!');
+  save();document.getElementById('modCopy').classList.remove('show');renderAssign();document.getElementById('asel').value=to;toast('Copied!');
 }
-// ==================== TIMETABLE EDITOR ====================
-function popTTSel(){
-  const sel=document.getElementById('ttClassSelect');
-  sel.innerHTML='<option value="">-- Select Class --</option>'+ST.classes.map(c=>`<option value="${c.id}">${c.std} - ${c.division} (${c.medium})</option>`).join('');
+// ===== TIMETABLE EDITOR =====
+function loadEditor(){
+  const cid=document.getElementById('ttsel').value;
+  if(!cid){document.getElementById('ttarea').innerHTML='<div class="es"><div class="bi2">📅</div><p>Select a class.</p></div>';return;}
+  renderEditor(cid);
 }
-function loadTimetableEditor(){
-  const cid=document.getElementById('ttClassSelect').value;
-  if(!cid){document.getElementById('ttEditorArea').innerHTML='<div class="empty-state"><div class="big-icon">📅</div><p>Select a class.</p></div>';return;}
-  renderTTEditor(cid);
-}
-function renderTTEditor(classId){
-  const cls=ST.classes.find(c=>c.id===classId);if(!cls)return;
-  const s=ST.settings;const days=s.workingDays||[];
-  const cols=buildCols();const tt=ST.timetables[classId]||{};
-  const hasSubs=(ST.classSubjects[classId]||[]).length>0;
+function renderEditor(cid){
+  const cls=ST.classes.find(c=>c.id===cid);if(!cls)return;
+  const s=ST.settings;const days=s.workingDays||[];const tt=ST.timetables[cid]||{};
   const ct=ST.teachers.find(t=>t.id===cls.classTeacherId);
-
-  // Count period-type columns for group headers
-  const grpCnt={A:0,B:0,C:0};let extraA=0,extraB=0,extraC=0;
-  cols.forEach(c=>{
-    if(c.type==='period')grpCnt[getGroup(c.period.period)]++;
-    if(c.type==='short'){if(s.shortBreakAfter<=3)extraA++;else if(s.shortBreakAfter<=6)extraB++;else extraC++;}
-    if(c.type==='lunch'||c.type==='study'||c.type==='studybreak'){if(s.lunchBreakAfter<=3)extraA++;else if(s.lunchBreakAfter<=6)extraB++;else extraC++;}
+  const hasSubs=(ST.classSubjects[cid]||[]).length>0;
+  // Use non-short day cols for header (full)
+  const fullCols=buildCols();
+  // Group header colspan
+  let gA=0,gB=0,gC=0,gAx=0,gBx=0,gCx=0;
+  fullCols.forEach(c=>{
+    if(c.t==='p'){const g=getGroup(c.pt.p);if(g==='A')gA++;else if(g==='B')gB++;else gC++;}
+    else if(c.t==='sb'){const a=+(s.shortBreakAfter||3);if(a<=3)gAx++;else if(a<=6)gBx++;else gCx++;}
+    else{const la=+(s.lunchBreakAfter||6);if(la<=3)gAx++;else if(la<=6)gBx++;else gCx++;}
   });
-
-  let html=`<div style="margin-bottom:9px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;">
-    <h3 style="font-size:.92rem;font-weight:700;color:var(--primary);">${cls.std} - ${cls.division} (${cls.medium})</h3>
-    ${ct?`<span class="badge badge-green">वर्गशिक्षक: ${ct.name}</span>`:'<span class="badge badge-red">⚠️ No class teacher</span>'}
-    ${hasSubs?`<span class="badge badge-blue">${ST.classSubjects[classId].length} subjects</span>`:'<span class="badge badge-red">⚠️ Assign subjects first!</span>'}
+  let h=`<div style="margin-bottom:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+    <h3 style="font-size:.9rem;font-weight:700;color:var(--pr);">${cls.std}-${cls.division} (${cls.medium})</h3>
+    ${ct?`<span class="badge bgg">वर्गशिक्षक: ${ct.name}</span>`:'<span class="badge br">⚠️ No class teacher</span>'}
+    ${hasSubs?`<span class="badge bb">${ST.classSubjects[cid].length} subjects</span>`:'<span class="badge br">⚠️ Assign subjects first!</span>'}
   </div>
-  <div class="tt-wrapper"><table class="tt-table">
-  <thead>
-  <tr>
-    <th rowspan="2">Day</th>
-    <th colspan="${grpCnt.A+extraA}" style="background:#1a4a7a;">📘 Group A (P1–3)</th>
-    <th colspan="${grpCnt.B+extraB}" style="background:#1a5e34;">📗 Group B (P4–6)</th>
-    <th colspan="${grpCnt.C+extraC}" style="background:#7f3d00;">📙 Group C (P7–9)</th>
-  </tr>
-  <tr>`;
-  cols.forEach(col=>{
-    if(col.type==='period'){const p=col.period.period;const isTh=p<=s.subjectPeriodLimit;
-      html+=`<th style="${!isTh?'background:#7f3d00;':''}">P${p}<br><small>${col.period.start}</small><br><span style="font-size:.6rem;">${isTh?'📖':'🎨'}</span></th>`;
-    } else if(col.type==='short') html+=`<th style="background:#b7770d;min-width:50px;">☕<br><small>${col.duration}m</small></th>`;
-    else if(col.type==='lunch') html+=`<th style="background:#d35400;min-width:55px;">🍱<br><small>${col.duration}m</small></th>`;
-    else if(col.type==='study') html+=`<th style="background:#2e7d32;min-width:55px;">📖<br><small>${col.duration}m</small></th>`;
-    else if(col.type==='studybreak') html+=`<th style="background:#7b1fa2;min-width:45px;">☕<br><small>${col.duration}m</small></th>`;
+  <div class="ttw"><table class="ttt"><thead>
+  <tr><th rowspan="2">Day</th>
+    <th colspan="${gA+gAx}" style="background:#1a4a7a;">📘 Group A (P1–3)</th>
+    <th colspan="${gB+gBx}" style="background:#1a5e34;">📗 Group B (P4–6)</th>
+    <th colspan="${gC+gCx}" style="background:#7f3d00;">📙 Group C (P7–9)</th>
+  </tr><tr>`;
+  fullCols.forEach(c=>{
+    if(c.t==='p'){const isTh=c.pt.p<=+(s.subjectPeriodLimit||6);
+      h+=`<th style="${!isTh?'background:#7f3d00;':''}" title="${m2t12(t2m(c.pt.s))}–${m2t12(t2m(c.pt.e))}">P${c.pt.p}<br><small>${m2t12(t2m(c.pt.s))}</small><br><span style="font-size:.58rem;">${isTh?'📖':'🎨'}</span></th>`;}
+    else if(c.t==='sb')h+=`<th style="background:#b7770d;min-width:44px;">☕<br><small>${c.dur}m</small></th>`;
+    else if(c.t==='lb')h+=`<th style="background:#d35400;min-width:48px;">🍱<br><small>${c.dur}m</small></th>`;
+    else if(c.t==='ab')h+=`<th style="background:#2e7d32;min-width:48px;">📖<br><small>${c.dur}m</small></th>`;
+    else if(c.t==='abr')h+=`<th style="background:#7b1fa2;min-width:40px;">☕<br><small>${c.dur}m</small></th>`;
   });
-  html+='</tr></thead><tbody>';
-
+  h+='</tr></thead><tbody>';
   days.forEach(day=>{
-    html+=`<tr><td class="day-col">${day.substring(0,3)}</td>`;
-    cols.forEach(col=>{
-      if(col.type==='short'){html+=`<td class="tt-cell break-cell">☕<br><small>${col.start}</small></td>`;return;}
-      if(col.type==='lunch'){html+=`<td class="tt-cell lunch-cell">🍱<br><small>${col.start}</small></td>`;return;}
-      if(col.type==='study'){html+=`<td class="tt-cell study-cell">📖<br><small>Abhyasika</small></td>`;return;}
-      if(col.type==='studybreak'){html+=`<td class="tt-cell study-break-cell">☕<br><small>Break</small></td>`;return;}
-      const p=col.period.period;const cell=tt[day]?.[p];
-      if(cell?.isDoubleCont){html+=`<td class="tt-cell double-right" onclick="openModal('${classId}','${day}',${p})"><span style="color:#94b8d8;font-size:.65rem;">↩dbl</span></td>`;return;}
+    const isShort=isShortDay(day);const maxP=getMaxP(day);
+    h+=`<tr><td class="dc">${day.substring(0,3)}${isShort?'<br><span style="font-size:.58rem;opacity:.7;">6T</span>':''}</td>`;
+    fullCols.forEach(c=>{
+      if(c.t==='sb'){h+=`<td class="tc bk-c">☕<br><small>${m2t12(t2m(c.s))}</small></td>`;return;}
+      if(c.t==='lb'){h+=`<td class="tc ln-c">🍱<br><small>${m2t12(t2m(c.s))}</small></td>`;return;}
+      if(c.t==='ab'){
+        if(isShort)h+=`<td class="tc" style="background:#f3f3f3;color:#ccc;font-size:.6rem;">—</td>`;
+        else h+=`<td class="tc st-c">📖<br><small>Abhy.</small></td>`;return;}
+      if(c.t==='abr'){
+        if(isShort)h+=`<td class="tc" style="background:#f3f3f3;color:#ccc;font-size:.6rem;">—</td>`;
+        else h+=`<td class="tc sb-c">☕<br><small>Brk</small></td>`;return;}
+      const p=c.pt.p;
+      if(p>maxP){h+=`<td class="tc" style="background:#f0f0f0;color:#bbb;font-size:.6rem;">—</td>`;return;}
+      const cell=tt[day]?.[p];
+      if(cell?.isDoubleCont){h+=`<td class="tc dr" onclick="openMod('${cid}','${day}',${p})"><span style="color:#94b8d8;font-size:.62rem;">↩dbl</span></td>`;return;}
       if(cell?.subjectId){
-        const subj=ST.subjects.find(s=>s.id===cell.subjectId);
-        const tchr=ST.teachers.find(t=>t.id===cell.teacherId);
-        html+=`<td class="tt-cell filled${cell.isDouble?' double-left':''}" onclick="openModal('${classId}','${day}',${p})" style="border-top:3px solid ${subj?.color||'#3498db'}">
-          <span class="subj-label" style="color:${subj?.color||'#1a3a5c'}">${subj?.code||'?'}${cell.isDouble?'×2':''}</span>
-          <span class="teacher-label">${tchr?.code||'?'}</span>
-        </td>`;
+        const subj=ST.subjects.find(s=>s.id===cell.subjectId);const tchr=ST.teachers.find(t=>t.id===cell.teacherId);
+        h+=`<td class="tc filled${cell.isDouble?' dl':''}" onclick="openMod('${cid}','${day}',${p})" style="border-top:2.5px solid ${subj?.color||'#3498db'}">
+          <span class="sl" style="color:${subj?.color||'#1a3a5c'}">${subj?.code||'?'}${cell.isDouble?'×2':''}</span>
+          <span class="tl">${tchr?.code||'?'}</span></td>`;
       } else {
-        const isTh=p<=s.subjectPeriodLimit;
-        html+=`<td class="tt-cell empty-cell" onclick="openModal('${classId}','${day}',${p})">${isTh?'+':'🎨'}</td>`;
+        const isTh=p<=+(s.subjectPeriodLimit||6);
+        h+=`<td class="tc em-c" onclick="openMod('${cid}','${day}',${p})">${isTh?'+':'🎨'}</td>`;
       }
     });
-    html+='</tr>';
+    h+='</tr>';
   });
-  html+='</tbody></table></div>';
-  document.getElementById('ttEditorArea').innerHTML=html;
-  document.getElementById('ttLegend').style.display='flex';
-  checkConflicts(classId);
-  checkAllTeacherLoads();
+  h+='</tbody></table></div>';
+  document.getElementById('ttarea').innerHTML=h;
+  checkConflicts(cid);checkLoads();
+}
+function checkConflicts(cid){
+  const s=ST.settings;const days=s.workingDays||[];const cfls=[];
+  days.forEach(day=>{for(let p=1;p<=getMaxP(day);p++){
+    const cell=ST.timetables[cid]?.[day]?.[p];if(!cell?.teacherId)continue;
+    ST.classes.forEach(cls=>{if(cls.id===cid)return;const o=ST.timetables[cls.id]?.[day]?.[p];
+      if(o?.teacherId===cell.teacherId){const t=ST.teachers.find(x=>x.id===cell.teacherId);cfls.push(`⚠️ <strong>${t?.name}</strong> — ${day} P${p}`);}});
+  }});
+  document.getElementById('cflts').innerHTML=[...new Set(cfls)].map(c=>`<div class="cb">${c} — एकाच वेळी दोन वर्गांत!</div>`).join('');
 }
 
-function checkConflicts(classId){
-  const s=ST.settings;const days=s.workingDays||[];const conflicts=[];
-  days.forEach(day=>{
-    for(let p=1;p<=s.numPeriods;p++){
-      const cell=ST.timetables[classId]?.[day]?.[p];
-      if(!cell?.teacherId)continue;
-      ST.classes.forEach(cls=>{
-        if(cls.id===classId)return;
-        const o=ST.timetables[cls.id]?.[day]?.[p];
-        if(o?.teacherId===cell.teacherId){
-          const t=ST.teachers.find(x=>x.id===cell.teacherId);
-          conflicts.push(`⚠️ <strong>${t?.name}</strong> — ${day} P${p} — एकाच वेळी दोन वर्गांत!`);
-        }
-      });
-    }
-  });
-  document.getElementById('conflictWarnings').innerHTML=[...new Set(conflicts)].map(c=>`<div class="conflict-banner">${c}</div>`).join('');
-}
-
-// ==================== MODAL ====================
-function openModal(classId,day,period){
-  CM={classId,day,period};
-  const cls=ST.classes.find(c=>c.id===classId);
-  const times=getPeriodTimes();const t=times.find(x=>x.period===period);
-  const s=ST.settings;const isTh=period<=s.subjectPeriodLimit;
+// ===== MODAL =====
+function openMod(cid,day,p){
+  CM={cid,day,p};const cls=ST.classes.find(c=>c.id===cid);const s=ST.settings;
+  const isTh=p<=+(s.subjectPeriodLimit||6);const isShort=isShortDay(day);
+  const ptimes=getPTimes();const pt=ptimes.find(x=>x.p===p);
   const ct=ST.teachers.find(t=>t.id===cls.classTeacherId);
-
-  document.getElementById('modalInfo').innerHTML=
-    `<strong>${cls.std}-${cls.division}</strong> | ${day} | P${period} (${t?.start||''}–${t?.end||''}) | ${isTh?'📖 Theory':'🎨 Activity'}`;
-
-  // Class teacher hint for P1
-  const ctHint=document.getElementById('modalClassTeacherHint');
-  if(period===1&&ct){
-    ctHint.style.display='block';
-    ctHint.innerHTML=`👨‍🏫 <strong>P1 Suggestion:</strong> वर्गशिक्षक <strong>${ct.name}</strong> यांना शक्यतो P1 assign करावा.`;
-  } else ctHint.style.display='none';
-
-  const rEl=document.getElementById('modalRestriction');
-  if(!isTh){rEl.style.display='block';rEl.className='info-box';rEl.innerHTML='🎨 Activity Period — Only Practical/Activity/Any type subjects.';}
-  else rEl.style.display='none';
-
-  const csl=ST.classSubjects[classId]||[];
-  const filteredSubjs=csl.filter(row=>{
-    const subj=ST.subjects.find(x=>x.id===row.subjectId);if(!subj)return false;
-    if(!isTh&&subj.type==='theory')return false;
-    if(isTh&&subj.type==='practical')return false;
-    return true;
-  });
-  const subjSel=document.getElementById('modalSubject');
-  if(filteredSubjs.length){
-    subjSel.innerHTML='<option value="">-- Select Subject --</option>'+filteredSubjs.map(row=>{
-      const subj=ST.subjects.find(s=>s.id===row.subjectId);
-      return subj?`<option value="${subj.id}">${subj.name} (${subj.code})</option>`:'';
-    }).join('');
-  } else {
-    subjSel.innerHTML='<option value="">-- Select Subject --</option>'+ST.subjects.filter(sub=>{
-      if(!isTh&&sub.type==='theory')return false;
-      if(isTh&&sub.type==='practical')return false;return true;
-    }).map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
-  }
-
-  const cell=ST.timetables[classId]?.[day]?.[period];
-  if(cell){
-    subjSel.value=cell.subjectId||'';
-    onModalSubjectChange(cell.teacherId);
-    document.getElementById('modalDouble').checked=!!cell.isDouble;
-  } else {
-    // If P1, pre-suggest class teacher
-    if(period===1&&ct){
-      onModalSubjectChange(ct.id);
-    } else onModalSubjectChange(null);
-    document.getElementById('modalDouble').checked=false;
-  }
-  checkTeacherConflict();updateDoubleWarning();
-  document.getElementById('assignModal').classList.add('show');
+  document.getElementById('minfo').innerHTML=`<strong>${cls.std}-${cls.division}</strong> | ${day}${isShort?' (Short Day)':''} | P${p} ${pt?`(${m2t12(t2m(pt.s))}–${m2t12(t2m(pt.e))})`:''} | ${isTh?'📖 Theory':'🎨 Activity'}`;
+  const cthEl=document.getElementById('mcth');
+  if(p===1&&ct){cthEl.style.display='block';cthEl.innerHTML=`👨‍🏫 <strong>P1 Suggestion:</strong> वर्गशिक्षक <strong>${ct.name}</strong> यांना P1 assign करावा.`;}
+  else cthEl.style.display='none';
+  const rEl=document.getElementById('mrest');
+  if(!isTh){rEl.style.display='block';rEl.className='ib';rEl.innerHTML='🎨 Activity Period — Theory subjects इथे येणार नाहीत.';}else rEl.style.display='none';
+  const csl=ST.classSubjects[cid]||[];
+  const filtered=csl.filter(row=>{const subj=ST.subjects.find(x=>x.id===row.subjectId);if(!subj)return false;
+    if(!isTh&&subj.type==='theory')return false;if(isTh&&subj.type==='practical')return false;return true;});
+  const msubj=document.getElementById('msubj');
+  if(filtered.length)msubj.innerHTML='<option value="">-- Select --</option>'+filtered.map(row=>{const subj=ST.subjects.find(s=>s.id===row.subjectId);return subj?`<option value="${subj.id}">${subj.name}</option>`:''}).join('');
+  else msubj.innerHTML='<option value="">-- Select --</option>'+ST.subjects.filter(sub=>{if(!isTh&&sub.type==='theory')return false;if(isTh&&sub.type==='practical')return false;return true;}).map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  const cell=ST.timetables[cid]?.[day]?.[p];
+  if(cell){msubj.value=cell.subjectId||'';onSubjChange(cell.teacherId);document.getElementById('mdbl').checked=!!cell.isDouble;}
+  else{if(p===1&&ct)onSubjChange(ct.id);else onSubjChange(null);document.getElementById('mdbl').checked=false;}
+  checkMConflict();updDbl();
+  document.getElementById('modP').classList.add('show');
 }
-
-function onModalSubjectChange(preselect){
-  const subjId=+document.getElementById('modalSubject').value;
-  const classId=CM.classId;
-  const sel=document.getElementById('modalTeacher');
+function onSubjChange(presel){
+  const sid=+document.getElementById('msubj').value;const cid=CM.cid;const sel=document.getElementById('mteach');
   let teachers=[];
-  if(classId&&subjId){
-    const row=(ST.classSubjects[classId]||[]).find(r=>r.subjectId===subjId);
-    if(row?.teacherId){const t=ST.teachers.find(x=>x.id===row.teacherId);if(t)teachers=[t];}
-  }
-  if(!teachers.length&&subjId)teachers=ST.teachers.filter(t=>(t.subjects||[]).includes(subjId));
+  if(sid&&cid){const row=(ST.classSubjects[cid]||[]).find(r=>r.subjectId===sid);if(row?.teacherId){const t=ST.teachers.find(x=>x.id===row.teacherId);if(t)teachers=[t];}}
+  if(!teachers.length&&sid)teachers=ST.teachers.filter(t=>(t.subjects||[]).includes(sid));
   if(!teachers.length)teachers=ST.teachers;
-  sel.innerHTML='<option value="">-- Select Teacher --</option>'+teachers.map(t=>`<option value="${t.id}">${t.name} (${t.code})</option>`).join('');
-  if(preselect)sel.value=preselect;
-  checkTeacherConflict();
+  sel.innerHTML='<option value="">-- Select --</option>'+teachers.map(t=>`<option value="${t.id}">${t.name} (${t.code})</option>`).join('');
+  if(presel)sel.value=presel;checkMConflict();
 }
-
-function checkTeacherConflict(){
-  const tid=+document.getElementById('modalTeacher').value;
-  const{classId,day,period}=CM;
-  const conflictEl=document.getElementById('modalConflictMsg');
-  const loadEl=document.getElementById('modalLoadMsg');
-  if(!tid){conflictEl.style.display='none';loadEl.style.display='none';return;}
-
-  // Check same-time conflict
-  let conflict=null;
-  ST.classes.forEach(cls=>{
-    if(cls.id===classId)return;
-    const cell=ST.timetables[cls.id]?.[day]?.[period];
-    if(cell?.teacherId===tid){
-      const t=ST.teachers.find(x=>x.id===tid);
-      const c=ST.classes.find(x=>x.id===cls.id);
-      conflict=`⛔ ${t?.name} is already assigned to ${c?.std}-${c?.division} on ${day} P${period}!`;
-    }
-  });
-  if(conflict){conflictEl.style.display='block';conflictEl.className='warn-box';conflictEl.innerHTML=conflict;}
-  else conflictEl.style.display='none';
-
-  // Check load
-  const max=ST.settings.maxTeacherPeriods||36;
-  const load=getTeacherWeeklyLoad(tid);
-  if(load>=max){
-    loadEl.style.display='block';loadEl.className='warn-box';
-    loadEl.innerHTML=`⚠️ या शिक्षकांना आधीच ${load}/${max} periods assign झाले आहेत! (Limit exceeded)`;
-  } else if(load>=max*0.9){
-    loadEl.style.display='block';loadEl.className='warn-box';
-    loadEl.innerHTML=`⚠️ या शिक्षकांना ${load}/${max} periods — जवळ limit!`;
-  } else loadEl.style.display='none';
+function checkMConflict(){
+  const tid=+document.getElementById('mteach').value;const{cid,day,p}=CM;
+  const cflEl=document.getElementById('mcfl'),ldEl=document.getElementById('mload');
+  if(!tid){cflEl.style.display='none';ldEl.style.display='none';return;}
+  let cfl=null;
+  ST.classes.forEach(cls=>{if(cls.id===cid)return;const cell=ST.timetables[cls.id]?.[day]?.[p];
+    if(cell?.teacherId===tid){const t=ST.teachers.find(x=>x.id===tid);const c=ST.classes.find(x=>x.id===cls.id);cfl=`⛔ ${t?.name} आधीच ${c?.std}-${c?.division} मध्ये ${day} P${p} ला आहे!`;}});
+  if(cfl){cflEl.style.display='block';cflEl.className='wb';cflEl.innerHTML=cfl;}else cflEl.style.display='none';
+  const max=+(ST.settings.maxTeacherPeriods||36);const ld=getTLoad(tid);
+  if(ld>=max){ldEl.style.display='block';ldEl.className='wb';ldEl.innerHTML=`⚠️ ${ST.teachers.find(x=>x.id===tid)?.name} — ${ld}/${max} periods (limit exceeded!)`;}
+  else if(ld>=max*.9){ldEl.style.display='block';ldEl.className='wb';ldEl.innerHTML=`⚠️ ${ld}/${max} periods — जवळ limit!`;}
+  else ldEl.style.display='none';
 }
-
-function updateDoubleWarning(){
-  const isDouble=document.getElementById('modalDouble').checked;
-  const msg=document.getElementById('doubleMsg');
-  if(!isDouble){msg.style.display='none';return;}
-  const{period}=CM;const s=ST.settings;const nextP=period+1;
-  msg.style.display='block';
-  if(nextP>s.numPeriods){msg.className='warn-box';msg.innerHTML=`⛔ No next period!`;return;}
-  if(!sameGroup(period,nextP)){msg.className='warn-box';msg.innerHTML=`⛔ P${period}(Grp ${getGroup(period)}) + P${nextP}(Grp ${getGroup(nextP)}) — वेगळ्या group! Double शक्य नाही.`;return;}
-  if(period===s.shortBreakAfter||period===s.lunchBreakAfter){msg.className='warn-box';msg.innerHTML=`⛔ P${period} नंतर break — double शक्य नाही!`;return;}
-  msg.className='ok-box';msg.innerHTML=`✅ Double Period: P${period}+P${nextP} (Group ${getGroup(period)})`;
+function updDbl(){
+  const isDbl=document.getElementById('mdbl').checked;const msg=document.getElementById('dblmsg');
+  if(!isDbl){msg.style.display='none';return;}
+  const{p}=CM;const s=ST.settings;const next=p+1;msg.style.display='block';
+  if(next>+(s.numPeriods||9)){msg.className='wb';msg.innerHTML='⛔ Next period नाही!';return;}
+  if(!sameGroup(p,next)){msg.className='wb';msg.innerHTML=`⛔ P${p}(Grp ${getGroup(p)}) + P${next}(Grp ${getGroup(next)}) — वेगळ्या group!`;return;}
+  if(p===+(s.shortBreakAfter||3)||p===+(s.lunchBreakAfter||6)){msg.className='wb';msg.innerHTML=`⛔ P${p} नंतर break — double शक्य नाही!`;return;}
+  msg.className='ob';msg.innerHTML=`✅ Double Period: P${p}+P${next} (Group ${getGroup(p)})`;
 }
-
 function assignPeriod(){
-  const subjId=+document.getElementById('modalSubject').value;
-  const tid=+document.getElementById('modalTeacher').value;
-  if(!subjId||!tid)return toast('Subject आणि Teacher निवडा!','error');
-
-  // Block if conflict
-  const{classId,day,period}=CM;
-  let conflict=false;
-  ST.classes.forEach(cls=>{
-    if(cls.id===classId)return;
-    const cell=ST.timetables[cls.id]?.[day]?.[period];
-    if(cell?.teacherId===tid)conflict=true;
-  });
-  if(conflict)return toast('⛔ Teacher conflict! हा शिक्षक त्याच वेळी दुसऱ्या वर्गात आहे!','error',5000);
-
-  const isDouble=document.getElementById('modalDouble').checked;
-  const s=ST.settings;
-  if(isDouble){
-    const nextP=period+1;
-    if(!sameGroup(period,nextP)||nextP>s.numPeriods||period===s.shortBreakAfter||period===s.lunchBreakAfter)
-      return toast('Double period येथे शक्य नाही!','error');
-    if(!ST.timetables[classId])ST.timetables[classId]={};
-    if(!ST.timetables[classId][day])ST.timetables[classId][day]={};
-    ST.timetables[classId][day][period]={subjectId:subjId,teacherId:tid,isDouble:true};
-    ST.timetables[classId][day][nextP]={subjectId:subjId,teacherId:tid,isDoubleCont:true};
-  } else {
-    if(!ST.timetables[classId])ST.timetables[classId]={};
-    if(!ST.timetables[classId][day])ST.timetables[classId][day]={};
-    ST.timetables[classId][day][period]={subjectId:subjId,teacherId:tid};
-  }
-
-  // Warn if teacher load exceeded
-  const max=s.maxTeacherPeriods||36;
-  const load=getTeacherWeeklyLoad(tid);
-  if(load>max){
-    const t=ST.teachers.find(x=>x.id===tid);
-    toast(`⚠️ ${t?.name} — ${load} periods (limit: ${max})!`,'warn',5000);
-  }
-
-  saveST();closeModal();renderTTEditor(classId);checkAllTeacherLoads();
+  const sid=+document.getElementById('msubj').value,tid=+document.getElementById('mteach').value;
+  if(!sid||!tid)return toast('Subject आणि Teacher निवडा!','error');
+  const{cid,day,p}=CM;const s=ST.settings;
+  let cfl=false;ST.classes.forEach(cls=>{if(cls.id===cid)return;const cell=ST.timetables[cls.id]?.[day]?.[p];if(cell?.teacherId===tid)cfl=true;});
+  if(cfl)return toast('⛔ Teacher conflict!','error',5000);
+  const isDbl=document.getElementById('mdbl').checked;const next=p+1;
+  if(!ST.timetables[cid])ST.timetables[cid]={};if(!ST.timetables[cid][day])ST.timetables[cid][day]={};
+  if(isDbl){
+    if(!sameGroup(p,next)||next>+(s.numPeriods||9)||p===+(s.shortBreakAfter||3)||p===+(s.lunchBreakAfter||6))return toast('Double शक्य नाही!','error');
+    ST.timetables[cid][day][p]={subjectId:sid,teacherId:tid,isDouble:true};
+    ST.timetables[cid][day][next]={subjectId:sid,teacherId:tid,isDoubleCont:true};
+  } else ST.timetables[cid][day][p]={subjectId:sid,teacherId:tid};
+  const max=+(s.maxTeacherPeriods||36);const ld=getTLoad(tid);
+  if(ld>max){const t=ST.teachers.find(x=>x.id===tid);toast(`⚠️ ${t?.name} — ${ld} periods (limit: ${max})!`,'warn',5000);}
+  save();closeMod();renderEditor(cid);checkLoads();
 }
-
 function clearPeriod(){
-  const{classId,day,period}=CM;
-  const cell=ST.timetables[classId]?.[day]?.[period];
-  if(ST.timetables[classId]?.[day]){
-    if(cell?.isDouble&&ST.timetables[classId][day][period+1])delete ST.timetables[classId][day][period+1];
-    if(cell?.isDoubleCont){const prev=ST.timetables[classId][day][period-1];if(prev)delete prev.isDouble;}
-    delete ST.timetables[classId][day][period];
+  const{cid,day,p}=CM;const cell=ST.timetables[cid]?.[day]?.[p];
+  if(ST.timetables[cid]?.[day]){
+    if(cell?.isDouble&&ST.timetables[cid][day][p+1])delete ST.timetables[cid][day][p+1];
+    if(cell?.isDoubleCont&&ST.timetables[cid][day][p-1])delete ST.timetables[cid][day][p-1].isDouble;
+    delete ST.timetables[cid][day][p];
   }
-  saveST();closeModal();renderTTEditor(classId);checkAllTeacherLoads();
+  save();closeMod();renderEditor(cid);checkLoads();
 }
-function closeModal(){document.getElementById('assignModal').classList.remove('show');}
-
-function saveTimetable(){
-  saveST();const b=document.querySelector('#page-timetable .btn-primary');
-  b.textContent='✅ Saved!';b.style.background='var(--success)';
-  setTimeout(()=>{b.textContent='💾 Save';b.style.background='';},2000);
-  toast('Timetable saved!');
-}
-function clearTimetable(){
-  const cid=document.getElementById('ttClassSelect').value;
-  if(!cid||!confirm('Clear timetable?'))return;
-  ST.timetables[cid]={};saveST();renderTTEditor(cid);toast('Timetable cleared','warn');
-}
-
-function autoFillTimetable(){
-  const classId=document.getElementById('ttClassSelect').value;
-  if(!classId)return toast('Class select करा!','error');
-  const csl=ST.classSubjects[classId];
-  if(!csl?.length)return toast('आधी "Class Subjects" tab मध्ये विषय assign करा!','error');
-  if(!confirm('Auto-generate करायचे? सर्व नियम पाळले जातील.'))return;
-  const s=ST.settings;const days=s.workingDays||[];
-  const cls=ST.classes.find(c=>c.id===classId);
-  const ct=cls?.classTeacherId;
-  if(!ST.timetables[classId])ST.timetables[classId]={};
-
+function closeMod(){document.getElementById('modP').classList.remove('show');}
+function saveTT(){save();toast('Timetable saved!');}
+function clearTT(){const cid=document.getElementById('ttsel').value;if(!cid||!confirm('Clear?'))return;ST.timetables[cid]={};save();renderEditor(cid);toast('Cleared','warn');}
+function autoFill(){
+  const cid=document.getElementById('ttsel').value;if(!cid)return toast('Class select करा!','error');
+  const csl=ST.classSubjects[cid];if(!csl?.length)return toast('आधी subjects assign करा!','error');
+  if(!confirm('Auto-generate करायचे?'))return;
+  const s=ST.settings;const days=s.workingDays||[];const cls=ST.classes.find(c=>c.id===cid);const ct=cls?.classTeacherId;
+  if(!ST.timetables[cid])ST.timetables[cid]={};
   let pool=[];
-  csl.forEach(row=>{
-    const subj=ST.subjects.find(x=>x.id===row.subjectId);if(!subj)return;
-    for(let i=0;i<(row.periodsPerWeek||3);i++)pool.push({subjectId:row.subjectId,teacherId:row.teacherId,type:subj.type});
-  });
+  csl.forEach(row=>{const subj=ST.subjects.find(x=>x.id===row.subjectId);if(!subj)return;
+    for(let i=0;i<(row.periodsPerWeek||3);i++)pool.push({subjectId:row.subjectId,teacherId:row.teacherId,type:subj.type});});
   for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
   let pi=0;
-
   days.forEach(day=>{
-    if(!ST.timetables[classId][day])ST.timetables[classId][day]={};
-
-    // Try to assign class teacher to P1
-    if(ct){
-      const p1=ST.timetables[classId][day][1];
-      if(!p1){
-        // Find a subject for class teacher
-        const ctRow=csl.find(r=>r.teacherId===ct);
-        if(ctRow){
-          // Check no conflict
-          let conflict=false;
-          ST.classes.forEach(cls2=>{
-            if(cls2.id===classId)return;
-            const cell2=ST.timetables[cls2.id]?.[day]?.[1];
-            if(cell2?.teacherId===ct)conflict=true;
-          });
-          if(!conflict){
-            ST.timetables[classId][day][1]={subjectId:ctRow.subjectId,teacherId:ct};
-          }
-        }
-      }
-    }
-
-    for(let p=1;p<=s.numPeriods;p++){
-      if(ST.timetables[classId][day][p])continue;
-      const isTh=p<=s.subjectPeriodLimit;
-      let cand=null;
-      for(let k=0;k<pool.length;k++){
-        const item=pool[(pi+k)%pool.length];
-        if(isTh&&item.type==='practical')continue;
-        if(!isTh&&item.type==='theory')continue;
-        // Check teacher conflict
-        let conflict=false;
-        if(item.teacherId){
-          ST.classes.forEach(cls2=>{
-            if(cls2.id===classId)return;
-            const cell2=ST.timetables[cls2.id]?.[day]?.[p];
-            if(cell2?.teacherId===item.teacherId)conflict=true;
-          });
-        }
-        if(!conflict){cand=item;pi=(pi+k+1)%pool.length;break;}
-      }
-      if(!cand){
-        // fallback ignoring conflict check
-        for(let k=0;k<pool.length;k++){
-          const item=pool[(pi+k)%pool.length];
-          if(isTh&&item.type==='practical')continue;
-          if(!isTh&&item.type==='theory')continue;
-          cand=item;pi=(pi+k+1)%pool.length;break;
-        }
-      }
+    if(!ST.timetables[cid][day])ST.timetables[cid][day]={};
+    const maxP=getMaxP(day);
+    // Class teacher P1
+    if(ct){const ctRow=csl.find(r=>r.teacherId===ct);if(ctRow&&!ST.timetables[cid][day][1]){let cfl=false;ST.classes.forEach(cls2=>{if(cls2.id===cid)return;const c2=ST.timetables[cls2.id]?.[day]?.[1];if(c2?.teacherId===ct)cfl=true;});if(!cfl)ST.timetables[cid][day][1]={subjectId:ctRow.subjectId,teacherId:ct};}}
+    for(let p=1;p<=maxP;p++){
+      if(ST.timetables[cid][day][p])continue;
+      const isTh=p<=+(s.subjectPeriodLimit||6);let cand=null;
+      for(let k=0;k<pool.length;k++){const item=pool[(pi+k)%pool.length];
+        if(isTh&&item.type==='practical')continue;if(!isTh&&item.type==='theory')continue;
+        let cfl=false;if(item.teacherId)ST.classes.forEach(cls2=>{if(cls2.id===cid)return;const c2=ST.timetables[cls2.id]?.[day]?.[p];if(c2?.teacherId===item.teacherId)cfl=true;});
+        if(!cfl){cand=item;pi=(pi+k+1)%pool.length;break;}}
+      if(!cand)for(let k=0;k<pool.length;k++){const item=pool[(pi+k)%pool.length];if(isTh&&item.type==='practical')continue;if(!isTh&&item.type==='theory')continue;cand=item;pi=(pi+k+1)%pool.length;break;}
       if(!cand)continue;
-
-      const nextP=p+1;
-      const canDbl=isTh&&nextP<=s.numPeriods&&sameGroup(p,nextP)&&p!==s.shortBreakAfter&&p!==s.lunchBreakAfter&&!ST.timetables[classId][day][nextP];
-      if(canDbl&&Math.random()<0.22){
-        ST.timetables[classId][day][p]={subjectId:cand.subjectId,teacherId:cand.teacherId,isDouble:true};
-        ST.timetables[classId][day][nextP]={subjectId:cand.subjectId,teacherId:cand.teacherId,isDoubleCont:true};
-        p++;
-      } else {
-        ST.timetables[classId][day][p]={subjectId:cand.subjectId,teacherId:cand.teacherId};
-      }
+      const next=p+1;const canDbl=isTh&&next<=maxP&&sameGroup(p,next)&&p!==+(s.shortBreakAfter||3)&&p!==+(s.lunchBreakAfter||6)&&!ST.timetables[cid][day][next];
+      if(canDbl&&Math.random()<.22){ST.timetables[cid][day][p]={subjectId:cand.subjectId,teacherId:cand.teacherId,isDouble:true};ST.timetables[cid][day][next]={subjectId:cand.subjectId,teacherId:cand.teacherId,isDoubleCont:true};p++;}
+      else ST.timetables[cid][day][p]={subjectId:cand.subjectId,teacherId:cand.teacherId};
     }
   });
-  saveST();renderTTEditor(classId);checkAllTeacherLoads();
-  const max=s.maxTeacherPeriods||36;
-  const over=ST.teachers.filter(t=>getTeacherWeeklyLoad(t.id)>max);
-  if(over.length)toast(`⚠️ ${over.map(t=>t.name).join(', ')} — load limit ओलांडला!`,'warn',6000);
-  else toast('Timetable generated!');
+  save();renderEditor(cid);checkLoads();
+  const max=+(s.maxTeacherPeriods||36);const over=ST.teachers.filter(t=>getTLoad(t.id)>max);
+  if(over.length)toast(`⚠️ ${over.map(t=>t.name).join(', ')} — limit exceeded!`,'warn',6000);else toast('Generated!');
 }
-
-function printCurrentTT(){
-  const cid=document.getElementById('ttClassSelect').value;
-  if(!cid)return toast('Class select करा!','warn');
-  printClass(cid);
-}
-// ==================== VIEW & PRINT ====================
-function popViewSels(){
-  const cs=document.getElementById('viewClassSelect');
-  cs.innerHTML='<option value="">-- Select --</option>'+ST.classes.map(c=>`<option value="${c.id}">${c.std}-${c.division} (${c.medium})</option>`).join('');
-  const ts=document.getElementById('viewTeacherSelect');
-  ts.innerHTML='<option value="">-- Select --</option>'+ST.teachers.map(t=>`<option value="${t.id}">${t.name} (${t.code})</option>`).join('');
-}
-function renderClassView(){
-  const cid=document.getElementById('viewClassSelect').value;if(!cid)return;
-  const cls=ST.classes.find(c=>c.id===cid);
-  const ct=ST.teachers.find(t=>t.id===cls.classTeacherId);
-  document.getElementById('classViewArea').innerHTML=buildTTView(cid,`${cls.std} - ${cls.division} (${cls.medium})`,ct?.name,true);
-}
-function renderTeacherView(){
-  const tid=+document.getElementById('viewTeacherSelect').value;if(!tid)return;
-  const teacher=ST.teachers.find(t=>t.id===tid);
-  const s=ST.settings;const days=s.workingDays||[];const cols=buildCols();
-  let html=schoolHeader()+`<div style="margin-bottom:11px;"><h3 style="font-size:.92rem;font-weight:700;color:var(--primary);">👨‍🏫 ${teacher.name} (${teacher.code}) — Weekly Schedule</h3></div>
-  <div class="tt-wrapper"><table class="tt-table"><thead><tr><th>Day</th>`;
-  cols.forEach(col=>{
-    if(col.type==='period')html+=`<th>P${col.period.period}<br><small>${col.period.start}</small></th>`;
-    else if(col.type==='short')html+=`<th style="background:#b7770d;">☕</th>`;
-    else if(col.type==='lunch')html+=`<th style="background:#d35400;">🍱</th>`;
-    else if(col.type==='study')html+=`<th style="background:#2e7d32;">📖</th>`;
-    else if(col.type==='studybreak')html+=`<th style="background:#7b1fa2;">☕</th>`;
-  });
-  html+='</tr></thead><tbody>';
-  days.forEach(day=>{
-    html+=`<tr><td class="day-col">${day.substring(0,3)}</td>`;
-    cols.forEach(col=>{
-      if(col.type==='short'){html+=`<td class="tt-cell break-cell" style="font-size:.65rem;">☕</td>`;return;}
-      if(col.type==='lunch'){html+=`<td class="tt-cell lunch-cell" style="font-size:.65rem;">🍱</td>`;return;}
-      if(col.type==='study'){html+=`<td class="tt-cell study-cell" style="font-size:.65rem;">📖</td>`;return;}
-      if(col.type==='studybreak'){html+=`<td class="tt-cell study-break-cell" style="font-size:.65rem;">☕</td>`;return;}
-      const p=col.period.period;let found=null;
-      ST.classes.forEach(cls=>{
-        const cell=ST.timetables[cls.id]?.[day]?.[p];
-        if(cell?.teacherId===tid)found={cls,subjectId:cell.subjectId,isDouble:cell.isDouble,isCont:cell.isDoubleCont};
-      });
-      if(found){
-        const subj=ST.subjects.find(x=>x.id===found.subjectId);
-        html+=`<td class="tt-cell filled${found.isDouble?' double-left':found.isCont?' double-right':''}" style="border-top:3px solid ${subj?.color||'#3498db'}">
-          <span class="subj-label" style="color:${subj?.color||'#1a3a5c'}">${subj?.code||'?'}</span>
-          <span class="teacher-label">${found.cls.std}-${found.cls.division}</span>
-        </td>`;
-      } else html+=`<td class="tt-cell" style="color:#ddd;font-size:.65rem;">—</td>`;
+// ===== VIEW =====
+function renderCV(){const cid=document.getElementById('vcsel').value;if(!cid)return;const cls=ST.classes.find(c=>c.id===cid);const ct=ST.teachers.find(t=>t.id===cls.classTeacherId);document.getElementById('cva').innerHTML=buildTTGrid(cid,`${cls.std}-${cls.division} (${cls.medium})`,ct?.name);}
+function renderTV(){
+  const tid=+document.getElementById('vtsel').value;if(!tid)return;
+  const teacher=ST.teachers.find(t=>t.id===tid);const s=ST.settings;const days=s.workingDays||[];
+  const cols=buildCols();let h=`<div style="margin-bottom:9px;"><strong style="color:var(--pr);">👨‍🏫 ${teacher.name} (${teacher.code})</strong></div>
+  <div class="ttw"><table class="ttt"><thead><tr><th>Day</th>`;
+  cols.forEach(c=>{if(c.t==='p')h+=`<th>P${c.pt.p}<br><small>${m2t12(t2m(c.pt.s))}</small></th>`;
+    else if(c.t==='sb')h+=`<th style="background:#b7770d;">☕</th>`;else if(c.t==='lb')h+=`<th style="background:#d35400;">🍱</th>`;
+    else if(c.t==='ab')h+=`<th style="background:#2e7d32;">📖</th>`;else if(c.t==='abr')h+=`<th style="background:#7b1fa2;">☕</th>`;});
+  h+='</tr></thead><tbody>';
+  days.forEach(day=>{const isShort=isShortDay(day);const maxP=getMaxP(day);
+    h+=`<tr><td class="dc">${day.substring(0,3)}</td>`;
+    cols.forEach(c=>{
+      if(c.t==='sb'){h+=`<td class="tc bk-c" style="font-size:.62rem;">☕</td>`;return;}
+      if(c.t==='lb'){h+=`<td class="tc ln-c" style="font-size:.62rem;">🍱</td>`;return;}
+      if(c.t==='ab'){h+=isShort?`<td class="tc" style="background:#f3f3f3;color:#ccc;font-size:.6rem;">—</td>`:`<td class="tc st-c" style="font-size:.62rem;">📖</td>`;return;}
+      if(c.t==='abr'){h+=isShort?`<td class="tc" style="background:#f3f3f3;color:#ccc;font-size:.6rem;">—</td>`:`<td class="tc sb-c" style="font-size:.62rem;">☕</td>`;return;}
+      const p=c.pt.p;if(p>maxP){h+=`<td class="tc" style="background:#f0f0f0;color:#bbb;font-size:.6rem;">—</td>`;return;}
+      let found=null;ST.classes.forEach(cls=>{const cell=ST.timetables[cls.id]?.[day]?.[p];if(cell?.teacherId===tid)found={cls,sid:cell.subjectId,isDbl:cell.isDouble,isCont:cell.isDoubleCont};});
+      if(found){const subj=ST.subjects.find(x=>x.id===found.sid);
+        h+=`<td class="tc filled${found.isDbl?' dl':found.isCont?' dr':''}" style="border-top:2.5px solid ${subj?.color||'#3498db'}">
+          <span class="sl" style="color:${subj?.color||'#1a3a5c'}">${subj?.code||'?'}</span>
+          <span class="tl">${found.cls.std}-${found.cls.division}</span></td>`;
+      } else h+=`<td class="tc" style="color:#ddd;font-size:.62rem;">—</td>`;
     });
-    html+='</tr>';
+    h+='</tr>';
   });
-  html+='</tbody></table></div>';
-  let pCount={};
-  ST.classes.forEach(cls=>{days.forEach(day=>{for(let p=1;p<=s.numPeriods;p++){const cell=ST.timetables[cls.id]?.[day]?.[p];if(cell?.teacherId===tid&&!cell.isDoubleCont){const sub=ST.subjects.find(x=>x.id===cell.subjectId);pCount[sub?.name||'?']=(pCount[sub?.name||'?']||0)+1;}}});});
-  const total=Object.values(pCount).reduce((a,b)=>a+b,0);
-  const max=s.maxTeacherPeriods||36;
-  html+=`<div style="margin-top:11px;padding:10px;background:var(--light);border-radius:8px;">
-    <strong style="font-size:.82rem;color:var(--primary);">Weekly Load: <span style="color:${total>max?'#e74c3c':'#27ae60'}">${total}/${max}</span> periods</strong>
-    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:5px;">`;
-  Object.entries(pCount).forEach(([sub,cnt])=>{html+=`<span class="chip">${sub}: ${cnt}</span>`;});
-  html+='</div></div>';
-  document.getElementById('teacherViewArea').innerHTML=html;
+  h+='</tbody></table></div>';
+  let pCount={};const s2=ST.settings;ST.classes.forEach(cls=>(s2.workingDays||[]).forEach(day=>{for(let p=1;p<=getMaxP(day);p++){const cell=ST.timetables[cls.id]?.[day]?.[p];if(cell?.teacherId===tid&&!cell.isDoubleCont){const sub=ST.subjects.find(x=>x.id===cell.subjectId);pCount[sub?.name||'?']=(pCount[sub?.name||'?']||0)+1;}}}));
+  const total=Object.values(pCount).reduce((a,b)=>a+b,0);const max=+(s2.maxTeacherPeriods||36);
+  h+=`<div style="margin-top:10px;padding:9px;background:var(--lt);border-radius:7px;font-size:.8rem;"><strong>Weekly Load: <span style="color:${total>max?'#e74c3c':'#27ae60'}">${total}/${max}</span></strong> &nbsp; ${Object.entries(pCount).map(([k,v])=>`<span class="chip">${k}:${v}</span>`).join(' ')}</div>`;
+  document.getElementById('tva').innerHTML=h;
 }
-function renderAllView(){
+function renderAV(){
   if(!ST.classes.length)return;
-  const html=ST.classes.map(cls=>`<div style="margin-bottom:24px;">${buildTTView(cls.id,`${cls.std}-${cls.division} (${cls.medium})`,ST.teachers.find(t=>t.id===cls.classTeacherId)?.name,false)}</div>`).join('');
-  document.getElementById('allViewArea').innerHTML=html||'<div class="empty-state"><div class="big-icon">📊</div><p>No timetables yet.</p></div>';
+  document.getElementById('ava').innerHTML=ST.classes.map(cls=>`<div style="margin-bottom:20px;">${buildTTGrid(cls.id,`${cls.std}-${cls.division} (${cls.medium})`,ST.teachers.find(t=>t.id===cls.classTeacherId)?.name)}</div>`).join('');
+}
+function buildTTGrid(cid,title,ctName){
+  const s=ST.settings;const days=s.workingDays||[];const cols=buildCols();const tt=ST.timetables[cid]||{};
+  const csl=ST.classSubjects[cid]||[];
+  const subjTeachers=csl.map(row=>{const subj=ST.subjects.find(x=>x.id===row.subjectId);const t=ST.teachers.find(x=>x.id===row.teacherId);return subj&&t?`${subj.code}: ${t.name}`:''}).filter(Boolean);
+  let h=`<div style="margin-bottom:6px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:5px;">
+    <div><div style="font-size:.9rem;font-weight:700;color:var(--pr);">📅 ${title}</div>${ctName?`<div style="font-size:.73rem;color:var(--mu);">वर्गशिक्षक: <strong>${ctName}</strong></div>`:''}</div>
+    <div style="font-size:.68rem;color:#555;text-align:right;max-width:300px;"><strong>विषय शिक्षक:</strong> ${subjTeachers.join(' | ')||'—'}</div>
+  </div>
+  <div class="ttw"><table class="ttt"><thead><tr><th>Day</th>`;
+  cols.forEach(c=>{
+    if(c.t==='p')h+=`<th>P${c.pt.p}<br><small>${m2t12(t2m(c.pt.s))}</small><br><span style="font-size:.56rem;">${c.pt.p<=+(s.subjectPeriodLimit||6)?'📖':'🎨'}</span></th>`;
+    else if(c.t==='sb')h+=`<th style="background:#b7770d;">☕</th>`;else if(c.t==='lb')h+=`<th style="background:#d35400;">🍱</th>`;
+    else if(c.t==='ab')h+=`<th style="background:#2e7d32;">📖</th>`;else if(c.t==='abr')h+=`<th style="background:#7b1fa2;">☕</th>`;});
+  h+='</tr></thead><tbody>';
+  days.forEach(day=>{const isShort=isShortDay(day);const maxP=getMaxP(day);
+    h+=`<tr><td class="dc">${day.substring(0,3)}</td>`;
+    cols.forEach(c=>{
+      if(c.t==='sb'){h+=`<td class="tc bk-c">☕</td>`;return;}
+      if(c.t==='lb'){h+=`<td class="tc ln-c">🍱</td>`;return;}
+      if(c.t==='ab'){h+=isShort?`<td class="tc" style="background:#f3f3f3;color:#ccc;font-size:.6rem;">—</td>`:`<td class="tc st-c">📖</td>`;return;}
+      if(c.t==='abr'){h+=isShort?`<td class="tc" style="background:#f3f3f3;color:#ccc;font-size:.6rem;">—</td>`:`<td class="tc sb-c">☕</td>`;return;}
+      const p=c.pt.p;if(p>maxP){h+=`<td class="tc" style="background:#f0f0f0;color:#bbb;font-size:.6rem;">—</td>`;return;}
+      const cell=tt[day]?.[p];
+      if(cell?.isDoubleCont){h+=`<td class="tc dr"><span style="font-size:.6rem;color:#94b8d8;">↩</span></td>`;return;}
+      if(cell?.subjectId){const subj=ST.subjects.find(s=>s.id===cell.subjectId);const tchr=ST.teachers.find(t=>t.id===cell.teacherId);
+        h+=`<td class="tc filled${cell.isDouble?' dl':''}" style="border-top:2.5px solid ${subj?.color||'#3498db'}">
+          <span class="sl" style="color:${subj?.color||'#1a3a5c'}">${subj?.code||'?'}${cell.isDouble?'×2':''}</span>
+          <span class="tl">${tchr?.code||'?'}</span></td>`;
+      } else h+=`<td class="tc em-c">—</td>`;
+    });
+    h+='</tr>';
+  });
+  h+='</tbody></table></div>';return h;
 }
 
-function schoolHeader(){
-  return`<div style="text-align:center;margin-bottom:14px;padding:12px;background:linear-gradient(135deg,#1a3a5c,#2471a3);border-radius:10px;color:white;">
-    <div style="font-size:1.1rem;font-weight:900;font-family:'Playfair Display',serif;">Shree Warana Vidyalaya</div>
-    <div style="font-size:.82rem;margin-top:3px;">Warananagar, Tal: Panhala, Dist: Kolhapur</div>
+// ===== PRINT ENGINE =====
+function pSchoolHdr(){
+  const s=ST.settings;const aS=m2t12(t2m(s.assemblyTime||'07:15'));const aE=m2t12(t2m(s.assemblyTime||'07:15')+(+(s.assemblyDuration||15)));
+  return`<div style="text-align:center;border:2px solid #1a3a5c;border-radius:6px;padding:8px 12px;margin-bottom:10px;">
+    <div style="font-size:15px;font-weight:900;color:#1a3a5c;">श्री वारणा विद्यालय (Shree Warana Vidyalaya)</div>
+    <div style="font-size:10px;color:#444;margin-top:2px;">वारणानगर, ता: पन्हाळा, जि: कोल्हापूर | Warananagar, Tal: Panhala, Dist: Kolhapur</div>
+    <div style="font-size:9px;color:#777;margin-top:2px;">🙏 Assembly: ${aS} – ${aE} | शाळा सुरू: ${m2t12(t2m(s.startTime||'07:30'))}</div>
   </div>`;
 }
-
-function buildTTView(classId,title,ct,withHeader){
-  const s=ST.settings;const days=s.workingDays||[];const cols=buildCols();const tt=ST.timetables[classId]||{};
-  // Collect all subject teachers for this class
-  const csl=ST.classSubjects[classId]||[];
-  const subjTeachers=csl.map(row=>{
-    const subj=ST.subjects.find(x=>x.id===row.subjectId);
-    const t=ST.teachers.find(x=>x.id===row.teacherId);
-    return subj&&t?`${subj.code}: ${t.name}`:'';
-  }).filter(Boolean);
-
-  let html='';
-  if(withHeader)html+=schoolHeader();
-  // Print header: School name top, Day on right, Time on left, Teachers on right
-  html+=`<div style="margin-bottom:7px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px;">
-    <div>
-      <div style="font-size:.92rem;font-weight:700;color:var(--primary);">📅 ${title}</div>
-      ${ct?`<div style="font-size:.75rem;color:var(--muted);">वर्गशिक्षक: <strong>${ct}</strong></div>`:''}
-    </div>
-    <div style="font-size:.7rem;color:#555;text-align:right;max-width:320px;">
-      <strong>विषय शिक्षक:</strong> ${subjTeachers.join(' | ')||'—'}
-    </div>
-  </div>
-  <div class="tt-wrapper"><table class="tt-table"><thead><tr>
-    <th style="text-align:right;">दिवस ▶</th>`;
-  // Time headers on LEFT side of each period column
-  cols.forEach(col=>{
-    if(col.type==='period'){
-      html+=`<th>
-        <div style="font-size:.62rem;color:#aef;text-align:left;">${col.period.start}</div>
-        P${col.period.period}
-        <div style="font-size:.58rem;opacity:.7;">${col.period.period<=s.subjectPeriodLimit?'📖':'🎨'}</div>
-      </th>`;
-    } else if(col.type==='short') html+=`<th style="background:#b7770d;">☕<br><small style="font-size:.58rem;">${col.start}</small></th>`;
-    else if(col.type==='lunch') html+=`<th style="background:#d35400;">🍱<br><small style="font-size:.58rem;">${col.start}</small></th>`;
-    else if(col.type==='study') html+=`<th style="background:#2e7d32;font-size:.65rem;">📖<br>Abhy.</th>`;
-    else if(col.type==='studybreak') html+=`<th style="background:#7b1fa2;font-size:.65rem;">☕</th>`;
-  });
-  html+='</tr></thead><tbody>';
-  days.forEach(day=>{
-    html+=`<tr><td class="day-col" style="text-align:right;">${day}</td>`;
-    cols.forEach(col=>{
-      if(col.type==='short'){html+=`<td class="tt-cell break-cell" style="font-size:.62rem;">☕<br>Break</td>`;return;}
-      if(col.type==='lunch'){html+=`<td class="tt-cell lunch-cell" style="font-size:.62rem;">🍱<br>Lunch</td>`;return;}
-      if(col.type==='study'){html+=`<td class="tt-cell study-cell" style="font-size:.62rem;">📖<br>अभ्यासिका</td>`;return;}
-      if(col.type==='studybreak'){html+=`<td class="tt-cell study-break-cell" style="font-size:.62rem;">☕<br>Break</td>`;return;}
-      const p=col.period.period;const cell=tt[day]?.[p];
-      if(cell?.isDoubleCont){html+=`<td class="tt-cell double-right"><span style="font-size:.6rem;color:#94b8d8;">↩</span></td>`;return;}
-      if(cell?.subjectId){
-        const subj=ST.subjects.find(s=>s.id===cell.subjectId);
-        const tchr=ST.teachers.find(t=>t.id===cell.teacherId);
-        html+=`<td class="tt-cell filled${cell.isDouble?' double-left':''}" style="border-top:3px solid ${subj?.color||'#3498db'}">
-          <span class="subj-label" style="color:${subj?.color||'#1a3a5c'}">${subj?.code||'?'}${cell.isDouble?'×2':''}</span>
-          <span class="teacher-label">${tchr?.code||'?'}</span>
-        </td>`;
-      } else html+=`<td class="tt-cell empty-cell">—</td>`;
-    });
-    html+='</tr>';
-  });
-  html+='</tbody></table></div>';return html;
+function pSignRow(ctName){
+  const mp=ST.settings.mukhyadhyapakName||'मुख्याध्यापक';
+  return`<table style="width:100%;margin-top:16px;"><tr>
+    <td style="width:42%;vertical-align:bottom;padding:5px 0;">
+      <div style="font-size:9px;color:#444;">वर्गशिक्षक स्वाक्षरी / Class Teacher</div>
+      <div style="border-bottom:1px solid #333;margin-top:22px;width:85%;"></div>
+      <div style="font-size:9px;color:#666;margin-top:2px;">${ctName||'वर्गशिक्षक'}</div>
+    </td>
+    <td style="width:16%;"></td>
+    <td style="width:42%;vertical-align:bottom;padding:5px 0;text-align:right;">
+      <div style="font-size:9px;color:#444;">मुख्याध्यापक स्वाक्षरी / Headmaster</div>
+      <div style="border-bottom:1px solid #333;margin-top:22px;margin-left:auto;width:85%;"></div>
+      <div style="font-size:9px;color:#666;margin-top:2px;">${mp}</div>
+    </td>
+  </tr></table>`;
 }
 
-function printCurrentView(areaId){
-  const el=document.getElementById(areaId);if(!el)return;
-  const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Timetable Print</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'DM Sans',sans-serif;font-size:11px;padding:15px;}
-  table{border-collapse:collapse;width:100%;}
-  th,td{border:1px solid #ccc;padding:4px 5px;font-size:10px;}
-  th{background:#1a3a5c;color:white;text-align:center;}
-  .day-col{background:#1a3a5c;color:white;font-weight:700;text-align:right;padding:4px 8px;}
-  .subj-label{font-weight:700;display:block;}
-  .teacher-label{font-size:9px;color:#666;display:block;}
-  .break-cell{background:#fef9e7;color:#b7770d;text-align:center;font-size:9px;}
-  .lunch-cell{background:#fff3e0;color:#d35400;text-align:center;font-size:9px;}
-  .study-cell{background:#e8f5e9;color:#2e7d32;text-align:center;font-size:9px;}
-  .study-break-cell{background:#f3e5f5;color:#7b1fa2;text-align:center;font-size:9px;}
-  .empty-cell{color:#ccc;text-align:center;}
-  .double-left{border-right:2px dashed #94b8d8!important;}
-  .double-right{background:#eff8ff;border-left:none!important;}
-  .school-header{text-align:center;margin-bottom:12px;padding:10px;background:#1a3a5c;color:white;border-radius:6px;}
-  .school-header h2{font-size:14px;font-weight:900;}
-  .school-header p{font-size:10px;margin-top:2px;opacity:.85;}
-  </style></head><body>`);
-  w.document.write(el.innerHTML);
-  w.document.write('</body></html>');
-  w.document.close();
-  w.focus();setTimeout(()=>{w.print();},500);
-}
+// THE KEY PRINT TABLE:
+// Rows = Period/Break rows | Col1 = Time (AM/PM) | Col2..7 = Mon–Sat | Last col = Subject Teachers
+function buildPrintTable(cid,ctName){
+  const s=ST.settings;const days=s.workingDays||[];const tt=ST.timetables[cid]||{};
+  const csl=ST.classSubjects[cid]||[];
+  const fullCols=buildCols(); // full schedule rows
+  const aS=m2t12(t2m(s.assemblyTime||'07:15'));const aE=m2t12(t2m(s.assemblyTime||'07:15')+(+(s.assemblyDuration||15)));
+  const fs='8.5px';const fss='7.5px';
+  // Subject-teacher list for last column
+  const subjTlines=csl.map(row=>{
+    const subj=ST.subjects.find(x=>x.id===row.subjectId);const t=ST.teachers.find(x=>x.id===row.teacherId);
+    return subj&&t?`<div style="font-size:${fss};line-height:1.5;margin-bottom:1px;"><span style="font-weight:700;color:${subj.color||'#1a3a5c'};">${subj.code}:</span> ${t.name}</div>`:''}).filter(Boolean).join('');
+  const totalDataRows=fullCols.length+1; // +1 for assembly row
+  let h=`<table style="width:100%;border-collapse:collapse;font-size:${fs};table-layout:fixed;">
+  <colgroup><col style="width:70px;"><col style="width:13%;" span="${days.length}"><col style="width:130px;"></colgroup>
+  <thead><tr>
+    <th style="background:#1a3a5c;color:white;padding:5px 4px;text-align:center;font-size:${fss};border:1px solid #ccc;">वेळ<br>Time</th>`;
+  days.forEach(day=>{const isShort=isShortDay(day);
+    h+=`<th style="background:${isShort?'#7f3d00':'#1a3a5c'};color:white;padding:5px 4px;text-align:center;font-size:${fss};border:1px solid #ccc;">${day}<br>${isShort?'(6 तास)':''}</th>`;});
+  h+=`<th style="background:#1a3a5c;color:white;padding:5px 6px;text-align:center;font-size:${fss};border:1px solid #ccc;">विषय शिक्षक<br>Subject Teachers</th>
+  </tr></thead><tbody>`;
+  // Assembly row
+  h+=`<tr style="background:#fff9c4;"><td style="text-align:center;border:1px solid #ccc;padding:4px 3px;font-size:${fss};font-weight:700;color:#856404;">🙏<br>${aS}<br>${aE}</td>`;
+  days.forEach(()=>h+=`<td style="text-align:center;border:1px solid #ccc;font-size:${fss};color:#856404;font-weight:700;padding:3px;">Assembly<br>प्रार्थना सभा</td>`);
+  h+=`<td rowspan="${totalDataRows}" style="border:1px solid #ccc;padding:5px 6px;vertical-align:top;background:#f8fafc;">${subjTlines||'—'}</td></tr>`;
 
-function printClass(classId){
-  const cls=ST.classes.find(c=>c.id===classId);if(!cls)return;
-  const ct=ST.teachers.find(t=>t.id===cls.classTeacherId);
-  const html=buildTTView(classId,`${cls.std}-${cls.division} (${cls.medium})`,ct?.name,true);
-  const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Timetable</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-  *{box-sizing:border-box;margin:0;padding:0;}body{font-family:'DM Sans',sans-serif;padding:15px;}
-  table{border-collapse:collapse;width:100%;}th,td{border:1px solid #ccc;padding:4px 5px;font-size:10px;}
-  th{background:#1a3a5c;color:white;text-align:center;}.day-col{background:#1a3a5c;color:white;font-weight:700;text-align:right;padding:4px 8px;}
-  .subj-label{font-weight:700;display:block;font-size:10px;}.teacher-label{font-size:8px;color:#666;display:block;}
-  .break-cell,.lunch-cell,.study-cell,.study-break-cell,.empty-cell{text-align:center;font-size:8px;}
-  .break-cell{background:#fef9e7;color:#b7770d;}.lunch-cell{background:#fff3e0;color:#d35400;}
-  .study-cell{background:#e8f5e9;color:#2e7d32;}.study-break-cell{background:#f3e5f5;color:#7b1fa2;}
-  .double-left{border-right:2px dashed #94b8d8!important;}.double-right{background:#eff8ff;border-left:none!important;}
-  .filled{background:#eaf5fb;}
-  </style></head><body>`+html+'</body></html>');
-  w.document.close();w.focus();setTimeout(()=>w.print(),400);
-}
-
-// ==================== REPORTS ====================
-function renderTeacherLoadReport(){
-  const s=ST.settings;const max=s.maxTeacherPeriods||36;
-  const days=s.workingDays||[];
-  if(!ST.teachers.length){document.getElementById('teacherLoadReport').innerHTML='<div class="empty-state"><div class="big-icon">👨‍🏫</div><p>No teachers.</p></div>';return;}
-  let html='<div class="tt-wrapper"><table class="data-table"><thead><tr><th>#</th><th>Teacher</th><th>Code</th>';
-  // Per-day columns
-  days.forEach(d=>html+=`<th>${d.substring(0,3)}</th>`);
-  html+=`<th>Total</th><th>Max(${max})</th><th>Status</th></tr></thead><tbody>`;
-  ST.teachers.forEach((t,i)=>{
-    let dayLoads={};let total=0;
-    days.forEach(day=>{dayLoads[day]=0;});
-    ST.classes.forEach(cls=>{
+  fullCols.forEach(col=>{
+    if(col.t==='p'){
+      const p=col.pt.p;const tStr=`${m2t12(t2m(col.pt.s))} –<br>${m2t12(t2m(col.pt.e))}`;
+      h+=`<tr><td style="text-align:center;border:1px solid #ccc;padding:3px 2px;font-size:${fss};font-weight:700;background:#f8fafc;color:#1a3a5c;">${tStr}<br><span style="font-size:7px;color:#888;">P${p}</span></td>`;
       days.forEach(day=>{
-        for(let p=1;p<=s.numPeriods;p++){
-          const cell=ST.timetables[cls.id]?.[day]?.[p];
-          if(cell?.teacherId===t.id&&!cell.isDoubleCont){dayLoads[day]=(dayLoads[day]||0)+1;total++;}
-        }
+        const maxP=getMaxP(day);const isShort=isShortDay(day);
+        if(p>maxP){h+=`<td style="background:#f0f0f0;border:1px solid #ccc;text-align:center;font-size:${fss};color:#bbb;">सुट्टी</td>`;return;}
+        const cell=tt[day]?.[p];
+        if(cell?.isDoubleCont){h+=`<td style="background:#eff8ff;border:1px solid #ccc;text-align:center;font-size:${fss};color:#94b8d8;">↩</td>`;return;}
+        if(cell?.subjectId){const subj=ST.subjects.find(x=>x.id===cell.subjectId);const tchr=ST.teachers.find(x=>x.id===cell.teacherId);
+          h+=`<td style="background:#eaf5fb;border:1px solid #ccc;border-top:2px solid ${subj?.color||'#3498db'};text-align:center;padding:3px;">
+            <strong style="font-size:${fs};color:${subj?.color||'#1a3a5c'};">${subj?.code||'?'}${cell.isDouble?'×2':''}</strong><br>
+            <span style="font-size:7px;color:#555;">${tchr?.code||'?'}</span></td>`;
+        } else h+=`<td style="background:#fafafa;border:1px solid #ccc;text-align:center;font-size:${fss};color:#ccc;">—</td>`;
       });
-    });
-    const pct=Math.min(100,Math.round(total/max*100));
-    const color=total>max?'#e74c3c':total>max*0.85?'#f39c12':'#27ae60';
-    html+=`<tr>
-      <td>${i+1}</td><td><strong>${t.name}</strong></td>
-      <td><span class="badge badge-green">${t.code}</span></td>`;
-    days.forEach(d=>html+=`<td style="text-align:center;">${dayLoads[d]||0}</td>`);
-    html+=`<td style="text-align:center;font-weight:700;color:${color};">${total}</td>
-      <td>
-        <div class="load-bar" style="width:90px;"><div class="load-fill" style="width:${pct}%;background:${color};"></div></div>
-        <span style="font-size:.72rem;">${pct}%</span>
-      </td>
-      <td>${total>max?'<span class="badge badge-red">⚠️ Over</span>':total>max*0.85?'<span class="badge badge-orange">⚡ High</span>':'<span class="badge badge-green">✓ OK</span>'}</td>
-    </tr>`;
+      h+='</tr>';
+    } else {
+      let lbl='',bg='',col2='',em='';
+      if(col.t==='sb'){lbl=`Short Break (${col.dur}m)`;bg='#fef9e7';col2='#b7770d';em='☕';}
+      else if(col.t==='lb'){lbl=`Lunch Break (${col.dur}m)`;bg='#fff3e0';col2='#d35400';em='🍱';}
+      else if(col.t==='ab'){lbl=`Abhyasika (${col.dur}m)`;bg='#e8f5e9';col2='#2e7d32';em='📖';}
+      else if(col.t==='abr'){lbl=`Break (${col.dur}m)`;bg='#f3e5f5';col2='#7b1fa2';em='☕';}
+      const tStr=col.s?`${m2t12(t2m(col.s))} –<br>${m2t12(t2m(col.e))}`:'';
+      h+=`<tr style="background:${bg};"><td style="text-align:center;border:1px solid #ccc;padding:3px 2px;font-size:${fss};font-weight:700;color:${col2};">${tStr}</td>`;
+      days.forEach(day=>{
+        if((col.t==='ab'||col.t==='abr')&&isShortDay(day))h+=`<td style="background:#f0f0f0;border:1px solid #ccc;text-align:center;font-size:${fss};color:#bbb;">—</td>`;
+        else h+=`<td style="background:${bg};border:1px solid #ccc;text-align:center;font-size:${fss};color:${col2};font-weight:700;">${em} ${lbl}</td>`;
+      });
+      h+='</tr>';
+    }
   });
-  html+='</tbody></table></div>';
-  document.getElementById('teacherLoadReport').innerHTML=html;
+  h+='</tbody></table>';return h;
 }
 
-function renderSubjectCoverReport(){
-  if(!ST.classes.length){document.getElementById('subjectCoverReport').innerHTML='<div class="empty-state"><p>No classes.</p></div>';return;}
-  const s=ST.settings;const days=s.workingDays||[];
-  let html='<div class="tt-wrapper"><table class="data-table"><thead><tr><th>Class</th><th>Subject</th><th>Target/Wk</th><th>Assigned</th><th>Status</th></tr></thead><tbody>';
-  ST.classes.forEach(cls=>{
-    const csl=ST.classSubjects[cls.id]||[];
-    if(!csl.length)return;
-    csl.forEach(row=>{
-      const subj=ST.subjects.find(s=>s.id===row.subjectId);
-      let assigned=0;
-      days.forEach(day=>{for(let p=1;p<=s.numPeriods;p++){const cell=ST.timetables[cls.id]?.[day]?.[p];if(cell?.subjectId===row.subjectId&&!cell.isDoubleCont)assigned++;}});
-      const target=row.periodsPerWeek||3;
-      const ok=assigned>=target;
-      html+=`<tr>
-        <td><strong>${cls.std}-${cls.division}</strong></td>
-        <td>${subj?.name||'?'} <span class="badge" style="background:${subj?.color||'#eee'}22;color:${subj?.color||'#333'};font-size:.62rem;">${subj?.code}</span></td>
-        <td style="text-align:center;">${target}</td>
-        <td style="text-align:center;font-weight:700;color:${ok?'#27ae60':'#e74c3c'};">${assigned}</td>
-        <td>${ok?'<span class="badge badge-green">✓</span>':'<span class="badge badge-red">⚠️ Short</span>'}</td>
-      </tr>`;
-    });
-  });
-  html+='</tbody></table></div>';
-  document.getElementById('subjectCoverReport').innerHTML=html;
-}
-
-function renderFreePeriodsReport(){
-  const s=ST.settings;const days=s.workingDays||[];
-  if(!ST.classes.length){document.getElementById('freePeriodsReport').innerHTML='<div class="empty-state"><p>No classes.</p></div>';return;}
-  let html='<div class="tt-wrapper"><table class="data-table"><thead><tr><th>Class</th><th>Day</th><th>Empty Periods</th><th>Count</th></tr></thead><tbody>';
-  let total=0;
-  ST.classes.forEach(cls=>{
-    days.forEach(day=>{
-      const empty=[];
-      for(let p=1;p<=s.numPeriods;p++){
-        const cell=ST.timetables[cls.id]?.[day]?.[p];
-        if(!cell||!cell.subjectId)empty.push(`P${p}`);
-      }
-      if(empty.length){
-        html+=`<tr><td><strong>${cls.std}-${cls.division}</strong></td><td>${day}</td><td>${empty.join(', ')}</td><td><span class="badge badge-red">${empty.length}</span></td></tr>`;
-        total+=empty.length;
-      }
-    });
-  });
-  html+=`</tbody></table></div><div style="margin-top:9px;font-size:.82rem;color:var(--muted);">Total empty periods: <strong style="color:#e74c3c;">${total}</strong></div>`;
-  document.getElementById('freePeriodsReport').innerHTML=html;
-}
-
-// ==================== EXPORT/IMPORT ====================
-function exportJSON(){
-  const data=JSON.stringify(ST,null,2);
-  const blob=new Blob([data],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download=`warana_timetable_${new Date().toISOString().slice(0,10)}.json`;
-  a.click();toast('JSON exported!');
-}
-function exportCSV(){
-  const s=ST.settings;const days=s.workingDays||[];
-  let csv='Class,Division,Day,Period,Time,Subject,Teacher\n';
-  const times=getPeriodTimes();
-  ST.classes.forEach(cls=>{
-    days.forEach(day=>{
-      for(let p=1;p<=s.numPeriods;p++){
-        const cell=ST.timetables[cls.id]?.[day]?.[p];
-        const t=times.find(x=>x.period===p);
-        const subj=ST.subjects.find(x=>x.id===cell?.subjectId);
-        const tchr=ST.teachers.find(x=>x.id===cell?.teacherId);
-        csv+=`${cls.std},${cls.division},${day},P${p},${t?.start||''}–${t?.end||''},${subj?.name||''},${tchr?.name||''}\n`;
-      }
-    });
-  });
-  const blob=new Blob([csv],{type:'text/csv'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download=`warana_timetable_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();toast('CSV exported!');
-}
-function exportPrintAll(){
-  const all=ST.classes.map(cls=>{
-    const ct=ST.teachers.find(t=>t.id===cls.classTeacherId);
-    return buildTTView(cls.id,`${cls.std}-${cls.division} (${cls.medium})`,ct?.name,true);
-  }).join('<div style="page-break-after:always;margin:16px 0;border-bottom:1px dashed #ccc;"></div>');
+function openPW(body,title){
   const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>All Timetables</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'DM Sans',sans-serif;padding:12px;}
-  table{border-collapse:collapse;width:100%;}th,td{border:1px solid #ccc;padding:3px 4px;font-size:9px;}
-  th{background:#1a3a5c;color:white;}.day-col{background:#1a3a5c;color:white;font-weight:700;text-align:right;}
-  .subj-label{font-weight:700;display:block;}.teacher-label{font-size:8px;color:#666;display:block;}
-  .break-cell{background:#fef9e7;}.lunch-cell{background:#fff3e0;}.study-cell{background:#e8f5e9;}.study-break-cell{background:#f3e5f5;}
-  .empty-cell{color:#ccc;}.filled{background:#eaf5fb;}.double-left{border-right:2px dashed #94b8d8!important;}
-  .double-right{background:#eff8ff;border-left:none!important;}
-  @page{margin:10mm;}</style></head><body>`+all+'</body></html>');
-  w.document.close();w.focus();setTimeout(()=>w.print(),500);
-  toast('Print window opened');
-}
-function importJSON(){document.getElementById('importFile').click();}
-function doImport(e){
-  const file=e.target.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    try{
-      const data=JSON.parse(ev.target.result);
-      if(!data.teachers||!data.classes)return toast('Invalid file!','error');
-      ST=data;saveST();
-      applySettings();renderPeriodPreview();renderRulesSummary();
-      renderTeachers();renderClasses();renderSubjects();popSubjSelForTeacher();popTeacherSel();
-      toast('Data imported successfully!');
-    }catch(err){toast('Import failed: '+err.message,'error');}
-  };
-  reader.readAsText(file);
-  e.target.value='';
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'DM Sans',sans-serif;padding:10px;background:white;}
+  .pb{page-break-after:always;margin:12px 0;border-bottom:1px dashed #ccc;}
+  @page{size:A4 landscape;margin:8mm;}@media print{.pb{page-break-after:always!important;}body{padding:0;}}</style>
+  </head><body>${body}<script>window.onload=function(){setTimeout(function(){window.print();},500);};<\/script></body></html>`);
+  w.document.close();
 }
 
-// ==================== INIT ====================
-loadST();
-renderPeriodPreview();renderRulesSummary();
-renderTeachers();renderClasses();renderSubjects();
-popSubjSelForTeacher();popTeacherSel();
+function printByClass(mode){
+  let classes=mode==='one'?[ST.classes.find(c=>c.id===document.getElementById('pClassSel').value)].filter(Boolean):ST.classes;
+  if(!classes.length)return toast('No classes!','error');
+  const html=classes.map((cls,i)=>{
+    const ct=ST.teachers.find(t=>t.id===cls.classTeacherId);
+    return`<div>${pSchoolHdr()}<div style="text-align:center;margin-bottom:7px;">
+      <div style="font-size:13px;font-weight:900;color:#1a3a5c;">वर्ग तासिका पत्रक — ${cls.std} - ${cls.division} (${cls.medium})</div>
+      ${ct?`<div style="font-size:10px;color:#444;">वर्गशिक्षक: ${ct.name}</div>`:''}
+    </div>
+    ${buildPrintTable(cls.id,ct?.name)}
+    ${pSignRow(ct?.name)}</div>${i<classes.length-1?'<div class="pb"></div>':''}`;}).join('');
+  openPW(html,'वर्गानुसार तासिका');
+}
 
+function printByTeacher(mode){
+  let teachers=mode==='one'?[ST.teachers.find(t=>t.id===+document.getElementById('pTeachSel').value)].filter(Boolean):ST.teachers;
+  if(!teachers.length)return toast('No teachers!','error');
+  const s=ST.settings;const days=s.workingDays||[];const fs='8.5px';const fss='7.5px';
+  const aS=m2t12(t2m(s.assemblyTime||'07:15'));const aE=m2t12(t2m(s.assemblyTime||'07:15')+(+(s.assemblyDuration||15)));
+  const html=teachers.map((teacher,idx)=>{
+    const fullCols=buildCols();const totalRows=fullCols.length+1;
+    let tbl=`<table style="width:100%;border-collapse:collapse;font-size:${fs};table-layout:fixed;">
+    <colgroup><col style="width:70px;"><col style="width:13%;" span="${days.length}"></colgroup>
+    <thead><tr><th style="background:#1a3a5c;color:white;padding:5px 4px;text-align:center;font-size:${fss};border:1px solid #ccc;">वेळ</th>`;
+    days.forEach(day=>{const isShort=isShortDay(day);tbl+=`<th style="background:${isShort?'#7f3d00':'#1a3a5c'};color:white;padding:5px 4px;text-align:center;font-size:${fss};border:1px solid #ccc;">${day}${isShort?'<br>(6T)':''}</th>`;});
+    tbl+=`</tr></thead><tbody>`;
+    // Assembly
+    tbl+=`<tr style="background:#fff9c4;"><td style="text-align:center;border:1px solid #ccc;padding:3px;font-size:${fss};color:#856404;font-weight:700;">🙏<br>${aS}<br>${aE}</td>`;
+    days.forEach(()=>tbl+=`<td style="text-align:center;border:1px solid #ccc;font-size:${fss};color:#856404;">Assembly</td>`);
+    tbl+='</tr>';
+    fullCols.forEach(col=>{
+      if(col.t==='p'){const p=col.pt.p;const tStr=`${m2t12(t2m(col.pt.s))} –<br>${m2t12(t2m(col.pt.e))}`;
+        tbl+=`<tr><td style="text-align:center;border:1px solid #ccc;padding:3px;font-size:${fss};font-weight:700;background:#f8fafc;color:#1a3a5c;">${tStr}<br>P${p}</td>`;
+        days.forEach(day=>{const maxP=getMaxP(day);const isShort=isShortDay(day);
+          if(p>maxP){tbl+=`<td style="background:#f0f0f0;border:1px solid #ccc;text-align:center;font-size:${fss};color:#bbb;">सुट्टी</td>`;return;}
+          let found=null;ST.classes.forEach(cls=>{const cell=ST.timetables[cls.id]?.[day]?.[p];if(cell?.teacherId===teacher.id)found={cls,sid:cell.subjectId,isDbl:cell.isDouble};});
+          if(found){const subj=ST.subjects.find(x=>x.id===found.sid);
+            tbl+=`<td style="background:#eaf5fb;border:1px solid #ccc;border-top:2px solid ${subj?.color||'#3498db'};text-align:center;padding:3px;">
+              <strong style="font-size:${fs};color:${subj?.color||'#1a3a5c'};">${subj?.code||'?'}${found.isDbl?'×2':''}</strong><br>
+              <span style="font-size:7px;color:#555;">${found.cls.std}-${found.cls.division}</span></td>`;
+          } else tbl+=`<td style="background:#fafafa;border:1px solid #ccc;text-align:center;font-size:${fss};color:#ccc;">—</td>`;
+        });
+        tbl+='</tr>';
+      } else {
+        let lbl='',bg='',col2='',em='';
+        if(col.t==='sb'){lbl=`Short Break`;bg='#fef9e7';col2='#b7770d';em='☕';}
+        else if(col.t==='lb'){lbl=`Lunch`;bg='#fff3e0';col2='#d35400';em='🍱';}
+        else if(col.t==='ab'){lbl=`Abhyasika`;bg='#e8f5e9';col2='#2e7d32';em='📖';}
+        else if(col.t==='abr'){lbl=`Break`;bg='#f3e5f5';col2='#7b1fa2';em='☕';}
+        const tStr=col.s?`${m2t12(t2m(col.s))} –<br>${m2t12(t2m(col.e))}`:'';
+        tbl+=`<tr style="background:${bg};"><td style="text-align:center;border:1px solid #ccc;padding:3px;font-size:${fss};color:${col2};font-weight:700;">${tStr}</td>`;
+        days.forEach(day=>{if((col.t==='ab'||col.t==='abr')&&isShortDay(day))tbl+=`<td style="background:#f0f0f0;border:1px solid #ccc;text-align:center;font-size:${fss};color:#bbb;">—</td>`;
+          else tbl+=`<td style="background:${bg};border:1px solid #ccc;text-align:center;font-size:${fss};color:${col2};">${em} ${lbl}</td>`;});
+        tbl+='</tr>';
+      }
+    });
+    tbl+='</tbody></table>';
+    const load=getTLoad(teacher.id);const max=+(s.maxTeacherPeriods||36);
+    return`<div>${pSchoolHdr()}<div style="text-align:center;margin-bottom:7px;">
+      <div style="font-size:13px;font-weight:900;color:#1a3a5c;">शिक्षक तासिका पत्रक</div>
+      <div style="font-size:11px;color:#444;">नाव: <strong>${teacher.name}</strong> (${teacher.code}) | साप्ताहिक भार: <strong style="color:${load>max?'#e74c3c':'#27ae60'}">${load}/${max}</strong> तास</div>
+    </div>${tbl}${pSignRow(teacher.name)}</div>${idx<teachers.length-1?'<div class="pb"></div>':''}`;
+  }).join('');
+  openPW(html,'शिक्षकानुसार तासिका');
+}
+
+function printFullSchool(){
+  const s=ST.settings;const days=s.workingDays||[];
+  const fs='7.5px';const fss='7px';
+  const aS=m2t12(t2m(s.assemblyTime||'07:15'));const aE=m2t12(t2m(s.assemblyTime||'07:15')+(+(s.assemblyDuration||15)));
+  let html=pSchoolHdr()+`<div style="text-align:center;font-size:13px;font-weight:900;color:#1a3a5c;margin-bottom:10px;">संपूर्ण शाळा — एकत्रित तासिका पत्रक</div>`;
+  days.forEach(day=>{
+    const isShort=isShortDay(day);const dayCols=buildCols(day);
+    html+=`<div style="margin-bottom:14px;"><div style="background:${isShort?'#7f3d00':'#1a3a5c'};color:white;padding:3px 8px;font-size:10px;font-weight:700;border-radius:3px 3px 0 0;">${day}${isShort?' — Short Day (6 तास, Abhyasika नाही)':''}</div>
+    <table style="width:100%;border-collapse:collapse;font-size:${fs};"><thead><tr>
+    <th style="background:#1a3a5c;color:white;padding:4px 3px;font-size:${fss};border:1px solid #ccc;min-width:65px;">वेळ</th>`;
+    ST.classes.forEach(cls=>{const ct=ST.teachers.find(t=>t.id===cls.classTeacherId);
+      html+=`<th style="background:#1a3a5c;color:white;padding:4px 3px;text-align:center;font-size:${fss};border:1px solid #ccc;">${cls.std}-${cls.division}<br><span style="font-weight:400;opacity:.8;font-size:6.5px;">${ct?ct.name.split(' ')[0]:''}</span></th>`;});
+    html+=`</tr></thead><tbody>`;
+    // Assembly row
+    html+=`<tr style="background:#fff9c4;"><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:${fss};color:#856404;font-weight:700;">🙏<br>${aS}–${aE}</td>`;
+    ST.classes.forEach(()=>html+=`<td style="border:1px solid #ccc;text-align:center;font-size:${fss};color:#856404;background:#fff9c4;">Assembly</td>`);
+    html+='</tr>';
+    dayCols.forEach(col=>{
+      if(col.t==='p'){const p=col.pt.p;
+        html+=`<tr><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:${fss};font-weight:700;background:#f8fafc;color:#1a3a5c;">${m2t12(t2m(col.pt.s))}<br>${m2t12(t2m(col.pt.e))}<br>P${p}</td>`;
+        ST.classes.forEach(cls=>{const cell=(ST.timetables[cls.id]||{})[day]?.[p];
+          if(cell?.isDoubleCont){html+=`<td style="background:#eff8ff;border:1px solid #ccc;text-align:center;font-size:${fss};color:#94b8d8;">↩</td>`;return;}
+          if(cell?.subjectId){const subj=ST.subjects.find(x=>x.id===cell.subjectId);const tchr=ST.teachers.find(x=>x.id===cell.teacherId);
+            html+=`<td style="background:#eaf5fb;border:1px solid #ccc;border-top:1.5px solid ${subj?.color||'#3498db'};text-align:center;padding:2px;">
+              <strong style="font-size:${fs};color:${subj?.color||'#1a3a5c'};">${subj?.code||'?'}</strong><br>
+              <span style="font-size:6.5px;color:#555;">${tchr?.code||'?'}</span></td>`;
+          } else html+=`<td style="background:#fafafa;border:1px solid #ccc;text-align:center;font-size:${fss};color:#ccc;">—</td>`;
+        });
+        html+='</tr>';
+      } else {
+        let lbl='',bg='',col2='',em='';
+        if(col.t==='sb'){lbl='Short Break';bg='#fef9e7';col2='#b7770d';em='☕';}
+        else if(col.t==='lb'){lbl='Lunch';bg='#fff3e0';col2='#d35400';em='🍱';}
+        const tStr=col.s?`${m2t12(t2m(col.s))}–${m2t12(t2m(col.e))}`:'';
+        html+=`<tr style="background:${bg};"><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:${fss};color:${col2};font-weight:700;">${tStr}</td>`;
+        ST.classes.forEach(()=>html+=`<td style="background:${bg};border:1px solid #ccc;text-align:center;font-size:${fss};color:${col2};">${em} ${lbl}</td>`);
+        html+='</tr>';
+      }
+    });
+    html+='</tbody></table></div>';
+  });
+  html+=pSignRow(null);
+  openPW(html,'संपूर्ण शाळा तासिका');
+}
+
+// ===== REPORTS =====
+function renderLoadRep(){
+  const s=ST.settings;const max=+(s.maxTeacherPeriods||36);const days=s.workingDays||[];
+  if(!ST.teachers.length){document.getElementById('loadRep').innerHTML='<div class="es"><div class="bi2">👨‍🏫</div><p>No teachers.</p></div>';return;}
+  let h='<div class="ttw"><table class="dt"><thead><tr><th>#</th><th>Teacher</th><th>Code</th>';
+  days.forEach(d=>h+=`<th>${d.substring(0,3)}</th>`);h+=`<th>Total</th><th>Status</th></tr></thead><tbody>`;
+  ST.teachers.forEach((t,i)=>{
+    let dl={};let total=0;days.forEach(day=>{dl[day]=0;});
+    ST.classes.forEach(cls=>{days.forEach(day=>{for(let p=1;p<=getMaxP(day);p++){const cell=ST.timetables[cls.id]?.[day]?.[p];if(cell?.teacherId===t.id&&!cell.isDoubleCont){dl[day]++;total++;}}});});
+    const pct=Math.min(100,Math.round(total/max*100));const col=total>max?'#e74c3c':total>max*.85?'#f39c12':'#27ae60';
+    h+=`<tr><td>${i+1}</td><td><strong>${t.name}</strong></td><td><span class="badge bgg">${t.code}</span></td>`;
+    days.forEach(d=>h+=`<td style="text-align:center;">${dl[d]||0}</td>`);
+    h+=`<td style="font-weight:700;color:${col};text-align:center;">${total}/${max}</td>
+    <td>${total>max?'<span class="badge br">⚠️ Over</span>':total>max*.85?'<span class="badge bo2">⚡ High</span>':'<span class="badge bgg">✓ OK</span>'}</td></tr>`;
+  });
+  h+='</tbody></table></div>';document.getElementById('loadRep').innerHTML=h;
+}
+function renderSubjRep(){
+  const s=ST.settings;const days=s.workingDays||[];
+  let h='<div class="ttw"><table class="dt"><thead><tr><th>Class</th><th>Subject</th><th>Target</th><th>Assigned</th><th>Status</th></tr></thead><tbody>';
+  ST.classes.forEach(cls=>{(ST.classSubjects[cls.id]||[]).forEach(row=>{
+    const subj=ST.subjects.find(s=>s.id===row.subjectId);let asgn=0;
+    days.forEach(day=>{for(let p=1;p<=getMaxP(day);p++){const cell=ST.timetables[cls.id]?.[day]?.[p];if(cell?.subjectId===row.subjectId&&!cell.isDoubleCont)asgn++;}});
+    const tgt=row.periodsPerWeek||3;const ok=asgn>=tgt;
+    h+=`<tr><td><strong>${cls.std}-${cls.division}</strong></td><td>${subj?.name||'?'} <span class="badge" style="background:${subj?.color||'#eee'}20;color:${subj?.color||'#333'};">${subj?.code}</span></td>
+    <td style="text-align:center;">${tgt}</td><td style="text-align:center;font-weight:700;color:${ok?'#27ae60':'#e74c3c'};">${asgn}</td>
+    <td>${ok?'<span class="badge bgg">✓</span>':'<span class="badge br">⚠️</span>'}</td></tr>`;});});
+  h+='</tbody></table></div>';document.getElementById('subjRep').innerHTML=h;
+}
+function renderFreeRep(){
+  const s=ST.settings;const days=s.workingDays||[];let total=0;
+  let h='<div class="ttw"><table class="dt"><thead><tr><th>Class</th><th>Day</th><th>Empty Periods</th><th>Count</th></tr></thead><tbody>';
+  ST.classes.forEach(cls=>{days.forEach(day=>{const empty=[];for(let p=1;p<=getMaxP(day);p++){const cell=ST.timetables[cls.id]?.[day]?.[p];if(!cell||!cell.subjectId)empty.push(`P${p}`);}
+    if(empty.length){h+=`<tr><td><strong>${cls.std}-${cls.division}</strong></td><td>${day}</td><td>${empty.join(', ')}</td><td><span class="badge br">${empty.length}</span></td></tr>`;total+=empty.length;}});});
+  h+=`</tbody></table></div><div style="margin-top:8px;font-size:.8rem;color:var(--mu);">Total empty: <strong style="color:#e74c3c;">${total}</strong></div>`;
+  document.getElementById('freeRep').innerHTML=h;
+}
+
+// ===== EXPORT/IMPORT =====
+function exportJSON(){const blob=new Blob([JSON.stringify(ST,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`wvs_${new Date().toISOString().slice(0,10)}.json`;a.click();toast('Exported!');}
+function exportCSV(){
+  const s=ST.settings;const days=s.workingDays||[];const ptimes=getPTimes();
+  let csv='Class,Division,Day,Period,Time,Subject,Teacher\n';
+  ST.classes.forEach(cls=>{days.forEach(day=>{for(let p=1;p<=getMaxP(day);p++){const cell=ST.timetables[cls.id]?.[day]?.[p];const t=ptimes.find(x=>x.p===p);const subj=ST.subjects.find(x=>x.id===cell?.subjectId);const tchr=ST.teachers.find(x=>x.id===cell?.teacherId);csv+=`${cls.std},${cls.division},${day},P${p},${t?m2t12(t2m(t.s)):''}–${t?m2t12(t2m(t.e)):''},${subj?.name||''},${tchr?.name||''}\n`;}});});
+  const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`wvs_${new Date().toISOString().slice(0,10)}.csv`;a.click();toast('CSV exported!');
+}
+function importJSON(){document.getElementById('impFile').click();}
+function doImport(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(!d.teachers||!d.classes)return toast('Invalid!','error');ST=d;save();load();toast('Imported!');}catch(err){toast('Failed: '+err.message,'error');}};r.readAsText(file);e.target.value='';}
+
+// ===== INIT =====
+load();
+renderPreview();renderSubjects();renderTeachers();renderClasses();popSubjSel();popCTSel();
 if(!ST.subjects.length){
-  const defs=[
-    {name:'Marathi',code:'MAR',color:'#e74c3c',type:'theory'},
-    {name:'Hindi',code:'HIN',color:'#e67e22',type:'theory'},
-    {name:'English',code:'ENG',color:'#3498db',type:'theory'},
-    {name:'Mathematics',code:'MATH',color:'#9b59b6',type:'theory'},
-    {name:'Science',code:'SCI',color:'#27ae60',type:'theory'},
-    {name:'Social Science',code:'SS',color:'#1abc9c',type:'theory'},
-    {name:'History',code:'HIST',color:'#c0392b',type:'theory'},
-    {name:'Geography',code:'GEO',color:'#2980b9',type:'theory'},
-    {name:'Civics',code:'CIV',color:'#16a085',type:'theory'},
-    {name:'Physical Education',code:'PE',color:'#f39c12',type:'practical'},
-    {name:'Art',code:'ART',color:'#d35400',type:'practical'},
-    {name:'Computer',code:'COMP',color:'#2c3e50',type:'practical'},
-    {name:'Lab / Practical',code:'LAB',color:'#7f8c8d',type:'practical'},
-  ];
-  defs.forEach((s,i)=>ST.subjects.push({id:Date.now()+i,...s}));
-  saveST();renderSubjects();popSubjSelForTeacher();
+  [{name:'Marathi',code:'MAR',color:'#e74c3c',type:'theory'},{name:'Hindi',code:'HIN',color:'#e67e22',type:'theory'},
+  {name:'English',code:'ENG',color:'#3498db',type:'theory'},{name:'Mathematics',code:'MATH',color:'#9b59b6',type:'theory'},
+  {name:'Science',code:'SCI',color:'#27ae60',type:'theory'},{name:'Social Science',code:'SS',color:'#1abc9c',type:'theory'},
+  {name:'History',code:'HIST',color:'#c0392b',type:'theory'},{name:'Geography',code:'GEO',color:'#2980b9',type:'theory'},
+  {name:'Civics',code:'CIV',color:'#16a085',type:'theory'},{name:'PE',code:'PE',color:'#f39c12',type:'practical'},
+  {name:'Art',code:'ART',color:'#d35400',type:'practical'},{name:'Computer',code:'COMP',color:'#2c3e50',type:'practical'},
+  {name:'Lab / Practical',code:'LAB',color:'#7f8c8d',type:'practical'}].forEach((s,i)=>ST.subjects.push({id:Date.now()+i,...s}));
+  save();renderSubjects();popSubjSel();
 }
 </script>
 </body>
