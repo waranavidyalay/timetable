@@ -1051,7 +1051,7 @@ function pSig(ctName){
       <div style="font-size:8.5px;color:#666;margin-top:2px;">${mp}</div>
     </td>
   </tr></table>
-  <div style="text-align:right;margin-top:6px;">
+  <div style="text-align:center;margin-top:6px;">
     <span style="font-size:7px;color:#aaa;">&#169; ppm</span>
   </div>`;
 }
@@ -1078,15 +1078,15 @@ function buildA4Cls(cid){
   rows.forEach(row=>{
     if(row.type==='p'){
       const p=row.pt.p;const tStr=`${m2t12(t2m(row.pt.s))} –<br>${m2t12(t2m(row.pt.e))}`;
-      h+=`<tr><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:7.5px;font-weight:700;background:#f8fafc;color:#1a3a5c;">${tStr}<br><span style="font-size:6.5px;color:#888;">P${p}</span></td>`;
+      h+=`<tr><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:8px;font-weight:700;background:#f8fafc;color:#1a3a5c;">${tStr}<br><span style="font-size:7px;color:#888;">P${p}</span></td>`;
       days.forEach(day=>{const mp=maxP(day);
         if(p>mp){h+=`<td style="background:#f0f0f0;border:1px solid #ccc;text-align:center;font-size:7px;color:#bbb;">सुट्टी</td>`;return;}
         const cell=tt[day]?.[p];
         if(cell?.isDoubleCont){h+=`<td style="background:#eff8ff;border:1px solid #ccc;text-align:center;font-size:7px;color:#94b8d8;">↩</td>`;return;}
         if(cell?.subjectId){const subj=D.subjects.find(x=>x.id===cell.subjectId);const tchr=D.teachers.find(x=>x.id===cell.teacherId);
           h+=`<td style="background:#eaf5fb;border:1px solid #ccc;border-top:2px solid ${subj?.color||'#3498db'};text-align:center;padding:2px;">
-            <strong style="font-size:8px;color:${subj?.color||'#1a3a5c'};">${subj?.name||'?'}${cell.isDouble?'×2':''}</strong><br>
-            <span style="font-size:6.5px;color:#555;">/${tchr?.code||'?'}</span></td>`;
+            <strong style="font-size:9.5px;color:${subj?.color||'#1a3a5c'};">${subj?.name||'?'}${cell.isDouble?'×2':''}</strong><br>
+            <span style="font-size:8px;color:#555;">/${tchr?.code||'?'}</span></td>`;
         } else h+=`<td style="background:#fafafa;border:1px solid #ccc;text-align:center;font-size:7px;color:#ccc;">—</td>`;
       });h+='</tr>';
     } else {
@@ -1154,14 +1154,14 @@ function buildA4Teacher(teacher){
   rows.forEach(row=>{
     if(row.type==='p'){
       const p=row.pt.p;const tStr=`${m2t12(t2m(row.pt.s))}<br>${m2t12(t2m(row.pt.e))}`;
-      h+=`<tr><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:6.5px;font-weight:700;background:#f8fafc;color:#1a3a5c;">${tStr}<br><span style="font-size:6px;">P${p}</span></td>`;
+      h+=`<tr><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:8px;font-weight:700;background:#f8fafc;color:#1a3a5c;">${tStr}<br><span style="font-size:7px;">P${p}</span></td>`;
       days.forEach(day=>{const mp=maxP(day);
         if(p>mp){h+=`<td style="background:#f0f0f0;border:1px solid #ccc;text-align:center;font-size:7px;color:#bbb;">सुट्टी</td>`;return;}
         let found=null;D.classes.forEach(cls=>{const cell=D.TT[cls.id]?.[day]?.[p];if(cell?.teacherId===teacher.id)found={cls,cell};});
         if(found){const subj=D.subjects.find(x=>x.id===found.cell.subjectId);
           h+=`<td style="background:#eaf5fb;border:1px solid #ccc;border-top:2px solid ${subj?.color||'#3498db'};text-align:center;padding:2px;">
-            <strong style="font-size:8px;color:${subj?.color||'#1a3a5c'};">${found.cls.std}-${found.cls.division}</strong><br>
-            <span style="font-size:6.5px;color:#555;">${subj?.code||'?'}${found.cell.isDouble?'×2':''}</span></td>`;
+            <strong style="font-size:9.5px;color:${subj?.color||'#1a3a5c'};">${found.cls.std}-${found.cls.division}</strong><br>
+            <span style="font-size:8px;color:#555;">${subj?.code||'?'}${found.cell.isDouble?'×2':''}</span></td>`;
         } else h+=`<td style="background:#fafafa;border:1px solid #ccc;text-align:center;font-size:7px;color:#ccc;">—</td>`;
       });h+='</tr>';
     } else {
@@ -1245,8 +1245,8 @@ function buildA3School(){
           if(cell?.isDoubleCont){html+=`<td style="background:#eff8ff;border:1px solid #ccc;text-align:center;font-size:6px;color:#94b8d8;">↩</td>`;return;}
           if(cell?.subjectId){const subj=D.subjects.find(x=>x.id===cell.subjectId);
             html+=`<td style="background:#eaf5fb;border:1px solid #ccc;border-top:1.5px solid ${subj?.color||'#3498db'};text-align:center;padding:1px;">
-              <strong style="font-size:6px;color:${subj?.color||'#1a3a5c'};">${cl.std}-${cl.division}</strong><br>
-              <span style="font-size:5.5px;color:#555;">${subj?.code||'?'}${cell.isDouble?'×2':''}</span></td>`;
+              <strong style="font-size:7.5px;color:${subj?.color||'#1a3a5c'};">${cl.std}-${cl.division}</strong><br>
+              <span style="font-size:7px;color:#555;">${subj?.code||'?'}${cell.isDouble?'×2':''}</span></td>`;
           } else html+=`<td style="background:#fafafa;border:1px solid #ccc;text-align:center;font-size:6px;color:#ccc;">—</td>`;
         });
       });
@@ -1273,9 +1273,9 @@ function openPW(body,title,size){
   const pgSize=size===3?'A3 landscape':'A4 landscape';
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;900&display=swap" rel="stylesheet">
-  <style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'DM Sans',sans-serif;padding:8px;background:#fff;}
+  <style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'DM Sans',sans-serif;padding:0;background:#fff;}
   .pb{page-break-after:always;margin:10px 0;border-bottom:1px dashed #ccc;}
-  @page{size:${pgSize};margin:7mm;}@media print{.pb{page-break-after:always!important;}body{padding:0;}}
+  @page{size:${pgSize};margin:10mm;}@media print{.pb{page-break-after:always!important;}body{padding:0;}}
   </style></head><body>${body}<script>window.onload=function(){setTimeout(function(){window.print();},500);};<\/script></body></html>`);
   w.document.close();
 }
