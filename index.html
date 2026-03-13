@@ -163,9 +163,14 @@ body{font-family:'DM Sans',sans-serif;background:#eaf0f6;color:var(--tx);min-hei
         <div><label>Name</label><input type="text" id="tname" placeholder="Rajesh Patil"></div>
         <div><label>Code (max 5)</label><input type="text" id="tcode" placeholder="RP" maxlength="5"></div>
         <div><label>Phone</label><input type="text" id="tphone" placeholder="9876543210"></div>
-        <div><label>Subjects</label><select id="tsubjs" multiple style="height:68px;"></select></div>
       </div>
-      <div style="margin-top:7px;"><button class="btn bp" onclick="addTeacher()">➕ Add</button></div>
+      <div style="margin-top:8px;">
+        <div class="fl" style="margin-bottom:4px;">Subjects (एकापेक्षा जास्त निवडता येतात)</div>
+        <div id="tsubjCB" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;background:var(--lt);border-radius:7px;border:1.5px solid var(--bd);min-height:36px;">
+          <span style="font-size:.72rem;color:var(--mu);">— आधी Subjects tab मध्ये subjects add करा —</span>
+        </div>
+      </div>
+      <div style="margin-top:9px;"><button class="btn bp" onclick="addTeacher()">➕ Add</button></div>
     </div>
     <div class="card">
       <div class="sh"><div class="ct" style="margin-bottom:0;">Teachers (<span id="tcount">0</span>)</div>
@@ -346,6 +351,7 @@ body{font-family:'DM Sans',sans-serif;background:#eaf0f6;color:var(--tx);min-hei
       <select id="mteach" class="fi" onchange="chkMC()"></select></div>
     <div id="mcfl" style="display:none;margin-bottom:6px;"></div>
     <div id="mload" style="display:none;margin-bottom:6px;"></div>
+    <div id="mperiodcount" style="display:none;margin-bottom:6px;font-size:.75rem;font-weight:600;padding:4px 8px;background:var(--lt);border-radius:5px;"></div>
     <div style="margin-bottom:10px;">
       <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.78rem;">
         <input type="checkbox" id="mdbl" onchange="updDbl()"> 🔗 Double Period
@@ -458,7 +464,18 @@ function popSel(id){const e=document.getElementById(id);if(!e)return;
   e.innerHTML='<option value="">-- Select --</option>'+D.classes.map(c=>`<option value="${c.id}">${c.std}-${c.division} (${c.medium})</option>`).join('');}
 function popSelT(id){const e=document.getElementById(id);if(!e)return;
   e.innerHTML='<option value="">-- Select --</option>'+D.teachers.map(t=>`<option value="${t.id}">${t.name} (${t.code})</option>`).join('');}
-function popSubjSel(){const e=document.getElementById('tsubjs');if(e)e.innerHTML=D.subjects.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');}
+function popSubjSel(){
+  // Checkboxes for teacher add form
+  const cb=document.getElementById('tsubjCB');
+  if(cb){
+    if(!D.subjects.length){cb.innerHTML='<span style="font-size:.72rem;color:var(--mu);">— आधी Subjects tab मध्ये subjects add करा —</span>';return;}
+    cb.innerHTML=D.subjects.map(s=>`<label style="display:flex;align-items:center;gap:4px;cursor:pointer;padding:3px 8px;background:${s.color}14;border:1.5px solid ${s.color}44;border-radius:20px;font-size:.74rem;">
+      <input type="checkbox" class="tsCB" value="${s.id}">
+      <span style="width:8px;height:8px;border-radius:50%;background:${s.color};display:inline-block;flex-shrink:0;"></span>
+      <strong style="color:${s.color};">${s.code}</strong> ${s.name}
+    </label>`).join('');
+  }
+}
 function popCTSel(){const e=document.getElementById('cct');if(e)e.innerHTML='<option value="">-- None --</option>'+D.teachers.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');}
 function ppSels(){
   const pc=document.getElementById('pCSel');if(pc)pc.innerHTML='<option value="">एक वर्ग...</option>'+D.classes.map(c=>`<option value="${c.id}">${c.std}-${c.division}</option>`).join('');
@@ -546,9 +563,10 @@ function addTeacher(){
   const name=document.getElementById('tname').value.trim(),code=document.getElementById('tcode').value.trim().toUpperCase();
   if(!name||!code)return toast('Name & code required!','error');
   if(D.teachers.find(t=>t.code===code))return toast('Code exists!','error');
-  const subjs=Array.from(document.getElementById('tsubjs').selectedOptions).map(o=>+o.value);
+  const subjs=Array.from(document.querySelectorAll('.tsCB:checked')).map(o=>+o.value);
   D.teachers.push({id:Date.now(),name,code,phone:document.getElementById('tphone').value.trim(),subjects:subjs});
   save();document.getElementById('tname').value='';document.getElementById('tcode').value='';document.getElementById('tphone').value='';
+  document.querySelectorAll('.tsCB').forEach(cb=>cb.checked=false);
   renderTeachers();popCTSel();toast(`${name} added`);
 }
 function renderTeachers(){
@@ -783,7 +801,15 @@ function openMod(cid,day,p){
   msubj.innerHTML=opts;
   const cell=D.TT[cid]?.[day]?.[p];
   if(cell){msubj.value=cell.subjectId||'';onSC(cell.teacherId);document.getElementById('mdbl').checked=!!cell.isDouble;}
-  else{if(p===1&&ctobj)onSC(ctobj.id);else onSC(null);document.getElementById('mdbl').checked=false;}
+  else{if(p===1&&ctobj){msubj.value='';onSC(ctobj.id);}else onSC(null);document.getElementById('mdbl').checked=false;}
+  // Show subject period count in modal
+  const mpc=document.getElementById('mperiodcount');
+  if(mpc){msubj.addEventListener('change',function(){
+    const s2=+this.value;const csR=(D.CS[CM.cid]||[]).find(r=>r.subjectId===s2);
+    if(csR){const done=getSubjAssigned(CM.cid,s2);const t2=csR.periodsPerWeek||0;
+      mpc.innerHTML=`<span style="color:${done>=t2?'#e74c3c':'#27ae60'}">📊 ${done}/${t2} assigned</span>`;mpc.style.display='block';}
+    else mpc.style.display='none';
+  },{once:false});}
   chkMC();updDbl();
   document.getElementById('modP').classList.add('show');
 }
@@ -818,6 +844,11 @@ function updDbl(){
   if(p===+(c.shortBreakAfter||3)||p===+(c.lunchBreakAfter||6)){msg.className='wb';msg.innerHTML=`⛔ P${p} नंतर break — double शक्य नाही!`;return;}
   msg.className='ob';msg.innerHTML=`✅ P${p}+P${next} Double (Group ${getGrp(p)})`;
 }
+function getSubjAssigned(cid,sid){
+  // Count how many times subject is assigned in timetable for this class
+  let cnt=0;(D.cfg.workingDays||[]).forEach(day=>{for(let p=1;p<=maxP(day);p++){const cell=D.TT[cid]?.[day]?.[p];if(cell?.subjectId===sid&&!cell.isDoubleCont)cnt++;}});
+  return cnt;
+}
 function assignP(){
   const sid=+document.getElementById('msubj').value,tid=+document.getElementById('mteach').value;
   if(!sid||!tid)return toast('Subject & Teacher निवडा!','error');
@@ -826,12 +857,24 @@ function assignP(){
   let cfl=false;D.classes.forEach(cls=>{if(cls.id===cid)return;const cell=D.TT[cls.id]?.[day]?.[p];if(cell?.teacherId===tid)cfl=true;});
   if(cfl)return toast('⛔ Teacher conflict!','error',5000);
   const isDbl=document.getElementById('mdbl').checked;
+  // Check subject period limit BEFORE assigning
+  const csRow=(D.CS[cid]||[]).find(r=>r.subjectId===sid);
+  const tgt=csRow?.periodsPerWeek||0;
+  if(tgt>0){
+    const cur=getSubjAssigned(cid,sid);
+    const adding=isDbl?2:1;
+    if(cur+adding>tgt){
+      const subj=D.subjects.find(x=>x.id===sid);
+      if(!confirm(`⚠️ ${subj?.name||'हा विषय'} — आधीच ${cur}/${tgt} तास assigned आहेत!
+जास्त assign करायचे का?`))return;
+    }
+  }
   if(!D.TT[cid])D.TT[cid]={};if(!D.TT[cid][day])D.TT[cid][day]={};
   if(isDbl){const next=p+1;
     if(!sameGrp(p,next)||next>+(c.numPeriods||9)||p===+(c.shortBreakAfter||3)||p===+(c.lunchBreakAfter||6))return toast('Double शक्य नाही!','error');
     D.TT[cid][day][p]={subjectId:sid,teacherId:tid,isDouble:true};D.TT[cid][day][next]={subjectId:sid,teacherId:tid,isDoubleCont:true};
   } else D.TT[cid][day][p]={subjectId:sid,teacherId:tid};
-  // Warn if load exceeded (no block)
+  // Warn if teacher load exceeded (no block)
   const mx=+(c.maxTeacherPeriods||36);const l=getTLoad(tid);
   if(l>mx){const t=D.teachers.find(x=>x.id===tid);toast(`⚠️ ${t?.name} — ${l} periods (warning, not blocked)`,'warn',4000);}
   save();closeMod();loadEditor();checkLoads();
@@ -1013,8 +1056,8 @@ function buildA4Cls(cid){
         if(cell?.isDoubleCont){h+=`<td style="background:#eff8ff;border:1px solid #ccc;text-align:center;font-size:7px;color:#94b8d8;">↩</td>`;return;}
         if(cell?.subjectId){const subj=D.subjects.find(x=>x.id===cell.subjectId);const tchr=D.teachers.find(x=>x.id===cell.teacherId);
           h+=`<td style="background:#eaf5fb;border:1px solid #ccc;border-top:2px solid ${subj?.color||'#3498db'};text-align:center;padding:2px;">
-            <strong style="font-size:8px;color:${subj?.color||'#1a3a5c'};">${subj?.code||'?'}${cell.isDouble?'×2':''}</strong><br>
-            <span style="font-size:6.5px;color:#555;">${tchr?.code||'?'}</span></td>`;
+            <strong style="font-size:8px;color:${subj?.color||'#1a3a5c'};">${subj?.name||'?'}${cell.isDouble?'×2':''}</strong><br>
+            <span style="font-size:6.5px;color:#555;">/${tchr?.code||'?'}</span></td>`;
         } else h+=`<td style="background:#fafafa;border:1px solid #ccc;text-align:center;font-size:7px;color:#ccc;">—</td>`;
       });h+='</tr>';
     } else {
@@ -1039,23 +1082,23 @@ function buildA4Teacher(teacher){
   const c=D.cfg;const days=c.workingDays||[];const rows=fullRows();
   const aS=m2t12(t2m(c.assemblyTime||'07:15'));const aE=m2t12(t2m(c.assemblyTime||'07:15')+(+(c.assemblyDuration||15)));
   let h=`<table style="width:100%;border-collapse:collapse;font-size:8.5px;table-layout:fixed;">
-  <colgroup><col style="width:65px;"><col style="width:11%;" span="${days.length}"></colgroup>
-  <thead><tr><th style="background:#1a3a5c;color:#fff;padding:4px 3px;border:1px solid #aaa;text-align:center;font-size:7.5px;">वेळ</th>`;
-  days.forEach(day=>{const iS=isShort(day);h+=`<th style="background:${iS?'#7f3d00':'#1a3a5c'};color:#fff;padding:4px 3px;border:1px solid #aaa;text-align:center;font-size:7.5px;">${day}${iS?'<br>(6T)':''}</th>`;});
+  <colgroup><col style="width:46px;"><col style="width:11%;" span="${days.length}"></colgroup>
+  <thead><tr><th style="background:#1a3a5c;color:#fff;padding:3px 2px;border:1px solid #aaa;text-align:center;font-size:7px;">वेळ</th>`;
+  days.forEach(day=>{const iS=isShort(day);h+=`<th style="background:${iS?'#7f3d00':'#1a3a5c'};color:#fff;padding:3px 2px;border:1px solid #aaa;text-align:center;font-size:7px;">${day}${iS?'<br>(6T)':''}</th>`;});
   h+=`</tr></thead><tbody>`;
-  h+=`<tr style="background:#fff9c4;"><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:7.5px;color:#856404;font-weight:700;">🙏<br>${aS}<br>${aE}</td>`;
-  days.forEach(()=>h+=`<td style="border:1px solid #ccc;text-align:center;font-size:7px;color:#856404;">Assembly</td>`);h+='</tr>';
+  h+=`<tr style="background:#fff9c4;"><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:7px;color:#856404;font-weight:700;">🙏<br>${aS}<br>${aE}</td>`;
+  days.forEach(()=>h+=`<td style="border:1px solid #ccc;text-align:center;font-size:6.5px;color:#856404;">Assembly</td>`);h+='</tr>';
   rows.forEach(row=>{
     if(row.type==='p'){
-      const p=row.pt.p;const tStr=`${m2t12(t2m(row.pt.s))} –<br>${m2t12(t2m(row.pt.e))}`;
-      h+=`<tr><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:7.5px;font-weight:700;background:#f8fafc;color:#1a3a5c;">${tStr}<br>P${p}</td>`;
+      const p=row.pt.p;const tStr=`${m2t12(t2m(row.pt.s))}<br>${m2t12(t2m(row.pt.e))}`;
+      h+=`<tr><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:6.5px;font-weight:700;background:#f8fafc;color:#1a3a5c;">${tStr}<br><span style="font-size:6px;">P${p}</span></td>`;
       days.forEach(day=>{const mp=maxP(day);
         if(p>mp){h+=`<td style="background:#f0f0f0;border:1px solid #ccc;text-align:center;font-size:7px;color:#bbb;">सुट्टी</td>`;return;}
         let found=null;D.classes.forEach(cls=>{const cell=D.TT[cls.id]?.[day]?.[p];if(cell?.teacherId===teacher.id)found={cls,cell};});
         if(found){const subj=D.subjects.find(x=>x.id===found.cell.subjectId);
           h+=`<td style="background:#eaf5fb;border:1px solid #ccc;border-top:2px solid ${subj?.color||'#3498db'};text-align:center;padding:2px;">
-            <strong style="font-size:8px;color:${subj?.color||'#1a3a5c'};">${subj?.code||'?'}${found.cell.isDouble?'×2':''}</strong><br>
-            <span style="font-size:6.5px;color:#555;">${found.cls.std}-${found.cls.division}</span></td>`;
+            <strong style="font-size:8px;color:${subj?.color||'#1a3a5c'};">${found.cls.std}-${found.cls.division}</strong><br>
+            <span style="font-size:6.5px;color:#555;">${subj?.code||'?'}${found.cell.isDouble?'×2':''}</span></td>`;
         } else h+=`<td style="background:#fafafa;border:1px solid #ccc;text-align:center;font-size:7px;color:#ccc;">—</td>`;
       });h+='</tr>';
     } else {
@@ -1139,10 +1182,10 @@ function buildA3School(){
           if(p>mp2){html+=`<td style="background:#f0f0f0;border:1px solid #ccc;text-align:center;font-size:6px;color:#bbb;">—</td>`;return;}
           const cell=(D.TT[cl.id]||{})[day]?.[p];
           if(cell?.isDoubleCont){html+=`<td style="background:#eff8ff;border:1px solid #ccc;text-align:center;font-size:6px;color:#94b8d8;">↩</td>`;return;}
-          if(cell?.subjectId){const subj=D.subjects.find(x=>x.id===cell.subjectId);const tchr=D.teachers.find(x=>x.id===cell.teacherId);
+          if(cell?.subjectId){const subj=D.subjects.find(x=>x.id===cell.subjectId);
             html+=`<td style="background:#eaf5fb;border:1px solid #ccc;border-top:1.5px solid ${subj?.color||'#3498db'};text-align:center;padding:1px;">
-              <strong style="font-size:6.5px;color:${subj?.color||'#1a3a5c'};">${subj?.code||'?'}</strong><br>
-              <span style="font-size:5.5px;color:#555;">${tchr?.code||'?'}</span></td>`;
+              <strong style="font-size:6px;color:${subj?.color||'#1a3a5c'};">${cl.std}-${cl.division}</strong><br>
+              <span style="font-size:5.5px;color:#555;">${subj?.code||'?'}${cell.isDouble?'×2':''}</span></td>`;
           } else html+=`<td style="background:#fafafa;border:1px solid #ccc;text-align:center;font-size:6px;color:#ccc;">—</td>`;
         });
       });
