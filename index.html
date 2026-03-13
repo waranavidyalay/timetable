@@ -1188,144 +1188,114 @@ function buildA4Teacher(teacher){
 // A3 SCHOOL TIMETABLE
 // Layout: Time | Mon(9 sub-cols) | Tue(9) | Wed(9) | Teachers col | Thu(9) | Fri(9) | Sat(9)
 function buildA3School(){
-  const c=D.cfg;const allDays=c.workingDays||[];const rows=fullRows();const cls=D.classes;
+  const c=D.cfg;const allDays=c.workingDays||[];
   const np=+(c.numPeriods||9);const sdp=+(c.shortDayPeriods||6);
-  const grp1Days=allDays.filter(d=>['Monday','Tuesday','Wednesday'].includes(d));
-  const grp2Days=allDays.filter(d=>['Thursday','Friday','Saturday'].includes(d));
-  const aS=m2t12(t2m(c.assemblyTime||'07:15'));const aE=m2t12(t2m(c.assemblyTime||'07:15')+(+(c.assemblyDuration||15)));
-  const fss='6.5px';const fs='7px';
-  const teacherListHTML=D.teachers.map(t=>`<div style="font-size:${fss};line-height:1.6;border-bottom:1px dotted #ddd;padding:1px 0;"><strong>${t.code}</strong> ${t.name}</div>`).join('');
+  const fss='6.5px';const fs='6.5px';
+  const teacherNameColIdx=3; // 0-based: place teacher name in 4th period col (index 3)
 
-  // Build period header row for a group of days
-  function buildPeriodHdrs(groupDays){
+  // For each day, how many period columns
+  function dayP(day){return isShort(day)?sdp:np;}
+
+  // Build top header row: Day names with colspan
+  function buildDayHdrRow(){
     let h='';
-    groupDays.forEach(day=>{
-      const mp=isShort(day)?sdp:np;
-      for(let p=1;p<=np;p++){
-        if(p<=mp){
-          h+=`<th style="background:#2c3e6b;color:#fff;border:1px solid #aaa;font-size:6px;text-align:center;padding:2px 1px;min-width:22px;">P${p}</th>`;
-        } else {
-          h+=`<th style="background:#555;color:#ccc;border:1px solid #aaa;font-size:6px;text-align:center;padding:2px 1px;">—</th>`;
-        }
+    // teacher name cell spans teacherNameColIdx cols at start — handled differently
+    // We need: [teacher-name cols merged] | day1(colspan=dayP) | day2 | ...
+    // Actually teacher name is IN the period cols as a merged cell
+    // Header row 1: blank for teacher col area | Day1 | Day2 | ...
+    allDays.forEach(day=>{
+      const iS=isShort(day);
+      h+=`<th colspan="${dayP(day)}" style="background:${iS?'#7f3d00':'#1a3a5c'};color:#fff;border:1px solid #aaa;font-size:${fss};text-align:center;padding:3px 1px;">${day}${iS?` (${sdp}T)`:''}</th>`;
+    });
+    return h;
+  }
+
+  // Build period sub-header row: P1 P2 ... for each day
+  function buildPeriodHdrRow(){
+    let h='';
+    allDays.forEach(day=>{
+      for(let p=1;p<=dayP(day);p++){
+        h+=`<th style="background:#2c3e6b;color:#fff;border:1px solid #aaa;font-size:6px;text-align:center;padding:2px 1px;min-width:20px;">P${p}</th>`;
       }
     });
     return h;
   }
 
-  // Day header with colspan = np periods
-  function buildDayHdrs(groupDays){
-    let h='';
-    groupDays.forEach(day=>{const iS=isShort(day);
-      h+=`<th colspan="${np}" style="background:${iS?'#7f3d00':'#1a3a5c'};color:#fff;border:1px solid #aaa;font-size:${fss};text-align:center;padding:3px 1px;">${day}${iS?` (${sdp}T)`:''}</th>`;
-    });
-    return h;
-  }
+  // Total period cols = sum of dayP for all days
+  const totalPCols=allDays.reduce((s,d)=>s+dayP(d),0);
 
-  const totalRows2=rows.length+1;
+  // Pre-compute col index offset for each day (for teacher name placement)
+  const dayOffset={};let off=0;
+  allDays.forEach(day=>{dayOffset[day]=off;off+=dayP(day);});
+
+  // Find which col index is the "middle" across all cols (for teacher name)
+  const midCol=Math.floor(totalPCols/2);
+
   let html=`<table style="width:100%;border-collapse:collapse;font-size:${fs};table-layout:fixed;">
   <thead>
   <tr>
-    <th rowspan="2" style="background:#1a3a5c;color:#fff;padding:3px 2px;border:1px solid #aaa;text-align:center;font-size:${fss};vertical-align:middle;width:48px;">वेळ<br>Time</th>
-    ${buildDayHdrs(grp1Days)}
-    <th rowspan="2" style="background:#2e7d32;color:#fff;padding:3px 3px;border:1px solid #aaa;font-size:${fss};text-align:center;width:80px;">शिक्षक<br>यादी</th>
-    ${buildDayHdrs(grp2Days)}
+    <th colspan="1" style="background:#1a3a5c;color:#fff;padding:3px 2px;border:1px solid #aaa;text-align:center;font-size:${fss};vertical-align:middle;width:28px;">#</th>
+    ${buildDayHdrRow()}
   </tr>
-  <tr>${buildPeriodHdrs(grp1Days)}${buildPeriodHdrs(grp2Days)}</tr>
+  <tr>
+    <th style="background:#1a3a5c;color:#fff;border:1px solid #aaa;font-size:6px;text-align:center;padding:2px;">क्र.</th>
+    ${buildPeriodHdrRow()}
+  </tr>
   </thead><tbody>`;
 
-  // Assembly row — one cell per period per day
-  html+=`<tr style="background:#fff9c4;"><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:${fss};color:#856404;font-weight:700;">🙏<br>${aS}<br>${aE}</td>`;
-  grp1Days.forEach(day=>{for(let p=1;p<=np;p++) html+=`<td style="border:1px solid #ccc;text-align:center;font-size:6px;color:#856404;">🙏</td>`;});
-  html+=`<td rowspan="${totalRows2}" style="border:1px solid #ccc;padding:3px 4px;vertical-align:top;background:#f0fff4;">${teacherListHTML}</td>`;
-  grp2Days.forEach(day=>{for(let p=1;p<=np;p++) html+=`<td style="border:1px solid #ccc;text-align:center;font-size:6px;color:#856404;">🙏</td>`;});
-  html+='</tr>';
-
-  rows.forEach(row=>{
-    if(row.type==='p'){
-      const p=row.pt.p;
-      const tStr=`${m2t12(t2m(row.pt.s))}<br>${m2t12(t2m(row.pt.e))}`;
-      html+=`<tr><td style="text-align:center;border:1px solid #ccc;padding:1px;font-size:6px;font-weight:700;background:#f8fafc;color:#1a3a5c;">${tStr}<br>P${p}</td>`;
-      [...grp1Days,'__teachers__',...grp2Days].forEach(day=>{
-        if(day==='__teachers__')return;
-        const mp2=isShort(day)?sdp:np;
-        // For each period slot in this day
-        for(let pi=1;pi<=np;pi++){
-          if(pi!==p){
-            // Not this period — skip (will be handled in its own row)
-            // But we need one cell per period column — show content only for THIS period row
-          }
-        }
-        // This row = period p. Show content for column p, empty for others? No —
-        // Each ROW = one time slot, each column = one period number
-        // So in row P3, column P3 shows data, others show nothing (they have their own rows)
-        // Actually: columns ARE period numbers, rows ARE time slots
-        // Each cell (row=Px, col=Py): only Px==Py is relevant → show class/subject
-        // But that makes a sparse diagonal matrix — NOT useful
-        // CORRECT interpretation: rows=classes, cols=periods per day
-        // Let's reconsider: rows = TIME SLOTS, cols = DAYS×PERIODS
-        // Each cell = which class has that period on that day
-        // So for row=P3, col=Monday-P3: show all classes that have P3 on Monday
-        // But multiple classes can have P3 on Monday (all classes do!) — need to show all
-        // So each cell lists ALL classes assigned at day/period
-        const allAssigned=[];
-        cls.forEach(cl=>{
-          if(p>mp2){return;}
-          const cell=(D.TT[cl.id]||{})[day]?.[p];
-          if(cell?.subjectId&&!cell.isDoubleCont){
-            const subj=D.subjects.find(x=>x.id===cell.subjectId);
-            allAssigned.push({cl,subj,cell});
-          }
+  D.teachers.forEach((teacher,ti)=>{
+    // Build cells for all days+periods
+    const cells=[];
+    allDays.forEach(day=>{
+      for(let p=1;p<=dayP(day);p++){
+        let found=null;
+        D.classes.forEach(cls=>{
+          const cell=(D.TT[cls.id]||{})[day]?.[p];
+          if(cell?.teacherId===teacher.id&&!cell.isDoubleCont)found={cls,cell};
         });
-        if(p>mp2){
-          // Short day - this period doesn't exist
-          for(let pi=1;pi<=np;pi++) html+=`<td style="background:#f0f0f0;border:1px solid #ccc;text-align:center;font-size:6px;color:#bbb;">—</td>`;
-          return;
-        }
-        // For period p column: show content; other period columns in this row are irrelevant
-        // Since layout is rows=periods, cols=days×(P1-P9 sub-cols):
-        // Row P3 shows data only in the "P3" sub-column of each day
-        // Other sub-columns (P1,P2,P4...) in row P3 are EMPTY (those are other rows)
-        for(let pi=1;pi<=np;pi++){
-          if(pi===p){
-            // This is the matching period column — show all class assignments
-            if(allAssigned.length===0){
-              html+=`<td style="background:#fafafa;border:1px solid #ccc;text-align:center;font-size:6px;color:#ccc;">—</td>`;
-            } else {
-              const inner=allAssigned.map(({cl,subj,cell})=>
-                `<div style="font-size:6.5px;line-height:1.4;border-bottom:1px dotted #ddd;padding:0 1px;">
-                  <strong style="color:${subj?.color||'#1a3a5c'};">${cl.std}-${cl.division}</strong>
-                  <span style="color:#555;"> ${subj?.code||'?'}${cell.isDouble?'×2':''}</span>
-                </div>`).join('');
-              html+=`<td style="background:#eaf5fb;border:1px solid #ccc;border-top:1.5px solid #3498db;padding:1px;vertical-align:top;">${inner}</td>`;
-            }
-          } else {
-            // Different period column in this row — blank
-            html+=`<td style="border:1px solid #eee;background:#fafafa;"></td>`;
-          }
-        }
-      });
-      html+='</tr>';
-    } else {
-      let bg='#fef9e7',col='#b7770d',em='☕',lbl='Break';
-      if(row.type==='lb'){bg='#fff3e0';col='#d35400';em='🍱';lbl='Lunch';}
-      else if(row.type==='ab'){bg='#e8f5e9';col='#2e7d32';em='📖';lbl='Abhyasika';}
-      else if(row.type==='abr'){bg='#f3e5f5';col='#7b1fa2';}
-      const tStr=row.s?`${m2t12(t2m(row.s))}<br>${m2t12(t2m(row.e))}`:' ';
-      const totalPeriodCols=allDays.length*np;
-      html+=`<tr style="background:${bg};">
-        <td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:${fss};color:${col};font-weight:700;">${tStr}</td>`;
-      [...grp1Days,...grp2Days].forEach(day=>{
-        const isS=isShort(day);
-        if((row.type==='ab'||row.type==='abr')&&isS){
-          html+=`<td colspan="${np}" style="background:#f0f0f0;border:1px solid #ccc;text-align:center;font-size:6px;color:#bbb;">—</td>`;
+        cells.push({day,p,found});
+      }
+    });
+
+    // Place teacher name in midCol position (colspan=1, or span a few)
+    // Build the row with all cells, replacing midCol with teacher name
+    const nameColSpan=3;
+    const nameStart=Math.max(0,Math.floor((totalPCols-nameColSpan)/2));
+
+    let rowHTML=`<tr style="${ti%2===0?'background:#fff':'background:#f7f9fc'}">`;
+    rowHTML+=`<td style="text-align:center;border:1px solid #ccc;padding:1px;font-size:6px;font-weight:700;color:#1a3a5c;">${ti+1}</td>`;
+
+    let ci=0;
+    while(ci<cells.length){
+      if(ci===nameStart){
+        // Insert teacher name spanning nameColSpan cols
+        rowHTML+=`<td colspan="${nameColSpan}" style="text-align:center;border:2px solid #1a3a5c;padding:2px;background:#1a3a5c;vertical-align:middle;">
+          <div style="font-size:7.5px;font-weight:900;color:#fff;line-height:1.3;">${teacher.name}</div>
+          <div style="font-size:6px;color:#aad4f5;">${teacher.code}</div>
+        </td>`;
+        // Skip nameColSpan cells
+        for(let k=0;k<nameColSpan&&ci<cells.length;k++,ci++);
+      } else {
+        const {day,p,found}=cells[ci];
+        const mp2=isShort(day)?sdp:np;
+        if(found){
+          const subj=D.subjects.find(x=>x.id===found.cell.subjectId);
+          rowHTML+=`<td style="background:#eaf5fb;border:1px solid #ccc;border-top:2px solid ${subj?.color||'#3498db'};text-align:center;padding:1px;">
+            <strong style="font-size:7px;color:${subj?.color||'#1a3a5c'};">${found.cls.std}-${found.cls.division}</strong><br>
+            <span style="font-size:6px;color:#555;">${subj?.code||'?'}${found.cell.isDouble?'×2':''}</span>
+          </td>`;
         } else {
-          html+=`<td colspan="${np}" style="background:${bg};border:1px solid #ccc;text-align:center;font-size:${fss};color:${col};font-weight:700;">${em} ${lbl}</td>`;
+          rowHTML+=`<td style="background:#fafafa;border:1px solid #ccc;text-align:center;font-size:6px;color:#ddd;">—</td>`;
         }
-      });
-      html+='</tr>';
+        ci++;
+      }
     }
+    rowHTML+='</tr>';
+    html+=rowHTML;
   });
-  return html+'</tbody></table>';
+
+  html+='</tbody></table>';
+  return html;
 }
 
 function openPW(body,title,size){
