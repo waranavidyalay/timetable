@@ -602,12 +602,19 @@ function renderClasses(){
   document.getElementById('ccount').textContent=D.classes.length;
   if(!D.classes.length){tb.innerHTML='';em.style.display='block';return;}
   em.style.display='none';
-  const tOpts='<option value="">-- निवडा --</option>'+D.teachers.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
-  tb.innerHTML=D.classes.map((c,i)=>{
-    return`<tr><td>${i+1}</td><td><strong>${c.std}</strong></td><td><span class="badge bb">${c.division}</span></td>
-    <td><span class="badge ${c.medium==='Marathi'?'bgg':'bpu'}">${c.medium}</span></td>
-    <td><select onchange="updateCT('${c.id}',this.value)" style="padding:3px 6px;border:1.5px solid var(--bd);border-radius:5px;font-size:.78rem;min-width:150px;">${tOpts.replace(`value="${c.classTeacherId}"`,`value="${c.classTeacherId}" selected`)}</select></td>
-    <td><button class="btn bd2 bs" onclick="delC('${c.id}')">Del</button></td></tr>`;}).join('');
+  tb.innerHTML=D.classes.map((cls,i)=>{
+    const ctOpts='<option value="">-- वर्गशिक्षक निवडा --</option>'+
+      D.teachers.map(t=>`<option value="${t.id}"${t.id===cls.classTeacherId?' selected':''}>${t.name}</option>`).join('');
+    const cid=cls.id;
+    return `<tr>
+      <td>${i+1}</td>
+      <td><strong>${cls.std}</strong></td>
+      <td><span class="badge bb">${cls.division}</span></td>
+      <td><span class="badge ${cls.medium==='Marathi'?'bgg':'bpu'}">${cls.medium}</span></td>
+      <td><select data-cid="${cid}" onchange="updateCT(this.dataset.cid,this.value)" style="padding:4px 7px;border:1.5px solid var(--bd);border-radius:6px;font-size:.8rem;min-width:170px;background:var(--lt);">${ctOpts}</select></td>
+      <td><button class="btn bd2 bs" data-cid="${cid}" onclick="delC(this.dataset.cid)">Del</button></td>
+    </tr>`;
+  }).join('');
 }
 function delC(id){if(!confirm('Delete?'))return;D.classes=D.classes.filter(c=>c.id!==id);delete D.TT[id];delete D.CS[id];save();renderClasses();}
 
