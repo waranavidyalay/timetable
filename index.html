@@ -577,15 +577,44 @@ function renderTeachers(){
   if(!fl.length){tb.innerHTML='';em.style.display='block';return;}
   em.style.display='none';const mx=+(D.cfg.maxTeacherPeriods||36);
   tb.innerHTML=fl.map((t,i)=>{
-    const sn=(t.subjects||[]).map(sid=>{const s=D.subjects.find(x=>x.id===sid);return s?`<span class="badge" style="background:${s.color}18;color:${s.color};">${s.code}</span>`:''}).join(' ');
+    const sn=(t.subjects||[]).map(sid=>{const s=D.subjects.find(x=>x.id===sid);return s?`<span class="badge" style="background:${s.color}18;color:${s.color};cursor:pointer;" title="Click to remove" onclick="removeTS(${t.id},${s.id})">${s.code} ✕</span>`:''}).join(' ');
     const ld=getTLoad(t.id);const pct=Math.min(100,Math.round(ld/mx*100));const col=ld>mx?'#e74c3c':ld>mx*.8?'#f39c12':'#27ae60';
-    return`<tr><td>${i+1}</td><td><strong>${t.name}</strong></td><td><span class="badge bgg">${t.code}</span></td>
-    <td>${sn||'—'}</td>
-    <td><span style="font-size:.73rem;font-weight:700;color:${col};">${ld}/${mx}</span>
-    <div class="ld-bar" style="width:75px;"><div class="ld-fill" style="width:${pct}%;background:${col};"></div></div>
-    ${ld>mx?'<span class="badge br">⚠️ Over</span>':''}</td>
-    <td><button class="btn bd2 bs" onclick="delT(${t.id})">Del</button></td></tr>`;
+    // Build add-subject dropdown for subjects not yet assigned
+    const unassigned=D.subjects.filter(s=>!(t.subjects||[]).includes(s.id));
+    const addOpts=unassigned.length
+      ?'<option value="">+ विषय add करा</option>'+unassigned.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')
+      :'<option value="">— सर्व विषय assigned —</option>';
+    return`<tr>
+      <td>${i+1}</td>
+      <td><strong>${t.name}</strong><br><span style="font-size:.65rem;color:var(--mu);">${t.phone||''}</span></td>
+      <td><span class="badge bgg">${t.code}</span></td>
+      <td>
+        <div style="display:flex;flex-wrap:wrap;gap:3px;align-items:center;">
+          ${sn||'<span style="color:#bbb;font-size:.72rem;">—</span>'}
+          <select onchange="addTS(${t.id},this)" style="padding:2px 5px;border:1.5px solid var(--ac);border-radius:5px;font-size:.7rem;color:var(--ac);font-weight:600;background:#fff8f0;cursor:pointer;margin-left:2px;">${addOpts}</select>
+        </div>
+      </td>
+      <td><span style="font-size:.73rem;font-weight:700;color:${col};">${ld}/${mx}</span>
+      <div class="ld-bar" style="width:75px;"><div class="ld-fill" style="width:${pct}%;background:${col};"></div></div>
+      ${ld>mx?'<span class="badge br">⚠️ Over</span>':''}</td>
+      <td><button class="btn bd2 bs" onclick="delT(${t.id})">Del</button></td>
+    </tr>`;
   }).join('');
+}
+function addTS(tid,sel){
+  const sid=+sel.value;if(!sid)return;
+  const t=D.teachers.find(x=>x.id===tid);if(!t)return;
+  if(!(t.subjects||[]).includes(sid)){if(!t.subjects)t.subjects=[];t.subjects.push(sid);}
+  save();renderTeachers();
+  const s=D.subjects.find(x=>x.id===sid);
+  toast(`${t.name} ला ${s?.name} added!`);
+}
+function removeTS(tid,sid){
+  const t=D.teachers.find(x=>x.id===tid);if(!t)return;
+  t.subjects=(t.subjects||[]).filter(x=>x!==sid);
+  save();renderTeachers();
+  const s=D.subjects.find(x=>x.id===sid);
+  toast(`${t.name} कडून ${s?.name} काढला`,'warn');
 }
 function delT(id){if(!confirm('Delete?'))return;D.teachers=D.teachers.filter(t=>t.id!==id);save();renderTeachers();popCTSel();}
 function checkLoads(){
