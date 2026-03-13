@@ -183,7 +183,6 @@ body{font-family:'DM Sans',sans-serif;background:#eaf0f6;color:var(--tx);min-hei
         <div><label>Division</label><input type="text" id="cdiv" placeholder="A" maxlength="3"></div>
         <div><label>Medium</label><select id="cmed"><option>Marathi</option><option>Semi-English</option><option>English</option></select></div>
         <div><label>Class Teacher</label><select id="cct"></select></div>
-        <div><label>Students</label><input type="number" id="cstr" placeholder="40" min="1"></div>
       </div>
       <div style="display:flex;gap:7px;margin-top:8px;flex-wrap:wrap;">
         <button class="btn bp" onclick="addClass()">➕ Add One</button>
@@ -192,7 +191,7 @@ body{font-family:'DM Sans',sans-serif;background:#eaf0f6;color:var(--tx);min-hei
     </div>
     <div class="card">
       <div class="ct">Classes (<span id="ccount">0</span>)</div>
-      <div class="ttw"><table class="dt"><thead><tr><th>#</th><th>Std</th><th>Div</th><th>Medium</th><th>Class Teacher</th><th>Students</th><th></th></tr></thead>
+      <div class="ttw"><table class="dt"><thead><tr><th>#</th><th>Std</th><th>Div</th><th>Medium</th><th>Class Teacher (click to change)</th><th></th></tr></thead>
       <tbody id="tbody-c"></tbody></table></div>
       <div id="empty-c" class="es"><p>🏛️ No classes yet.</p></div>
     </div>
@@ -582,27 +581,32 @@ function addClass(){
   const std=document.getElementById('cstd').value,div=document.getElementById('cdiv').value.trim().toUpperCase();
   if(!div)return toast('Division required!','error');
   const id=`${std}-${div}`;if(D.classes.find(c=>c.id===id))return toast('Already exists!','error');
-  D.classes.push({id,std,division:div,medium:document.getElementById('cmed').value,classTeacherId:+document.getElementById('cct').value||null,strength:+document.getElementById('cstr').value||0});
+  D.classes.push({id,std,division:div,medium:document.getElementById('cmed').value,classTeacherId:+document.getElementById('cct').value||null});
   save();renderClasses();toast(`${id} added`);
 }
 function addStdDivs(){
   const std=document.getElementById('cstd').value;let added=0;
-  // A,B = Marathi, C,D,E,F = Semi-English
   [['A','Marathi'],['B','Marathi'],['C','Semi-English'],['D','Semi-English'],['E','Semi-English'],['F','Semi-English']].forEach(([div,med])=>{
     const id=`${std}-${div}`;
-    if(!D.classes.find(c=>c.id===id)){D.classes.push({id,std,division:div,medium:med,classTeacherId:null,strength:0});added++;}
+    if(!D.classes.find(c=>c.id===id)){D.classes.push({id,std,division:div,medium:med,classTeacherId:null});added++;}
   });
   save();renderClasses();toast(`${added} divisions added for ${std}`);
 }
+function updateCT(cid,tid){
+  const cls=D.classes.find(c=>c.id===cid);if(!cls)return;
+  cls.classTeacherId=+tid||null;save();
+  const t=D.teachers.find(x=>x.id===+tid);
+  toast(`${cid} वर्गशिक्षक: ${t?t.name:'(काढला)'}`);}
 function renderClasses(){
   const tb=document.getElementById('tbody-c'),em=document.getElementById('empty-c');
   document.getElementById('ccount').textContent=D.classes.length;
   if(!D.classes.length){tb.innerHTML='';em.style.display='block';return;}
   em.style.display='none';
-  tb.innerHTML=D.classes.map((c,i)=>{const ct=D.teachers.find(t=>t.id===c.classTeacherId);
+  const tOpts='<option value="">-- निवडा --</option>'+D.teachers.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+  tb.innerHTML=D.classes.map((c,i)=>{
     return`<tr><td>${i+1}</td><td><strong>${c.std}</strong></td><td><span class="badge bb">${c.division}</span></td>
     <td><span class="badge ${c.medium==='Marathi'?'bgg':'bpu'}">${c.medium}</span></td>
-    <td>${ct?ct.name:'—'}</td><td>${c.strength||'—'}</td>
+    <td><select onchange="updateCT('${c.id}',this.value)" style="padding:3px 6px;border:1.5px solid var(--bd);border-radius:5px;font-size:.78rem;min-width:150px;">${tOpts.replace(`value="${c.classTeacherId}"`,`value="${c.classTeacherId}" selected`)}</select></td>
     <td><button class="btn bd2 bs" onclick="delC('${c.id}')">Del</button></td></tr>`;}).join('');
 }
 function delC(id){if(!confirm('Delete?'))return;D.classes=D.classes.filter(c=>c.id!==id);delete D.TT[id];delete D.CS[id];save();renderClasses();}
