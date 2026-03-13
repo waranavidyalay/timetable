@@ -406,7 +406,7 @@ function getPTimes(){
     arr.push({p:i,s:m2t(cur),e:m2t(cur+(+c.periodDuration||45))});
     cur+=+(c.periodDuration||45);
     if(i===+(c.shortBreakAfter||3))cur+=+(c.shortBreakDuration||15);
-    if(i===+(c.lunchBreakAfter||6)){cur+=+(c.lunchBreakDuration||90)++(c.studyDuration||65)++(c.studyBreakDuration||10);}
+    if(i===+(c.lunchBreakAfter||6)){cur+=(+(c.lunchBreakDuration||90))+(+(c.studyDuration||65))+(+(c.studyBreakDuration||10));}
   }
   return arr;
 }
@@ -424,7 +424,7 @@ function buildRows(day){
       const ls=m2t(t2m(pt.e));const ld=+(c.lunchBreakDuration||90);
       rows.push({type:'lb',s:ls,e:m2t(t2m(ls)+ld),dur:ld});
       if(!isS&&+(c.studyDuration||0)>0){const as=m2t(t2m(ls)+ld);rows.push({type:'ab',s:as,e:m2t(t2m(as)+(+c.studyDuration)),dur:+(c.studyDuration)});}
-      if(!isS&&+(c.studyBreakDuration||0)>0){const bst=m2t(t2m(ls)+ld+(+c.studyDuration||0));rows.push({type:'abr',s:bst,e:m2t(t2m(bst)+(+c.studyBreakDuration)),dur:+(c.studyBreakDuration)});}
+      if(!isS&&+(c.studyBreakDuration||0)>0){const bst=m2t(t2m(ls)+ld+(+(c.studyDuration||0)));rows.push({type:'abr',s:bst,e:m2t(t2m(bst)+(+c.studyBreakDuration)),dur:+(c.studyBreakDuration)});}
     }
   });
   return rows;
