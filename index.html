@@ -1190,108 +1190,106 @@ function buildA4Teacher(teacher){
 function buildA3School(){
   const c=D.cfg;const allDays=c.workingDays||[];
   const np=+(c.numPeriods||9);const sdp=+(c.shortDayPeriods||6);
-  const fss='6.5px';const fs='6.5px';
-  const teacherNameColIdx=3; // 0-based: place teacher name in 4th period col (index 3)
+  const fss='6.5px';
 
-  // For each day, how many period columns
+  const mon=allDays.filter(d=>d==='Monday');
+  const tue=allDays.filter(d=>d==='Tuesday');
+  const wed=allDays.filter(d=>d==='Wednesday');
+  const thu=allDays.filter(d=>d==='Thursday');
+  const fri=allDays.filter(d=>d==='Friday');
+  const sat=allDays.filter(d=>d==='Saturday');
+  const grp1=[...mon,...tue,...wed];
+  const grp2=[...thu,...fri,...sat];
+
   function dayP(day){return isShort(day)?sdp:np;}
+  function dayBg(day){return isShort(day)?'#7f3d00':'#1a3a5c';}
+  function dayLabel(day){const iS=isShort(day);return day+(iS?` (${sdp}T)`:'');}
 
-  // Build top header row: Day names with colspan
-  function buildDayHdrRow(){
-    let h='';
-    // teacher name cell spans teacherNameColIdx cols at start — handled differently
-    // We need: [teacher-name cols merged] | day1(colspan=dayP) | day2 | ...
-    // Actually teacher name is IN the period cols as a merged cell
-    // Header row 1: blank for teacher col area | Day1 | Day2 | ...
-    allDays.forEach(day=>{
-      const iS=isShort(day);
-      h+=`<th colspan="${dayP(day)}" style="background:${iS?'#7f3d00':'#1a3a5c'};color:#fff;border:1px solid #aaa;font-size:${fss};text-align:center;padding:3px 1px;">${day}${iS?` (${sdp}T)`:''}</th>`;
-    });
-    return h;
-  }
+  // Each day col has dayP(day) sub-rows for periods
+  // Table: rows = teachers × periods (each teacher occupies np rows, merged in name col)
+  // Cols: Mon | Tue | Wed | ShikshaakNaav | Thu | Fri | Sat
+  // Each cell = subject+class for that teacher on that day at that period
 
-  // Build period sub-header row: P1 P2 ... for each day
-  function buildPeriodHdrRow(){
-    let h='';
-    allDays.forEach(day=>{
-      for(let p=1;p<=dayP(day);p++){
-        h+=`<th style="background:#2c3e6b;color:#fff;border:1px solid #aaa;font-size:6px;text-align:center;padding:2px 1px;min-width:20px;">P${p}</th>`;
-      }
-    });
-    return h;
-  }
-
-  // Total period cols = sum of dayP for all days
-  const totalPCols=allDays.reduce((s,d)=>s+dayP(d),0);
-
-  // Pre-compute col index offset for each day (for teacher name placement)
-  const dayOffset={};let off=0;
-  allDays.forEach(day=>{dayOffset[day]=off;off+=dayP(day);});
-
-  // Find which col index is the "middle" across all cols (for teacher name)
-  const midCol=Math.floor(totalPCols/2);
-
-  let html=`<table style="width:100%;border-collapse:collapse;font-size:${fs};table-layout:fixed;">
-  <thead>
-  <tr>
-    <th colspan="1" style="background:#1a3a5c;color:#fff;padding:3px 2px;border:1px solid #aaa;text-align:center;font-size:${fss};vertical-align:middle;width:28px;">#</th>
-    ${buildDayHdrRow()}
-  </tr>
-  <tr>
-    <th style="background:#1a3a5c;color:#fff;border:1px solid #aaa;font-size:6px;text-align:center;padding:2px;">क्र.</th>
-    ${buildPeriodHdrRow()}
-  </tr>
-  </thead><tbody>`;
+  let html=`<table style="width:100%;border-collapse:collapse;font-size:${fss};table-layout:fixed;">
+  <colgroup>`;
+  grp1.forEach(day=>html+=`<col style="width:13%;">`);
+  html+=`<col style="width:12%;">`;// teacher name col
+  grp2.forEach(day=>html+=`<col style="width:13%;">`);
+  html+=`</colgroup><thead><tr>`;
+  // Header row
+  grp1.forEach(day=>html+=`<th style="background:${dayBg(day)};color:#fff;border:1px solid #aaa;font-size:${fss};text-align:center;padding:4px 2px;">${dayLabel(day)}</th>`);
+  html+=`<th style="background:#2e7d32;color:#fff;border:1px solid #aaa;font-size:${fss};text-align:center;padding:4px 2px;">शिक्षक<br>नाव</th>`;
+  grp2.forEach(day=>html+=`<th style="background:${dayBg(day)};color:#fff;border:1px solid #aaa;font-size:${fss};text-align:center;padding:4px 2px;">${dayLabel(day)}</th>`);
+  html+=`</tr></thead><tbody>`;
 
   D.teachers.forEach((teacher,ti)=>{
-    // Build cells for all days+periods
-    const cells=[];
-    allDays.forEach(day=>{
-      for(let p=1;p<=dayP(day);p++){
+    const maxP_val=np; // rows per teacher = np (full day periods)
+    const rowBg=ti%2===0?'#fff':'#f7fafc';
+
+    for(let p=1;p<=np;p++){
+      html+=`<tr style="background:${rowBg};">`;
+
+      // Col 1-3: grp1 days
+      grp1.forEach(day=>{
+        const dp=dayP(day);
+        if(p>dp){
+          html+=`<td style="background:#f0f0f0;border:1px solid #e0e0e0;text-align:center;font-size:6px;color:#ccc;">—</td>`;
+          return;
+        }
         let found=null;
         D.classes.forEach(cls=>{
           const cell=(D.TT[cls.id]||{})[day]?.[p];
           if(cell?.teacherId===teacher.id&&!cell.isDoubleCont)found={cls,cell};
         });
-        cells.push({day,p,found});
-      }
-    });
-
-    // Place teacher name in midCol position (colspan=1, or span a few)
-    // Build the row with all cells, replacing midCol with teacher name
-    const nameColSpan=3;
-    const nameStart=Math.max(0,Math.floor((totalPCols-nameColSpan)/2));
-
-    let rowHTML=`<tr style="${ti%2===0?'background:#fff':'background:#f7f9fc'}">`;
-    rowHTML+=`<td style="text-align:center;border:1px solid #ccc;padding:1px;font-size:6px;font-weight:700;color:#1a3a5c;">${ti+1}</td>`;
-
-    let ci=0;
-    while(ci<cells.length){
-      if(ci===nameStart){
-        // Insert teacher name spanning nameColSpan cols
-        rowHTML+=`<td colspan="${nameColSpan}" style="text-align:center;border:2px solid #1a3a5c;padding:2px;background:#1a3a5c;vertical-align:middle;">
-          <div style="font-size:7.5px;font-weight:900;color:#fff;line-height:1.3;">${teacher.name}</div>
-          <div style="font-size:6px;color:#aad4f5;">${teacher.code}</div>
-        </td>`;
-        // Skip nameColSpan cells
-        for(let k=0;k<nameColSpan&&ci<cells.length;k++,ci++);
-      } else {
-        const {day,p,found}=cells[ci];
-        const mp2=isShort(day)?sdp:np;
         if(found){
           const subj=D.subjects.find(x=>x.id===found.cell.subjectId);
-          rowHTML+=`<td style="background:#eaf5fb;border:1px solid #ccc;border-top:2px solid ${subj?.color||'#3498db'};text-align:center;padding:1px;">
-            <strong style="font-size:7px;color:${subj?.color||'#1a3a5c'};">${found.cls.std}-${found.cls.division}</strong><br>
-            <span style="font-size:6px;color:#555;">${subj?.code||'?'}${found.cell.isDouble?'×2':''}</span>
+          html+=`<td style="background:#eaf5fb;border:1px solid #ccc;border-left:2px solid ${subj?.color||'#3498db'};text-align:center;padding:1px;">
+            <span style="font-size:7px;font-weight:700;color:${subj?.color||'#1a3a5c'};">${found.cls.std}-${found.cls.division}</span>
+            <span style="font-size:6.5px;color:#555;"> / ${subj?.code||'?'}${found.cell.isDouble?'×2':''}</span>
           </td>`;
         } else {
-          rowHTML+=`<td style="background:#fafafa;border:1px solid #ccc;text-align:center;font-size:6px;color:#ddd;">—</td>`;
+          html+=`<td style="background:${rowBg};border:1px solid #e8e8e8;text-align:center;font-size:6px;color:#ddd;">—</td>`;
         }
-        ci++;
+      });
+
+      // Col 4: teacher name — rowspan=np, only on first period row
+      if(p===1){
+        const load=getTLoad(teacher.id);const mx=+(c.maxTeacherPeriods||36);
+        html+=`<td rowspan="${np}" style="background:#1a3a5c;border:2px solid #0d2a47;text-align:center;vertical-align:middle;padding:3px 2px;">
+          <div style="font-size:8px;font-weight:900;color:#fff;line-height:1.4;">${teacher.name}</div>
+          <div style="font-size:6.5px;color:#7ec8e3;margin-top:1px;">(${teacher.code})</div>
+          <div style="font-size:6px;color:${load>mx?'#ff8a80':'#a5d6a7'};margin-top:2px;">${load}T</div>
+        </td>`;
       }
+
+      // Col 5-7: grp2 days
+      grp2.forEach(day=>{
+        const dp=dayP(day);
+        if(p>dp){
+          html+=`<td style="background:#f0f0f0;border:1px solid #e0e0e0;text-align:center;font-size:6px;color:#ccc;">—</td>`;
+          return;
+        }
+        let found=null;
+        D.classes.forEach(cls=>{
+          const cell=(D.TT[cls.id]||{})[day]?.[p];
+          if(cell?.teacherId===teacher.id&&!cell.isDoubleCont)found={cls,cell};
+        });
+        if(found){
+          const subj=D.subjects.find(x=>x.id===found.cell.subjectId);
+          html+=`<td style="background:#eaf5fb;border:1px solid #ccc;border-left:2px solid ${subj?.color||'#3498db'};text-align:center;padding:1px;">
+            <span style="font-size:7px;font-weight:700;color:${subj?.color||'#1a3a5c'};">${found.cls.std}-${found.cls.division}</span>
+            <span style="font-size:6.5px;color:#555;"> / ${subj?.code||'?'}${found.cell.isDouble?'×2':''}</span>
+          </td>`;
+        } else {
+          html+=`<td style="background:${rowBg};border:1px solid #e8e8e8;text-align:center;font-size:6px;color:#ddd;">—</td>`;
+        }
+      });
+
+      html+='</tr>';
     }
-    rowHTML+='</tr>';
-    html+=rowHTML;
+    // Separator row between teachers
+    const totalCols=grp1.length+1+grp2.length;
+    html+=`<tr><td colspan="${totalCols}" style="background:#1a3a5c;height:3px;padding:0;border:none;"></td></tr>`;
   });
 
   html+='</tbody></table>';
