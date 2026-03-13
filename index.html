@@ -1108,15 +1108,49 @@ function buildA4Cls(cid){
 
 // A4 Teacher timetable
 function buildA4Teacher(teacher){
-  const c=D.cfg;const days=c.workingDays||[];const rows=fullRows();
+  const c=D.cfg;const days=c.workingDays||[];const rows=fullRows();const nd=days.length;
   const aS=m2t12(t2m(c.assemblyTime||'07:15'));const aE=m2t12(t2m(c.assemblyTime||'07:15')+(+(c.assemblyDuration||15)));
-  let h=`<table style="width:100%;border-collapse:collapse;font-size:8.5px;table-layout:fixed;">
-  <colgroup><col style="width:46px;"><col style="width:11%;" span="${days.length}"></colgroup>
-  <thead><tr><th style="background:#1a3a5c;color:#fff;padding:3px 2px;border:1px solid #aaa;text-align:center;font-size:7px;">वेळ</th>`;
-  days.forEach(day=>{const iS=isShort(day);h+=`<th style="background:${iS?'#7f3d00':'#1a3a5c'};color:#fff;padding:3px 2px;border:1px solid #aaa;text-align:center;font-size:7px;">${day}${iS?'<br>(6T)':''}</th>`;});
-  h+=`</tr></thead><tbody>`;
-  h+=`<tr style="background:#fff9c4;"><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:7px;color:#856404;font-weight:700;">🙏<br>${aS}<br>${aE}</td>`;
-  days.forEach(()=>h+=`<td style="border:1px solid #ccc;text-align:center;font-size:6.5px;color:#856404;">Assembly</td>`);h+='</tr>';
+  // Build class-subject summary for last column
+  const clsSummary=[];
+  D.classes.forEach(cls=>{
+    const subjMap={};
+    days.forEach(day=>{for(let p=1;p<=maxP(day);p++){
+      const cell=D.TT[cls.id]?.[day]?.[p];
+      if(cell?.teacherId===teacher.id&&!cell.isDoubleCont){
+        const s=D.subjects.find(x=>x.id===cell.subjectId);
+        if(s)subjMap[s.id]=(subjMap[s.id]||0)+1;
+      }
+    }});
+    Object.entries(subjMap).forEach(([sid,cnt])=>{
+      const s=D.subjects.find(x=>x.id===+sid);
+      clsSummary.push({cls,s,cnt});
+    });
+  });
+  const load=getTLoad(teacher.id);const mx=+(c.maxTeacherPeriods||36);
+  const summaryHTML=clsSummary.map(({cls,s,cnt})=>
+    `<div style="font-size:7px;line-height:1.6;border-bottom:1px dotted #ddd;padding:1px 0;">
+      <span style="font-weight:700;color:#1a3a5c;">${cls.std}-${cls.division}</span>
+      <span style="color:${s?.color||'#333'};"> / ${s?.name||'?'}</span>
+      <span style="color:#888;"> (${cnt}T)</span>
+    </div>`).join('');
+  const totalHTML=`<div style="margin-top:5px;padding:3px 0;border-top:1.5px solid #1a3a5c;">
+    <span style="font-size:7.5px;font-weight:700;color:${load>mx?'#e74c3c':'#1a3a5c'};">एकूण: ${load}/${mx} तास</span>
+  </div>`;
+  // colgroup: time col same % as day cols, then summary col
+  const dayPct=Math.floor(90/nd);
+  let h=`<table style="width:100%;border-collapse:collapse;font-size:8px;table-layout:fixed;">
+  <colgroup><col style="width:${dayPct}%;"><col style="width:${dayPct}%;" span="${nd}"><col style="width:18%;"></colgroup>
+  <thead><tr>
+    <th style="background:#1a3a5c;color:#fff;padding:3px 2px;border:1px solid #aaa;text-align:center;font-size:7px;">वेळ</th>`;
+  days.forEach(day=>{const iS=isShort(day);
+    h+=`<th style="background:${iS?'#7f3d00':'#1a3a5c'};color:#fff;padding:3px 2px;border:1px solid #aaa;text-align:center;font-size:7px;">${day}${iS?'<br>(6T)':''}</th>`;});
+  h+=`<th style="background:#2e7d32;color:#fff;padding:3px 3px;border:1px solid #aaa;text-align:center;font-size:7px;">वर्ग / विषय<br>Workload</th>
+  </tr></thead><tbody>`;
+  const totalR=rows.length+1;
+  h+=`<tr style="background:#fff9c4;">
+    <td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:7px;color:#856404;font-weight:700;">🙏<br>${aS}<br>${aE}</td>`;
+  days.forEach(()=>h+=`<td style="border:1px solid #ccc;text-align:center;font-size:6.5px;color:#856404;">Assembly</td>`);
+  h+=`<td rowspan="${totalR}" style="border:1px solid #ccc;padding:4px 5px;vertical-align:top;background:#f0fff4;">${summaryHTML||'<span style="font-size:7px;color:#bbb;">—</span>'}${totalHTML}</td></tr>`;
   rows.forEach(row=>{
     if(row.type==='p'){
       const p=row.pt.p;const tStr=`${m2t12(t2m(row.pt.s))}<br>${m2t12(t2m(row.pt.e))}`;
@@ -1134,22 +1168,20 @@ function buildA4Teacher(teacher){
       let bg='#fef9e7',col='#b7770d',em='☕',lbl='Break';
       if(row.type==='lb'){bg='#fff3e0';col='#d35400';em='🍱';lbl='Lunch';}
       else if(row.type==='ab'){bg='#e8f5e9';col='#2e7d32';em='📖';lbl='Abhyasika';
-        // Show which classes this teacher supervises in Abhyasika
         const abhyCls=D.classes.filter(cls=>cls.classTeacherId===teacher.id);
-        const tStr=row.s?`${m2t12(t2m(row.s))} –<br>${m2t12(t2m(row.e))}`:'';
-        h+=`<tr style="background:${bg};"><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:7.5px;color:${col};font-weight:700;">${tStr}</td>`;
+        const tStr=row.s?`${m2t12(t2m(row.s))}<br>${m2t12(t2m(row.e))}`:'';
+        h+=`<tr style="background:${bg};"><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:6.5px;color:${col};font-weight:700;">${tStr}</td>`;
         days.forEach(day=>{if(isShort(day))h+=`<td style="background:#f0f0f0;border:1px solid #ccc;text-align:center;font-size:7px;color:#bbb;">—</td>`;
-          else{const isCT=abhyCls.length>0;h+=`<td style="background:${bg};border:1px solid #ccc;text-align:center;font-size:7.5px;color:${col};font-weight:700;">📖 Abhyasika${isCT?`<br><span style='font-size:6.5px;'>${abhyCls.map(x=>`${x.std}-${x.division}`).join(', ')}</span>`:''}</td>`;}});
+          else{const isCT=abhyCls.length>0;h+=`<td style="background:${bg};border:1px solid #ccc;text-align:center;font-size:7px;color:${col};font-weight:700;">📖 Abhyasika${isCT?`<br><span style='font-size:6px;'>${abhyCls.map(x=>`${x.std}-${x.division}`).join(', ')}</span>`:''}</td>`;}});
         h+='</tr>';return;
       } else if(row.type==='abr'){bg='#f3e5f5';col='#7b1fa2';}
-      const tStr=row.s?`${m2t12(t2m(row.s))} –<br>${m2t12(t2m(row.e))}`:'';
-      h+=`<tr style="background:${bg};"><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:7.5px;color:${col};font-weight:700;">${tStr}</td>`;
+      const tStr=row.s?`${m2t12(t2m(row.s))}<br>${m2t12(t2m(row.e))}`:'';
+      h+=`<tr style="background:${bg};"><td style="text-align:center;border:1px solid #ccc;padding:2px;font-size:6.5px;color:${col};font-weight:700;">${tStr}</td>`;
       days.forEach(day=>{if((row.type==='abr')&&isShort(day))h+=`<td style="background:#f0f0f0;border:1px solid #ccc;text-align:center;font-size:7px;color:#bbb;">—</td>`;
-        else h+=`<td style="background:${bg};border:1px solid #ccc;text-align:center;font-size:7.5px;color:${col};">${em}<br>${lbl}</td>`;});h+='</tr>';
+        else h+=`<td style="background:${bg};border:1px solid #ccc;text-align:center;font-size:7px;color:${col};">${em}<br>${lbl}</td>`;});h+='</tr>';
     }
   });
-  const load=getTLoad(teacher.id);const mx=+(c.maxTeacherPeriods||36);
-  h+=`</tbody></table><div style="margin-top:5px;font-size:8px;color:#555;">साप्ताहिक भार: <strong style="color:${load>mx?'#e74c3c':'#27ae60'}">${load}/${mx}</strong> तास</div>`;
+  h+=`</tbody></table>`;
   return h;
 }
 
