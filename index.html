@@ -1055,6 +1055,17 @@ function pSig(ctName){
     <span style="font-size:7px;color:#aaa;">&#169; ppm</span>
   </div>`;
 }
+function pSigSchool(){
+  const mp=D.cfg.mukhyadhyapakName||'मुख्याध्यापक';
+  return`<div style="margin-top:14px;text-align:right;padding-right:10%;">
+    <div style="font-size:8.5px;color:#444;">मुख्याध्यापक स्वाक्षरी / Headmaster</div>
+    <div style="border-bottom:1px solid #333;margin-top:20px;width:200px;margin-left:auto;"></div>
+    <div style="font-size:8.5px;color:#666;margin-top:2px;">${mp}</div>
+  </div>
+  <div style="text-align:center;margin-top:6px;">
+    <span style="font-size:7px;color:#aaa;">&#169; ppm</span>
+  </div>`;
+}
 
 // A4 class timetable: rows=time, cols=days, last col=subject teachers
 function buildA4Cls(cid){
@@ -1205,30 +1216,29 @@ function buildA3School(){
   let html=`<table style="width:100%;border-collapse:collapse;font-size:${fss};table-layout:fixed;">
   <colgroup>`;
   // Each day col = np sub-cols, each sub-col width = small
-  grp1.forEach(()=>{for(let p=0;p<np;p++)html+=`<col>`;});
+  grp1.forEach(day=>{for(let p=0;p<dayP(day);p++)html+=`<col>`;});
   html+=`<col style="width:60px;">`; // teacher name col
-  grp2.forEach(()=>{for(let p=0;p<np;p++)html+=`<col>`;});
+  grp2.forEach(day=>{for(let p=0;p<dayP(day);p++)html+=`<col>`;});
   html+=`</colgroup><thead>`;
 
   // Row 1: Day headers
   html+=`<tr>`;
   grp1.forEach(day=>{
     const iS=isShort(day);
-    html+=`<th colspan="${np}" style="background:${dayBg(day)};color:#fff;border:1px solid #777;font-size:6.5px;text-align:center;padding:3px 1px;font-weight:700;">${day}${iS?` (${sdp}T)`:''}</th>`;
+    html+=`<th colspan="${dayP(day)}" style="background:${dayBg(day)};color:#fff;border:1px solid #777;font-size:6.5px;text-align:center;padding:3px 1px;font-weight:700;">${day}${iS?` (${sdp}T)`:''}</th>`;
   });
   html+=`<th rowspan="2" style="background:#2e7d32;color:#fff;border:2px solid #1a5c2e;font-size:6.5px;text-align:center;vertical-align:middle;padding:2px;">शिक्षक<br>नाव</th>`;
   grp2.forEach(day=>{
     const iS=isShort(day);
-    html+=`<th colspan="${np}" style="background:${dayBg(day)};color:#fff;border:1px solid #777;font-size:6.5px;text-align:center;padding:3px 1px;font-weight:700;">${day}${iS?` (${sdp}T)`:''}</th>`;
+    html+=`<th colspan="${dayP(day)}" style="background:${dayBg(day)};color:#fff;border:1px solid #777;font-size:6.5px;text-align:center;padding:3px 1px;font-weight:700;">${day}${iS?` (${sdp}T)`:''}</th>`;
   });
   html+=`</tr>`;
 
   // Row 2: P1..P9 sub-cols under each day
   html+=`<tr>`;
   [...grp1,...grp2].forEach(day=>{
-    for(let p=1;p<=np;p++){
-      const iS=isShort(day);const over=iS&&p>sdp;
-      html+=`<th style="background:${over?'#555':'#2c3e6b'};color:${over?'#aaa':'#fff'};border:1px solid #666;font-size:5.5px;text-align:center;padding:1px 0;">${over?'—':'P'+p}</th>`;
+    for(let p=1;p<=dayP(day);p++){
+      html+=`<th style="background:#2c3e6b;color:#fff;border:1px solid #666;font-size:5.5px;text-align:center;padding:1px 0;">P${p}</th>`;
     }
   });
   html+=`</tr></thead><tbody>`;
@@ -1251,12 +1261,7 @@ function buildA3School(){
         </td>`;
       }
 
-      for(let p=1;p<=np;p++){
-        const iS=isShort(day);const over=iS&&p>sdp;
-        if(over){
-          html+=`<td style="background:#f0f0f0;border:1px solid #ddd;"></td>`;
-          continue;
-        }
+      for(let p=1;p<=dayP(day);p++){
         let found=null;
         D.classes.forEach(cls=>{
           const cell=(D.TT[cls.id]||{})[day]?.[p];
@@ -1285,7 +1290,7 @@ function buildA3School(){
 
     html+=`</tr>`;
     // thick separator between teachers
-    const totalCols=grp1.length*np+1+grp2.length*np;
+    const totalCols=[...grp1,...grp2].reduce((s,d)=>s+dayP(d),0)+1;
     html+=`<tr><td colspan="${totalCols}" style="background:#c8d8e8;height:2px;padding:0;border:none;"></td></tr>`;
   });
 
@@ -1325,7 +1330,7 @@ function pTeacher(mode){
 }
 function pSchool(){
   if(!D.classes.length)return toast('No classes!','error');
-  const html=pSchHdr(3)+`<div style="text-align:center;font-size:13px;font-weight:900;color:#1a3a5c;margin-bottom:8px;">संपूर्ण शाळा — एकत्रित तासिका पत्रक</div>`+buildA3School()+pSig(null);
+  const html=pSchHdr(3)+`<div style="text-align:center;font-size:13px;font-weight:900;color:#1a3a5c;margin-bottom:8px;">संपूर्ण शाळा — एकत्रित तासिका पत्रक</div>`+buildA3School()+pSigSchool();
   openPW(html,'संपूर्ण शाळा तासिका',3);
 }
 
