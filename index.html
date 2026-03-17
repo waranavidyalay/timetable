@@ -675,7 +675,10 @@ function renderAssign(){
   h+=`<div class="ttw"><table class="dt" style="min-width:470px;"><thead><tr><th>#</th><th>Subject</th><th>Type</th><th>Priority</th><th>Teacher</th><th>P/Week</th><th></th></tr></thead><tbody id="arows">`;
   rows.forEach((row,idx)=>{
     const subj=D.subjects.find(s=>s.id===row.subjectId);
-    const tOpts=D.teachers.map(t=>`<option value="${t.id}" ${t.id===row.teacherId?'selected':''}>${t.name}</option>`).join('');
+    // Only show teachers who teach this subject
+    const subjTeachers=D.teachers.filter(t=>(t.subjects||[]).includes(row.subjectId));
+    const tList=subjTeachers.length?subjTeachers:D.teachers; // fallback: all teachers
+    const tOpts=tList.map(t=>`<option value="${t.id}" ${t.id===row.teacherId?'selected':''}>${t.name}</option>`).join('');
     h+=`<tr><td>${idx+1}</td>
     <td><span class="badge" style="background:${subj?.color||'#eee'}18;color:${subj?.color||'#333'};">${subj?.code||'?'}</span> ${subj?.name||'?'}</td>
     <td><span class="badge ${subj?.type==='theory'?'bb':subj?.type==='practical'?'bo2':'bgy'}" style="font-size:.58rem;">${subj?.type||'?'}</span></td>
@@ -687,12 +690,23 @@ function renderAssign(){
   h+=`</tbody></table></div>`;
   const sOpts=D.subjects.map(s=>`<option value="${s.id}">${s.name} [${s.type}/${s.priority||'normal'}]</option>`).join('');
   h+=`<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:flex-end;padding:10px;background:var(--lt);border-radius:7px;">
-    <div><label class="fl">Subject</label><select id="nas" class="fi" style="min-width:155px;"><option value="">-- Select --</option>${sOpts}</select></div>
-    <div><label class="fl">Teacher</label><select id="nat" class="fi" style="min-width:155px;"><option value="">-- Select --</option>${D.teachers.map(t=>`<option value="${t.id}">${t.name}</option>`).join('')}</select></div>
+    <div><label class="fl">Subject</label><select id="nas" class="fi" style="min-width:155px;" onchange="filterNAT()"><option value="">-- Select --</option>${sOpts}</select></div>
+    <div><label class="fl">Teacher</label><select id="nat" class="fi" style="min-width:155px;"><option value="">-- Select --</option></select></div>
     <div><label class="fl">P/Week</label><input type="number" id="nap" value="3" min="1" max="20" style="width:52px;padding:5px;border:1.5px solid var(--bd);border-radius:5px;text-align:center;"></div>
     <button class="btn bk" onclick="addAR('${cid}')">➕ Add</button>
   </div>`;
   document.getElementById('aarea').innerHTML=h;
+}
+function filterNAT(){
+  const sid=+document.getElementById('nas').value;
+  const sel=document.getElementById('nat');
+  if(!sel)return;
+  let teachers=[];
+  if(sid){
+    teachers=D.teachers.filter(t=>(t.subjects||[]).includes(sid));
+    if(!teachers.length)teachers=D.teachers; // fallback
+  } else teachers=D.teachers;
+  sel.innerHTML='<option value="">-- Select --</option>'+teachers.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
 }
 function addAR(cid){
   const sid=+document.getElementById('nas').value,tid=+document.getElementById('nat').value||null,ppw=+document.getElementById('nap').value||3;
@@ -845,8 +859,11 @@ function openMod(cid,day,p){
 function onSC(presel){
   const sid=+document.getElementById('msubj').value;const cid=CM.cid;const sel=document.getElementById('mteach');
   let teachers=[];
+  // First: teacher assigned to this subject for this class
   if(sid&&cid){const row=(D.CS[cid]||[]).find(r=>r.subjectId===sid);if(row?.teacherId){const t=D.teachers.find(x=>x.id===row.teacherId);if(t)teachers=[t];}}
+  // Second: teachers who have this subject in their list
   if(!teachers.length&&sid)teachers=D.teachers.filter(t=>(t.subjects||[]).includes(sid));
+  // Fallback: all teachers
   if(!teachers.length)teachers=D.teachers;
   sel.innerHTML='<option value="">-- Select --</option>'+teachers.map(t=>`<option value="${t.id}">${t.name} (${t.code})</option>`).join('');
   if(presel)sel.value=presel;chkMC();
@@ -894,11 +911,9 @@ function assignP(){
     const adding=isDbl?2:1;
     if(cur+adding>tgt){
       const subj=D.subjects.find(x=>x.id===sid);
-      if(!confirm(`⚠️ ${subj?.name||'हा विषय'} — आधीच ${cur}/${tgt} तास assigned आहेत!
-जास्त assign करायचे का?`))return;
+      return toast(`⛔ ${subj?.name||'हा विषय'} — ${cur}/${tgt} तास पूर्ण! आठवड्याचे तास संपले.`,'error',5000);
     }
-  }
-  if(!D.TT[cid])D.TT[cid]={};if(!D.TT[cid][day])D.TT[cid][day]={};
+  }  if(!D.TT[cid])D.TT[cid]={};if(!D.TT[cid][day])D.TT[cid][day]={};
   if(isDbl){const next=p+1;
     if(!sameGrp(p,next)||next>+(c.numPeriods||9)||p===+(c.shortBreakAfter||3)||p===+(c.lunchBreakAfter||6))return toast('Double शक्य नाही!','error');
     D.TT[cid][day][p]={subjectId:sid,teacherId:tid,isDouble:true};D.TT[cid][day][next]={subjectId:sid,teacherId:tid,isDoubleCont:true};
