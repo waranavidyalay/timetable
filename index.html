@@ -940,48 +940,104 @@ function autoFill(){
   const csl=D.CS[cid];if(!csl?.length)return toast('आधी subjects assign करा!','error');
   if(!confirm('Auto-generate?'))return;
   const c=D.cfg;const days=c.workingDays||[];const cls=D.classes.find(x=>x.id===cid);const ctId=cls?.classTeacherId;
-  if(!D.TT[cid])D.TT[cid]={};
-  // Build pool with smart placement
+  D.TT[cid]={};// clear first
+
+  // Build pool: exactly periodsPerWeek entries per subject — NO circular repeat
   let pool=[];
-  csl.forEach(row=>{const subj=D.subjects.find(x=>x.id===row.subjectId);if(!subj)return;
-    for(let i=0;i<(row.periodsPerWeek||3);i++)pool.push({subjectId:row.subjectId,teacherId:row.teacherId,type:subj.type,priority:subj.priority||'normal'});});
-  // Shuffle
+  csl.forEach(row=>{
+    const subj=D.subjects.find(x=>x.id===row.subjectId);if(!subj)return;
+    const ppw=+(row.periodsPerWeek||3);
+    for(let i=0;i<ppw;i++)pool.push({subjectId:row.subjectId,teacherId:row.teacherId,type:subj.type,priority:subj.priority||'normal',name:subj.name});
+  });
+
+  // Track used count per subject to enforce hard limit
+  const usedCount={};
+  csl.forEach(row=>{usedCount[row.subjectId]=0;});
+
+  // Shuffle pool for random distribution
   for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
-  let pi=0;
+
   const limit=+(c.subjectPeriodLimit||6);
+
+  // Class teacher P1 — pre-assign on all days
+  if(ctId){
+    const ctRow=csl.find(r=>r.teacherId===ctId);
+    if(ctRow){
+      days.forEach(day=>{
+        if(!D.TT[cid][day])D.TT[cid][day]={};
+        const tgt=+(ctRow.periodsPerWeek||3);
+        if(usedCount[ctRow.subjectId]>=tgt)return;
+        let cfl=false;
+        D.classes.forEach(cls2=>{if(cls2.id===cid)return;const c2=D.TT[cls2.id]?.[day]?.[1];if(c2?.teacherId===ctId)cfl=true;});
+        if(!cfl){
+          D.TT[cid][day][1]={subjectId:ctRow.subjectId,teacherId:ctId};
+          usedCount[ctRow.subjectId]=(usedCount[ctRow.subjectId]||0)+1;
+          // Remove one entry from pool for this subject
+          const idx=pool.findIndex(x=>x.subjectId===ctRow.subjectId);
+          if(idx>=0)pool.splice(idx,1);
+        }
+      });
+    }
+  }
+
+  // Fill remaining periods
   days.forEach(day=>{
-    if(!D.TT[cid][day])D.TT[cid][day]={};const mp=maxP(day);
-    // Class teacher P1
-    if(ctId){const ctRow=csl.find(r=>r.teacherId===ctId);if(ctRow&&!D.TT[cid][day][1]){
-      let cfl=false;D.classes.forEach(cls2=>{if(cls2.id===cid)return;const c2=D.TT[cls2.id]?.[day]?.[1];if(c2?.teacherId===ctId)cfl=true;});
-      if(!cfl)D.TT[cid][day][1]={subjectId:ctRow.subjectId,teacherId:ctId};
-    }}
+    if(!D.TT[cid][day])D.TT[cid][day]={};
+    const mp=maxP(day);
     for(let p=1;p<=mp;p++){
       if(D.TT[cid][day][p])continue;
+      if(!pool.length)continue; // pool exhausted = all periods filled per limit
       const isLate=p>limit;
-      // Try preferred match first, then any
-      let cand=null;
-      for(let pass=0;pass<2;pass++){
-        for(let k=0;k<pool.length;k++){const item=pool[(pi+k)%pool.length];
-          // Pass 0: prefer type match; Pass 1: allow any
+
+      // Find best candidate from pool (not yet used beyond limit)
+      let candIdx=-1;
+      // Pass 0: type match preferred; Pass 1: any type
+      for(let pass=0;pass<2&&candIdx===-1;pass++){
+        for(let k=0;k<pool.length;k++){
+          const item=pool[k];
+          // Enforce hard limit
+          const tgt=csl.find(r=>r.subjectId===item.subjectId)?.periodsPerWeek||3;
+          if((usedCount[item.subjectId]||0)>=tgt)continue;
+          // Type preference
           if(pass===0){if(isLate&&item.type==='theory')continue;if(!isLate&&item.type==='practical')continue;}
-          let cfl=false;if(item.teacherId)D.classes.forEach(cls2=>{if(cls2.id===cid)return;const c2=D.TT[cls2.id]?.[day]?.[p];if(c2?.teacherId===item.teacherId)cfl=true;});
-          if(!cfl){cand=item;pi=(pi+k+1)%pool.length;break;}
+          // Teacher conflict check
+          let cfl=false;
+          if(item.teacherId)D.classes.forEach(cls2=>{if(cls2.id===cid)return;const c2=D.TT[cls2.id]?.[day]?.[p];if(c2?.teacherId===item.teacherId)cfl=true;});
+          if(!cfl){candIdx=k;break;}
         }
-        if(cand)break;
       }
-      if(!cand)continue;
+      if(candIdx===-1)continue;
+
+      const cand=pool[candIdx];
+      const tgt=csl.find(r=>r.subjectId===cand.subjectId)?.periodsPerWeek||3;
+
       // Try double period
-      const next=p+1;const canDbl=next<=mp&&sameGrp(p,next)&&p!==+(c.shortBreakAfter||3)&&p!==+(c.lunchBreakAfter||6)&&!D.TT[cid][day][next];
-      if(canDbl&&Math.random()<.2){
+      const next=p+1;
+      const canDbl=next<=mp&&sameGrp(p,next)&&p!==+(c.shortBreakAfter||3)&&p!==+(c.lunchBreakAfter||6)&&!D.TT[cid][day][next];
+      const dblOk=canDbl&&((usedCount[cand.subjectId]||0)+2<=tgt)&&Math.random()<0.2;
+
+      if(dblOk){
         D.TT[cid][day][p]={subjectId:cand.subjectId,teacherId:cand.teacherId,isDouble:true};
-        D.TT[cid][day][next]={subjectId:cand.subjectId,teacherId:cand.teacherId,isDoubleCont:true};p++;
-      } else D.TT[cid][day][p]={subjectId:cand.subjectId,teacherId:cand.teacherId};
+        D.TT[cid][day][next]={subjectId:cand.subjectId,teacherId:cand.teacherId,isDoubleCont:true};
+        usedCount[cand.subjectId]=(usedCount[cand.subjectId]||0)+2;
+        // Remove 2 entries of this subject from pool
+        let rem=2;
+        pool=pool.filter(x=>{if(rem>0&&x.subjectId===cand.subjectId){rem--;return false;}return true;});
+        p++;
+      } else {
+        D.TT[cid][day][p]={subjectId:cand.subjectId,teacherId:cand.teacherId};
+        usedCount[cand.subjectId]=(usedCount[cand.subjectId]||0)+1;
+        pool.splice(candIdx,1);
+      }
     }
   });
+
   save();loadEditor();checkLoads();
-  const mx=+(c.maxTeacherPeriods||36);const over=D.teachers.filter(t=>getTLoad(t.id)>mx);
-  if(over.length)toast(`⚠️ ${over.map(t=>t.name).join(', ')} — limit exceeded!`,'warn',5000);else toast('Generated!');
+  // Summary
+  const leftover=csl.filter(row=>{const used=usedCount[row.subjectId]||0;return used<+(row.periodsPerWeek||3);});
+  if(leftover.length){
+    toast(`⚠️ काही तास assign होऊ शकले नाहीत: ${leftover.map(r=>{const s=D.subjects.find(x=>x.id===r.subjectId);return s?.name||'?';}).join(', ')}`,'warn',6000);
+  } else toast('✅ Generated! सर्व तास बरोबर assign झाले.');
 }
 
 // ===== VIEW =====
