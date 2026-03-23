@@ -938,128 +938,203 @@ function closeMod(){document.getElementById('modP').classList.remove('show');}
 function autoFill(){
   const cid=document.getElementById('ttsel').value;if(!cid)return toast('Class select करा!','error');
   const csl=D.CS[cid];if(!csl?.length)return toast('आधी subjects assign करा!','error');
-  if(!confirm('Auto-generate?'))return;
-  const c=D.cfg;const days=c.workingDays||[];const cls=D.classes.find(x=>x.id===cid);const ctId=cls?.classTeacherId;
-  D.TT[cid]={};// clear first
+  if(!confirm('Auto-generate? (सध्याचा timetable clear होईल)'))return;
 
-  // Build pool: exactly periodsPerWeek entries per subject — NO circular repeat
-  let pool=[];
+  const cfg=D.cfg;
+  const days=[...(cfg.workingDays||[])];
+  const cls=D.classes.find(x=>x.id===cid);
+  const ctId=cls?.classTeacherId;
+  const limit=+(cfg.subjectPeriodLimit||6);
+  const sb=+(cfg.shortBreakAfter||3);
+  const lb=+(cfg.lunchBreakAfter||6);
+
+  // Clear timetable
+  D.TT[cid]={};
+  days.forEach(day=>{D.TT[cid][day]={};});
+
+  // Build slots list: all available (day,period) pairs — shuffled randomly
+  let slots=[];
+  days.forEach(day=>{
+    const mp=maxP(day);
+    for(let p=1;p<=mp;p++) slots.push({day,p});
+  });
+  // Fisher-Yates shuffle
+  function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}}
+  shuffle(slots);
+
+  // Build subject queue: each subject repeated periodsPerWeek times, then shuffle
+  let queue=[];
   csl.forEach(row=>{
     const subj=D.subjects.find(x=>x.id===row.subjectId);if(!subj)return;
     const ppw=+(row.periodsPerWeek||3);
-    for(let i=0;i<ppw;i++)pool.push({subjectId:row.subjectId,teacherId:row.teacherId,type:subj.type,priority:subj.priority||'normal',name:subj.name});
+    for(let i=0;i<ppw;i++) queue.push({
+      subjectId:row.subjectId,
+      teacherId:row.teacherId,
+      type:subj.type,
+      priority:subj.priority||'normal',
+      name:subj.name,
+      color:subj.color
+    });
   });
+  shuffle(queue);
 
-  // Track used count per subject to enforce hard limit
-  const usedCount={};
-  csl.forEach(row=>{usedCount[row.subjectId]=0;});
+  // Track: weekly used, daily used
+  const weekUsed={};  // subjectId -> count
+  const dayUsed={};   // day -> {subjectId -> count}
+  csl.forEach(r=>{weekUsed[r.subjectId]=0;});
+  days.forEach(day=>{dayUsed[day]={};});
 
-  // Shuffle pool for random distribution
-  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  // Helper: can place subject at (day,p)?
+  function canPlace(item,day,p){
+    const subj_id=item.subjectId;
+    // Weekly limit
+    const tgt=csl.find(r=>r.subjectId===subj_id)?.periodsPerWeek||3;
+    if((weekUsed[subj_id]||0)>=tgt) return false;
+    // Max 2 per subject per day
+    if((dayUsed[day][subj_id]||0)>=2) return false;
+    // Slot already taken
+    if(D.TT[cid][day][p]) return false;
+    // Teacher conflict across classes
+    if(item.teacherId){
+      for(const cls2 of D.classes){
+        if(cls2.id===cid) continue;
+        if(D.TT[cls2.id]?.[day]?.[p]?.teacherId===item.teacherId) return false;
+      }
+    }
+    return true;
+  }
 
-  const limit=+(c.subjectPeriodLimit||6);
+  function place(item,day,p){
+    D.TT[cid][day][p]={subjectId:item.subjectId,teacherId:item.teacherId};
+    weekUsed[item.subjectId]=(weekUsed[item.subjectId]||0)+1;
+    dayUsed[day][item.subjectId]=(dayUsed[day][item.subjectId]||0)+1;
+  }
 
-  // Class teacher P1 — pre-assign on all days
+  // --- Phase 1: Class teacher P1 on each day ---
   if(ctId){
     const ctRow=csl.find(r=>r.teacherId===ctId);
     if(ctRow){
+      const tgt=+(ctRow.periodsPerWeek||3);
+      shuffle(days);
       days.forEach(day=>{
-        if(!D.TT[cid][day])D.TT[cid][day]={};
-        const tgt=+(ctRow.periodsPerWeek||3);
-        if(usedCount[ctRow.subjectId]>=tgt)return;
-        let cfl=false;
-        D.classes.forEach(cls2=>{if(cls2.id===cid)return;const c2=D.TT[cls2.id]?.[day]?.[1];if(c2?.teacherId===ctId)cfl=true;});
-        if(!cfl){
-          D.TT[cid][day][1]={subjectId:ctRow.subjectId,teacherId:ctId};
-          usedCount[ctRow.subjectId]=(usedCount[ctRow.subjectId]||0)+1;
-          // Remove one entry from pool for this subject
-          const idx=pool.findIndex(x=>x.subjectId===ctRow.subjectId);
-          if(idx>=0)pool.splice(idx,1);
-        }
+        if((weekUsed[ctRow.subjectId]||0)>=tgt) return;
+        if(!canPlace({subjectId:ctRow.subjectId,teacherId:ctId},day,1)) return;
+        place({subjectId:ctRow.subjectId,teacherId:ctId},day,1);
+        // Remove one from queue
+        const qi=queue.findIndex(x=>x.subjectId===ctRow.subjectId);
+        if(qi>=0) queue.splice(qi,1);
       });
     }
   }
 
-  // Fill remaining periods — 2 passes over all days to distribute evenly
-  // Pass A: fill max 2 per subject per day
-  // Pass B: second round for leftover (still max 2/day enforced strictly)
-  for(let round=0;round<2;round++){
-    days.forEach(day=>{
-      if(!D.TT[cid][day])D.TT[cid][day]={};
-      const mp=maxP(day);
-      for(let p=1;p<=mp;p++){
-        if(D.TT[cid][day][p])continue;
-        if(!pool.length)continue;
+  // --- Phase 2: Assign from queue into slots (random order) ---
+  // For each item in queue, find a valid slot
+  // To ensure good spread, iterate queue items and for each try random slots
+  const unplaced=[];
+
+  for(const item of queue){
+    const tgt=csl.find(r=>r.subjectId===item.subjectId)?.periodsPerWeek||3;
+    if((weekUsed[item.subjectId]||0)>=tgt) continue; // already placed enough
+
+    const isHigh=item.priority==='high';
+
+    // Build candidate slots for this item (shuffled already via slots array)
+    // Prefer: type-correct slots first, then any
+    let placed=false;
+
+    // Pass 0: type match + not same day as existing (for high priority spread)
+    // Pass 1: type match only
+    // Pass 2: any slot
+    for(let pass=0;pass<=2&&!placed;pass++){
+      for(const slot of slots){
+        const {day,p}=slot;
+        if(D.TT[cid][day][p]) continue; // taken
+
+        // Type check
         const isLate=p>limit;
-
-        // Count per-subject usage on THIS day (including already assigned)
-        const dayCount={};
-        for(let pp=1;pp<=mp;pp++){
-          const cell=D.TT[cid][day]?.[pp];
-          if(cell?.subjectId&&!cell.isDoubleCont)
-            dayCount[cell.subjectId]=(dayCount[cell.subjectId]||0)+1;
+        if(pass===0||pass===1){
+          if(isLate&&item.type==='theory') continue;
+          if(!isLate&&item.type==='practical') continue;
         }
 
-        // Find candidate: STRICT max 2/day always (no bypass)
-        // Pass 0: type match; Pass 1: any type
-        let candIdx=-1;
-        for(let pass=0;pass<2&&candIdx===-1;pass++){
-          for(let k=0;k<pool.length;k++){
-            const item=pool[k];
-            // Weekly hard limit
-            const tgt=csl.find(r=>r.subjectId===item.subjectId)?.periodsPerWeek||3;
-            if((usedCount[item.subjectId]||0)>=tgt)continue;
-            // STRICT: max 2 per subject per day — no exceptions
-            if((dayCount[item.subjectId]||0)>=2)continue;
-            // Type preference pass 0 only
-            if(pass===0){if(isLate&&item.type==='theory')continue;if(!isLate&&item.type==='practical')continue;}
-            // Teacher conflict
-            let cfl=false;
-            if(item.teacherId)D.classes.forEach(cls2=>{
-              if(cls2.id===cid)return;
-              const c2=D.TT[cls2.id]?.[day]?.[p];
-              if(c2?.teacherId===item.teacherId)cfl=true;
-            });
-            if(!cfl){candIdx=k;break;}
-          }
+        // High priority spread: pass 0 — avoid days where this subject already exists
+        if(pass===0&&isHigh){
+          if((dayUsed[day][item.subjectId]||0)>0) continue;
         }
-        if(candIdx===-1)continue;
 
-        const cand=pool[candIdx];
-        const tgt=csl.find(r=>r.subjectId===cand.subjectId)?.periodsPerWeek||3;
-        const curDay=dayCount[cand.subjectId]||0;
+        if(!canPlace(item,day,p)) continue;
 
-        // Double period: only if today has 0 of this subject (so double = 2, within limit)
-        const next=p+1;
-        const canDbl=curDay===0&&next<=mp&&sameGrp(p,next)
-          &&p!==+(c.shortBreakAfter||3)&&p!==+(c.lunchBreakAfter||6)
-          &&!D.TT[cid][day][next]
-          &&((usedCount[cand.subjectId]||0)+2<=tgt)
-          &&Math.random()<0.2;
-
-        if(canDbl){
-          D.TT[cid][day][p]={subjectId:cand.subjectId,teacherId:cand.teacherId,isDouble:true};
-          D.TT[cid][day][next]={subjectId:cand.subjectId,teacherId:cand.teacherId,isDoubleCont:true};
-          usedCount[cand.subjectId]=(usedCount[cand.subjectId]||0)+2;
-          let rem=2;
-          pool=pool.filter(x=>{if(rem>0&&x.subjectId===cand.subjectId){rem--;return false;}return true;});
-          p++;
-        } else {
-          D.TT[cid][day][p]={subjectId:cand.subjectId,teacherId:cand.teacherId};
-          usedCount[cand.subjectId]=(usedCount[cand.subjectId]||0)+1;
-          pool.splice(candIdx,1);
-        }
+        place(item,day,p);
+        placed=true;
+        break;
       }
-    });
+    }
+    if(!placed) unplaced.push(item);
   }
 
+  // --- Phase 3: Try to place unplaced items with relaxed constraints ---
+  for(const item of unplaced){
+    const tgt=csl.find(r=>r.subjectId===item.subjectId)?.periodsPerWeek||3;
+    if((weekUsed[item.subjectId]||0)>=tgt) continue;
+    shuffle(slots); // re-shuffle for another try
+    for(const slot of slots){
+      const {day,p}=slot;
+      if(!canPlace(item,day,p)) continue;
+      place(item,day,p);
+      break;
+    }
+  }
+
+  // --- Phase 4: Try double periods (random, only if 0 of subject that day) ---
+  days.forEach(day=>{
+    const mp=maxP(day);
+    for(let p=1;p<mp;p++){
+      const cell=D.TT[cid][day][p];
+      if(!cell||cell.isDouble||cell.isDoubleCont) continue;
+      const next=p+1;
+      if(D.TT[cid][day][next]) continue;
+      if(!sameGrp(p,next)) continue;
+      if(p===sb||p===lb) continue;
+      if(Math.random()>0.15) continue; // 15% chance
+
+      const item=queue.find(x=>x.subjectId===cell.subjectId);
+      const tgt=csl.find(r=>r.subjectId===cell.subjectId)?.periodsPerWeek||3;
+      // Only double if: today has exactly 1 of this subject, weekly still has room
+      if((dayUsed[day][cell.subjectId]||0)!==1) continue;
+      if((weekUsed[cell.subjectId]||0)>=tgt) continue;
+      // Check teacher conflict for next slot
+      let cfl=false;
+      if(cell.teacherId) D.classes.forEach(cls2=>{
+        if(cls2.id===cid) return;
+        if(D.TT[cls2.id]?.[day]?.[next]?.teacherId===cell.teacherId) cfl=true;
+      });
+      if(cfl) continue;
+
+      // Make double
+      D.TT[cid][day][next]={subjectId:cell.subjectId,teacherId:cell.teacherId,isDoubleCont:true};
+      D.TT[cid][day][p].isDouble=true;
+      weekUsed[cell.subjectId]=(weekUsed[cell.subjectId]||0)+1;
+      dayUsed[day][cell.subjectId]=(dayUsed[day][cell.subjectId]||0)+1;
+    }
+  });
+
   save();loadEditor();checkLoads();
-  // Summary
-  const leftover=csl.filter(row=>{const used=usedCount[row.subjectId]||0;return used<+(row.periodsPerWeek||3);});
+
+  // Report
+  const leftover=csl.filter(row=>(weekUsed[row.subjectId]||0)<+(row.periodsPerWeek||3));
   if(leftover.length){
-    toast(`⚠️ काही तास assign होऊ शकले नाहीत: ${leftover.map(r=>{const s=D.subjects.find(x=>x.id===r.subjectId);return s?.name||'?';}).join(', ')}`,'warn',6000);
-  } else toast('✅ Generated! सर्व तास बरोबर assign झाले.');
+    const names=leftover.map(r=>{
+      const s=D.subjects.find(x=>x.id===r.subjectId);
+      const have=weekUsed[r.subjectId]||0;
+      const need=r.periodsPerWeek||3;
+      return `${s?.name||'?'}(${have}/${need})`;
+    }).join(', ');
+    toast(`⚠️ काही तास assign होऊ शकले नाहीत: ${names}`,'warn',7000);
+  } else {
+    toast('✅ Generated! सर्व तास randomly assign झाले.');
+  }
 }
+
 
 // ===== VIEW =====
 function renderCV(){const cid=document.getElementById('vcsel').value;if(!cid)return;document.getElementById('cva').innerHTML=buildTTGrid(cid,false);}
