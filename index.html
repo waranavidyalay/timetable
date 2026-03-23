@@ -989,16 +989,22 @@ function autoFill(){
       if(!pool.length)continue; // pool exhausted = all periods filled per limit
       const isLate=p>limit;
 
-      // Find best candidate from pool (not yet used beyond limit)
+      // Count per-subject usage on THIS day
+      const dayCount={};
+      for(let pp=1;pp<p;pp++){const cell=D.TT[cid][day]?.[pp];if(cell?.subjectId&&!cell.isDoubleCont)dayCount[cell.subjectId]=(dayCount[cell.subjectId]||0)+1;}
+
+      // Find best candidate from pool (not yet used beyond limit, max 2/day)
       let candIdx=-1;
-      // Pass 0: type match preferred; Pass 1: any type
-      for(let pass=0;pass<2&&candIdx===-1;pass++){
+      // Pass 0: type match preferred; Pass 1: any type; Pass 2: ignore day limit (fallback)
+      for(let pass=0;pass<3&&candIdx===-1;pass++){
         for(let k=0;k<pool.length;k++){
           const item=pool[k];
-          // Enforce hard limit
+          // Enforce weekly hard limit
           const tgt=csl.find(r=>r.subjectId===item.subjectId)?.periodsPerWeek||3;
           if((usedCount[item.subjectId]||0)>=tgt)continue;
-          // Type preference
+          // Max 2 per day per subject (pass 0 & 1 only)
+          if(pass<2&&(dayCount[item.subjectId]||0)>=2)continue;
+          // Type preference (pass 0 only)
           if(pass===0){if(isLate&&item.type==='theory')continue;if(!isLate&&item.type==='practical')continue;}
           // Teacher conflict check
           let cfl=false;
