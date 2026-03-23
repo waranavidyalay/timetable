@@ -980,63 +980,78 @@ function autoFill(){
     }
   }
 
-  // Fill remaining periods
-  days.forEach(day=>{
-    if(!D.TT[cid][day])D.TT[cid][day]={};
-    const mp=maxP(day);
-    for(let p=1;p<=mp;p++){
-      if(D.TT[cid][day][p])continue;
-      if(!pool.length)continue; // pool exhausted = all periods filled per limit
-      const isLate=p>limit;
+  // Fill remaining periods — 2 passes over all days to distribute evenly
+  // Pass A: fill max 2 per subject per day
+  // Pass B: second round for leftover (still max 2/day enforced strictly)
+  for(let round=0;round<2;round++){
+    days.forEach(day=>{
+      if(!D.TT[cid][day])D.TT[cid][day]={};
+      const mp=maxP(day);
+      for(let p=1;p<=mp;p++){
+        if(D.TT[cid][day][p])continue;
+        if(!pool.length)continue;
+        const isLate=p>limit;
 
-      // Count per-subject usage on THIS day
-      const dayCount={};
-      for(let pp=1;pp<p;pp++){const cell=D.TT[cid][day]?.[pp];if(cell?.subjectId&&!cell.isDoubleCont)dayCount[cell.subjectId]=(dayCount[cell.subjectId]||0)+1;}
+        // Count per-subject usage on THIS day (including already assigned)
+        const dayCount={};
+        for(let pp=1;pp<=mp;pp++){
+          const cell=D.TT[cid][day]?.[pp];
+          if(cell?.subjectId&&!cell.isDoubleCont)
+            dayCount[cell.subjectId]=(dayCount[cell.subjectId]||0)+1;
+        }
 
-      // Find best candidate from pool (not yet used beyond limit, max 2/day)
-      let candIdx=-1;
-      // Pass 0: type match preferred; Pass 1: any type; Pass 2: ignore day limit (fallback)
-      for(let pass=0;pass<3&&candIdx===-1;pass++){
-        for(let k=0;k<pool.length;k++){
-          const item=pool[k];
-          // Enforce weekly hard limit
-          const tgt=csl.find(r=>r.subjectId===item.subjectId)?.periodsPerWeek||3;
-          if((usedCount[item.subjectId]||0)>=tgt)continue;
-          // Max 2 per day per subject (pass 0 & 1 only)
-          if(pass<2&&(dayCount[item.subjectId]||0)>=2)continue;
-          // Type preference (pass 0 only)
-          if(pass===0){if(isLate&&item.type==='theory')continue;if(!isLate&&item.type==='practical')continue;}
-          // Teacher conflict check
-          let cfl=false;
-          if(item.teacherId)D.classes.forEach(cls2=>{if(cls2.id===cid)return;const c2=D.TT[cls2.id]?.[day]?.[p];if(c2?.teacherId===item.teacherId)cfl=true;});
-          if(!cfl){candIdx=k;break;}
+        // Find candidate: STRICT max 2/day always (no bypass)
+        // Pass 0: type match; Pass 1: any type
+        let candIdx=-1;
+        for(let pass=0;pass<2&&candIdx===-1;pass++){
+          for(let k=0;k<pool.length;k++){
+            const item=pool[k];
+            // Weekly hard limit
+            const tgt=csl.find(r=>r.subjectId===item.subjectId)?.periodsPerWeek||3;
+            if((usedCount[item.subjectId]||0)>=tgt)continue;
+            // STRICT: max 2 per subject per day — no exceptions
+            if((dayCount[item.subjectId]||0)>=2)continue;
+            // Type preference pass 0 only
+            if(pass===0){if(isLate&&item.type==='theory')continue;if(!isLate&&item.type==='practical')continue;}
+            // Teacher conflict
+            let cfl=false;
+            if(item.teacherId)D.classes.forEach(cls2=>{
+              if(cls2.id===cid)return;
+              const c2=D.TT[cls2.id]?.[day]?.[p];
+              if(c2?.teacherId===item.teacherId)cfl=true;
+            });
+            if(!cfl){candIdx=k;break;}
+          }
+        }
+        if(candIdx===-1)continue;
+
+        const cand=pool[candIdx];
+        const tgt=csl.find(r=>r.subjectId===cand.subjectId)?.periodsPerWeek||3;
+        const curDay=dayCount[cand.subjectId]||0;
+
+        // Double period: only if today has 0 of this subject (so double = 2, within limit)
+        const next=p+1;
+        const canDbl=curDay===0&&next<=mp&&sameGrp(p,next)
+          &&p!==+(c.shortBreakAfter||3)&&p!==+(c.lunchBreakAfter||6)
+          &&!D.TT[cid][day][next]
+          &&((usedCount[cand.subjectId]||0)+2<=tgt)
+          &&Math.random()<0.2;
+
+        if(canDbl){
+          D.TT[cid][day][p]={subjectId:cand.subjectId,teacherId:cand.teacherId,isDouble:true};
+          D.TT[cid][day][next]={subjectId:cand.subjectId,teacherId:cand.teacherId,isDoubleCont:true};
+          usedCount[cand.subjectId]=(usedCount[cand.subjectId]||0)+2;
+          let rem=2;
+          pool=pool.filter(x=>{if(rem>0&&x.subjectId===cand.subjectId){rem--;return false;}return true;});
+          p++;
+        } else {
+          D.TT[cid][day][p]={subjectId:cand.subjectId,teacherId:cand.teacherId};
+          usedCount[cand.subjectId]=(usedCount[cand.subjectId]||0)+1;
+          pool.splice(candIdx,1);
         }
       }
-      if(candIdx===-1)continue;
-
-      const cand=pool[candIdx];
-      const tgt=csl.find(r=>r.subjectId===cand.subjectId)?.periodsPerWeek||3;
-
-      // Try double period
-      const next=p+1;
-      const canDbl=next<=mp&&sameGrp(p,next)&&p!==+(c.shortBreakAfter||3)&&p!==+(c.lunchBreakAfter||6)&&!D.TT[cid][day][next];
-      const dblOk=canDbl&&((usedCount[cand.subjectId]||0)+2<=tgt)&&Math.random()<0.2;
-
-      if(dblOk){
-        D.TT[cid][day][p]={subjectId:cand.subjectId,teacherId:cand.teacherId,isDouble:true};
-        D.TT[cid][day][next]={subjectId:cand.subjectId,teacherId:cand.teacherId,isDoubleCont:true};
-        usedCount[cand.subjectId]=(usedCount[cand.subjectId]||0)+2;
-        // Remove 2 entries of this subject from pool
-        let rem=2;
-        pool=pool.filter(x=>{if(rem>0&&x.subjectId===cand.subjectId){rem--;return false;}return true;});
-        p++;
-      } else {
-        D.TT[cid][day][p]={subjectId:cand.subjectId,teacherId:cand.teacherId};
-        usedCount[cand.subjectId]=(usedCount[cand.subjectId]||0)+1;
-        pool.splice(candIdx,1);
-      }
-    }
-  });
+    });
+  }
 
   save();loadEditor();checkLoads();
   // Summary
