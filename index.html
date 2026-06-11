@@ -109,7 +109,11 @@ body{font-family:'DM Sans',sans-serif;background:#eaf0f6;color:var(--tx);min-hei
       <button class="nb" onclick="SP('view',this)">👁️ View</button>
       <button class="nb" onclick="SP('print',this)">🖨️ Print</button>
       <button class="nb" onclick="SP('reports',this)">📊 Reports</button>
+      <div style="width:1px;background:rgba(255,255,255,.2);margin:0 4px;align-self:stretch;"></div>
+      <button class="nb" onclick="quickSave()" style="background:rgba(39,174,96,.35);" title="Data backup file download करा">💾 Save Data</button>
+      <button class="nb" onclick="quickLoad()" style="background:rgba(231,76,60,.35);" title="Backup file upload करून data restore करा">📂 Load Data</button>
     </nav>
+    <input type="file" id="qlImpF" accept=".json" style="display:none;" onchange="doQLImp(event)">
   </div>
 </header>
 <div class="app">
@@ -1686,7 +1690,81 @@ function rFree(){
 }
 
 // ===== EXPORT/IMPORT =====
-function expJSON(){const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`wvs_${new Date().toISOString().slice(0,10)}.json`;a.click();toast('Exported!');}
+function expJSON(){
+  try{
+    const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download='wvs_'+new Date().toISOString().slice(0,10)+'.json';
+    a.style.display='none';document.body.appendChild(a);a.click();
+    setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},200);
+    toast('Exported!');
+  }catch(err){toast('Export failed: '+err.message,'error');}
+}
+function quickSave(){
+  try{
+    const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
+    const date=new Date();
+    const fn='WVS_Backup_'+date.getFullYear()+String(date.getMonth()+1).padStart(2,'0')+String(date.getDate()).padStart(2,'0')+'_'+String(date.getHours()).padStart(2,'0')+String(date.getMinutes()).padStart(2,'0')+'.json';
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=fn;a.style.display='none';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},200);
+    toast('✅ Data saved: '+fn,'success',4000);
+  }catch(err){
+    // Fallback: open as data URI
+    try{
+      const json=JSON.stringify(D,null,2);
+      const uri='data:application/json;charset=utf-8,'+encodeURIComponent(json);
+      const a=document.createElement('a');
+      a.href=uri;a.download='WVS_Backup.json';a.style.display='none';
+      document.body.appendChild(a);a.click();
+      setTimeout(()=>document.body.removeChild(a),200);
+      toast('✅ Data saved (fallback)','success',4000);
+    }catch(e2){toast('Save failed: '+e2.message,'error');}
+  }
+}
+function quickLoad(){document.getElementById('qlImpF').click();}
+function doQLImp(e){
+  const file=e.target.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(!d.teachers||!d.classes)return toast('Invalid backup file!','error');
+      if(!confirm('"'+file.name+'" हा backup restore करायचा? सध्याचा data replace होईल.'))return;
+      // Merge cfg defaults to avoid missing keys
+      const defaultCfg={assemblyTime:'07:15',assemblyDuration:15,mukhyadhyapakName:'',
+        startTime:'07:30',numPeriods:9,shortDayPeriods:6,periodDuration:45,
+        shortBreakAfter:3,shortBreakDuration:15,lunchBreakAfter:6,lunchBreakDuration:90,
+        studyDuration:65,studyBreakDuration:10,subjectPeriodLimit:6,maxTeacherPeriods:36,
+        workingDays:['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']};
+      d.cfg=Object.assign({},defaultCfg,d.cfg||d.settings||{});
+      if(!d.TT)d.TT={};
+      if(!d.CS)d.CS={};
+      D=d;save();
+      // Reload all UI safely
+      try{applyS();}catch(e2){}
+      try{renderSubjects();}catch(e2){}
+      try{renderTeachers();}catch(e2){}
+      try{renderClasses();}catch(e2){}
+      try{popSubjSel();}catch(e2){}
+      try{popCTSel();}catch(e2){}
+      try{popSel('asel');}catch(e2){}
+      try{popSel('ttsel');}catch(e2){}
+      try{popSel('vcsel');}catch(e2){}
+      try{popSelT('vtsel');}catch(e2){}
+      try{ppSels();}catch(e2){}
+      // Navigate to setup
+      const setupBtn=document.querySelector('.nb');
+      try{SP('setup',setupBtn);}catch(e2){}
+      toast('✅ Data restored: '+file.name,'success',4000);
+    }catch(err){toast('Restore failed: '+err.message,'error',5000);}
+  };
+  r.readAsText(file);e.target.value='';
+}
 function expCSV(){const c=D.cfg;const days=c.workingDays||[];const pt=getPTimes();let csv='Class,Division,Day,Period,Time,Subject,Teacher\n';
   D.classes.forEach(cls=>days.forEach(day=>{for(let p=1;p<=maxP(day);p++){const cell=D.TT[cls.id]?.[day]?.[p];const t=pt.find(x=>x.p===p);const subj=D.subjects.find(x=>x.id===cell?.subjectId);const tchr=D.teachers.find(x=>x.id===cell?.teacherId);csv+=`${cls.std},${cls.division},${day},P${p},${t?m2t12(t2m(t.s)):''}–${t?m2t12(t2m(t.e)):''},${subj?.name||''},${tchr?.name||''}\n`;}}));
   const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`wvs_${new Date().toISOString().slice(0,10)}.csv`;a.click();toast('CSV exported!');
