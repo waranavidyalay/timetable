@@ -1015,9 +1015,14 @@ function autoFill(){
 
   function slotFree(day,p){return!D.TT[cid][day][p];}
 
+  function dayMax(subjectId){
+    const subj=D.subjects.find(x=>x.id===subjectId);
+    return isPE(subj)?3:2; // PE allows 3/day (consecutive), all others max 2/day
+  }
+
   function canPlace(item,day,p){
     if(getUsed(item.subjectId)>=getTgt(item.subjectId))return false;
-    if(getDayUsed(day,item.subjectId)>=3)return false; // max 3 periods/day per subject
+    if(getDayUsed(day,item.subjectId)>=dayMax(item.subjectId))return false;
     if(!slotFree(day,p))return false;
     if(!teacherFree(item.teacherId,day,p))return false;
     return true;
@@ -1034,7 +1039,7 @@ function autoFill(){
     const mp=maxPDay(day);
     if(p+len-1>mp)return false;
     if(getUsed(item.subjectId)+len>getTgt(item.subjectId))return false;
-    if(getDayUsed(day,item.subjectId)+len>3)return false;
+    if(getDayUsed(day,item.subjectId)+len>dayMax(item.subjectId))return false;
     for(let i=0;i<len;i++){
       if(!slotFree(day,p+i))return false;
       if(!teacherFree(item.teacherId,day,p+i))return false;
