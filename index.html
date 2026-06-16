@@ -560,7 +560,7 @@ function delSubj(id){if(!confirm('Delete?'))return;D.subjects=D.subjects.filter(
 
 // ===== TEACHERS =====
 function getTLoad(tid){
-  let c=0;D.classes.forEach(cls=>(D.cfg.workingDays||[]).forEach(day=>{for(let p=1;p<=maxP(day);p++){const cell=D.TT[cls.id]?.[day]?.[p];if(cell?.teacherId===tid&&!cell.isDoubleCont)c++;}}));
+  let c=0;D.classes.forEach(cls=>(D.cfg.workingDays||[]).forEach(day=>{for(let p=1;p<=maxP(day);p++){const cell=D.TT[cls.id]?.[day]?.[p];if(cell?.teacherId===tid)c++;}}));
   return c;
 }
 function addTeacher(){
@@ -896,7 +896,7 @@ function updDbl(){
 }
 function getSubjAssigned(cid,sid){
   // Count how many times subject is assigned in timetable for this class
-  let cnt=0;(D.cfg.workingDays||[]).forEach(day=>{for(let p=1;p<=maxP(day);p++){const cell=D.TT[cid]?.[day]?.[p];if(cell?.subjectId===sid&&!cell.isDoubleCont)cnt++;}});
+  let cnt=0;(D.cfg.workingDays||[]).forEach(day=>{for(let p=1;p<=maxP(day);p++){const cell=D.TT[cid]?.[day]?.[p];if(cell?.subjectId===sid)cnt++;}});
   return cnt;
 }
 function assignP(){
@@ -1017,7 +1017,7 @@ function autoFill(){
 
   function canPlace(item,day,p){
     if(getUsed(item.subjectId)>=getTgt(item.subjectId))return false;
-    if(getDayUsed(day,item.subjectId)>=2)return false;
+    if(getDayUsed(day,item.subjectId)>=3)return false; // max 3 periods/day per subject
     if(!slotFree(day,p))return false;
     if(!teacherFree(item.teacherId,day,p))return false;
     return true;
@@ -1335,7 +1335,7 @@ function renderTV(){
     }
   });
   // Load summary
-  let pCnt={};let total=0;D.classes.forEach(cls=>(c.workingDays||[]).forEach(day=>{for(let p=1;p<=maxP(day);p++){const cell=D.TT[cls.id]?.[day]?.[p];if(cell?.teacherId===tid&&!cell.isDoubleCont){const s=D.subjects.find(x=>x.id===cell.subjectId);pCnt[s?.name||'?']=(pCnt[s?.name||'?']||0)+1;total++;}}}));
+  let pCnt={};let total=0;D.classes.forEach(cls=>(c.workingDays||[]).forEach(day=>{for(let p=1;p<=maxP(day);p++){const cell=D.TT[cls.id]?.[day]?.[p];if(cell?.teacherId===tid){const s=D.subjects.find(x=>x.id===cell.subjectId);pCnt[s?.name||'?']=(pCnt[s?.name||'?']||0)+1;total++;}}}));
   const mx=+(c.maxTeacherPeriods||36);
   h+=`</tbody></table></div><div style="margin-top:9px;padding:8px;background:var(--lt);border-radius:6px;font-size:.78rem;"><strong>Weekly Load: <span style="color:${total>mx?'#e74c3c':'#27ae60'}">${total}/${mx}</span></strong> &nbsp; ${Object.entries(pCnt).map(([k,v])=>`<span class="chip">${k}:${v}</span>`).join(' ')}</div>`;
   document.getElementById('tva').innerHTML=h;
@@ -1660,7 +1660,7 @@ function rLoad(){
   days.forEach(d=>h+=`<th>${d.substring(0,3)}</th>`);h+=`<th>Total</th><th>Status</th></tr></thead><tbody>`;
   D.teachers.forEach((t,i)=>{
     let dl={};let total=0;days.forEach(day=>dl[day]=0);
-    D.classes.forEach(cls=>days.forEach(day=>{for(let p=1;p<=maxP(day);p++){const cell=D.TT[cls.id]?.[day]?.[p];if(cell?.teacherId===t.id&&!cell.isDoubleCont){dl[day]++;total++;}}}));
+    D.classes.forEach(cls=>days.forEach(day=>{for(let p=1;p<=maxP(day);p++){const cell=D.TT[cls.id]?.[day]?.[p];if(cell?.teacherId===t.id){dl[day]++;total++;}}}));
     const col=total>mx?'#e74c3c':total>mx*.85?'#f39c12':'#27ae60';
     h+=`<tr><td>${i+1}</td><td><strong>${t.name}</strong></td><td><span class="badge bgg">${t.code}</span></td>`;
     days.forEach(d=>h+=`<td style="text-align:center;">${dl[d]||0}</td>`);
@@ -1673,7 +1673,7 @@ function rSubj(){
   let h='<div class="ttw"><table class="dt"><thead><tr><th>Class</th><th>Subject</th><th>Target</th><th>Assigned</th><th></th></tr></thead><tbody>';
   D.classes.forEach(cls=>{(D.CS[cls.id]||[]).forEach(row=>{
     const subj=D.subjects.find(s=>s.id===row.subjectId);let asgn=0;
-    days.forEach(day=>{for(let p=1;p<=maxP(day);p++){const cell=D.TT[cls.id]?.[day]?.[p];if(cell?.subjectId===row.subjectId&&!cell.isDoubleCont)asgn++;}});
+    days.forEach(day=>{for(let p=1;p<=maxP(day);p++){const cell=D.TT[cls.id]?.[day]?.[p];if(cell?.subjectId===row.subjectId)asgn++;}});
     const tgt=row.periodsPerWeek||3;const ok=asgn>=tgt;
     h+=`<tr><td><strong>${cls.std}-${cls.division}</strong></td><td>${subj?.name||'?'} <span class="badge" style="background:${subj?.color||'#eee'}18;color:${subj?.color||'#333'};">${subj?.code}</span></td>
     <td style="text-align:center;">${tgt}</td><td style="text-align:center;font-weight:700;color:${ok?'#27ae60':'#e74c3c'};">${asgn}</td>
