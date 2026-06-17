@@ -960,7 +960,7 @@ function autoFill(){
 
   function isPE(subj){
     const s=nm(subj);
-    return s.includes('pe')||s.includes('sha')||s.includes('शा')||s.includes('we')||
+    return s.includes('pe')||s.includes('sha')||s.includes('शा')||
            s.includes('physical')||s.includes('शारीर');
   }
   function isSciPrac(subj){
@@ -973,6 +973,13 @@ function autoFill(){
     const s=nm(subj);
     return (s.includes('sci')||s.includes('sc1')||s.includes('sc2'))&&!isSciPrac(subj);
   }
+  function sciGroup(subj){
+    // Returns '1' or '2' if this is Science I / Science II (theory or practical), else null
+    const s=nm(subj);
+    if(s.includes('sc1')||s.includes('science i')||s.includes('science1'))return'1';
+    if(s.includes('sc2')||s.includes('science ii')||s.includes('science2'))return'2';
+    return null;
+  }
   function isComputer(subj){
     const s=nm(subj);
     return s.includes('comp')||s.includes('sang')||s.includes('संगण');
@@ -981,8 +988,8 @@ function autoFill(){
     const s=nm(subj);
     return s.includes('scout')||s.includes('ncc')||s.includes('mcc')||
            s.includes('rsp')||s.includes('guide')||s.includes('स्काऊट')||
-           s.includes('jal')||s.includes('jar')||s.includes('we ')
-           ||(s.includes('we')&&subj?.type==='practical'&&!isPE(subj));
+           s.includes('jal')||s.includes('jar')||
+           (s.includes('we')&&subj?.type==='practical'&&!isPE(subj));
   }
   function isPS1(subj){
     const s=nm(subj);
@@ -1003,7 +1010,6 @@ function autoFill(){
     return true;
   }
 
-  // weekUsed, dayUsed
   const weekUsed={};
   const dayUsed={};
   csl.forEach(r=>{weekUsed[r.subjectId]=0;});
@@ -1012,12 +1018,13 @@ function autoFill(){
   function getUsed(sid){return weekUsed[sid]||0;}
   function getDayUsed(day,sid){return dayUsed[day][sid]||0;}
   function getTgt(sid){return+(csl.find(r=>r.subjectId===sid)?.periodsPerWeek||3);}
-
   function slotFree(day,p){return!D.TT[cid][day][p];}
 
   function dayMax(subjectId){
     const subj=D.subjects.find(x=>x.id===subjectId);
-    return isPE(subj)?3:2; // PE allows 3/day (consecutive), all others max 2/day
+    if(isPE(subj))return 3; // PE allows 3/day
+    if(isSciTheory(subj)&&sciGroup(subj))return 1; // Sci I/II theory: max 1/day (spread across days)
+    return 2; // all others max 2/day
   }
 
   function canPlace(item,day,p){
@@ -1035,7 +1042,6 @@ function autoFill(){
   }
 
   function canConsec(item,day,p,len){
-    // len = 2 or 3 consecutive starting at p
     const mp=maxPDay(day);
     if(p+len-1>mp)return false;
     if(getUsed(item.subjectId)+len>getTgt(item.subjectId))return false;
@@ -1044,7 +1050,6 @@ function autoFill(){
       if(!slotFree(day,p+i))return false;
       if(!teacherFree(item.teacherId,day,p+i))return false;
     }
-    // No break in the middle
     for(let i=0;i<len-1;i++){
       if(p+i===sb||p+i===lb)return false;
       if(!sameGrp(p+i,p+i+1))return false;
@@ -1060,7 +1065,16 @@ function autoFill(){
     dayUsed[day][item.subjectId]=(dayUsed[day][item.subjectId]||0)+len;
   }
 
-  // School-wide sci practical count on a day
+  // Force a single placement even if it requires bumping nothing — best slot search
+  function forcePlace(item,day,p){
+    if(!slotFree(day,p))return false;
+    if(!teacherFree(item.teacherId,day,p))return false;
+    D.TT[cid][day][p]={subjectId:item.subjectId,teacherId:item.teacherId};
+    weekUsed[item.subjectId]=(weekUsed[item.subjectId]||0)+1;
+    dayUsed[day][item.subjectId]=(dayUsed[day][item.subjectId]||0)+1;
+    return true;
+  }
+
   function schoolSciPracOnDay(day){
     let cnt=0;
     D.classes.forEach(cl=>{
@@ -1080,7 +1094,27 @@ function autoFill(){
 
   const sdays=[...days];
 
-  // ── PHASE 1: PE / शा.शि. — 3 consecutive P7-P8-P9 ──────────
+  // ════════════════════════════════════════════════════════════
+  // PHASE 0: Class Teacher → P1 — HIGHEST PRIORITY, FORCED FIRST
+  // ════════════════════════════════════════════════════════════
+  if(ctId){
+    const ctRow=csl.find(r=>r.teacherId===ctId);
+    if(ctRow){
+      const item={subjectId:ctRow.subjectId,teacherId:ctId};
+      const tgt=getTgt(item.subjectId);
+      shuffle(sdays);
+      let placed=0;
+      for(const day of sdays){
+        if(placed>=Math.min(tgt,days.length))break;
+        // Force P1 on this day for class teacher (teacher conflict check only)
+        if(forcePlace(item,day,1))placed++;
+      }
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════
+  // PHASE 1: PE / शा.शि. — 3 consecutive P7-P8-P9
+  // ════════════════════════════════════════════════════════════
   csl.forEach(row=>{
     const subj=D.subjects.find(x=>x.id===row.subjectId);
     if(!isPE(subj))return;
@@ -1090,12 +1124,14 @@ function autoFill(){
     for(const day of sdays){
       if(getUsed(item.subjectId)>=tgt)break;
       const mp=maxPDay(day);
-      const p=lateStart; // P7
+      const p=lateStart;
       if(p+2<=mp&&canConsec(item,day,p,3))doConsec(item,day,p,3);
     }
   });
 
-  // ── PHASE 2: Scout/NCC/MCC/RSP/JAL — late periods only ─────
+  // ════════════════════════════════════════════════════════════
+  // PHASE 2: Scout/NCC/MCC/RSP/JAL — late periods only
+  // ════════════════════════════════════════════════════════════
   csl.forEach(row=>{
     const subj=D.subjects.find(x=>x.id===row.subjectId);
     if(!isLateOnly(subj)||isPE(subj))return;
@@ -1111,14 +1147,15 @@ function autoFill(){
     }
   });
 
-  // ── PHASE 3: Science Practical — 2 consec, prefer P1-6,
-  //   no theory day, max 6/day school-wide ──────────────────────
+  // ════════════════════════════════════════════════════════════
+  // PHASE 3: Science Practical — 2 consec, prefer P1-6,
+  //   no theory day, max 6/day school-wide
+  // ════════════════════════════════════════════════════════════
   csl.forEach(row=>{
     const subj=D.subjects.find(x=>x.id===row.subjectId);
     if(!isSciPrac(subj))return;
     const item={subjectId:row.subjectId,teacherId:row.teacherId};
     const tgt=getTgt(row.subjectId);
-    // Find sci theory subject for this class
     const sciTRow=csl.find(r=>isSciTheory(D.subjects.find(x=>x.id===r.subjectId)));
 
     shuffle(sdays);
@@ -1126,25 +1163,65 @@ function autoFill(){
       if(getUsed(item.subjectId)+2>tgt)break;
       if(schoolSciPracOnDay(day)>=6)continue;
       const mp=maxPDay(day);
-      // Skip if sci theory already on this day
       if(sciTRow){
         const hasT=Object.values(D.TT[cid][day]||{}).some(c=>c.subjectId===sciTRow.subjectId);
         if(hasT)continue;
       }
       let placed=false;
-      // Try P1-6 first (consecutive 2)
-      for(let p=1;p<=Math.min(limit-1,mp-1)&&!placed;p++){
+      for(let p=2;p<=Math.min(limit-1,mp-1)&&!placed;p++){ // skip P1 (class teacher slot)
         if(p===sb)continue;
         if(canConsec(item,day,p,2)){doConsec(item,day,p,2);placed=true;}
       }
-      // Fallback late
       for(let p=lateStart;p<=mp-1&&!placed;p++){
         if(canConsec(item,day,p,2)){doConsec(item,day,p,2);placed=true;}
       }
     }
   });
 
-  // ── PHASE 4: Computer — 2 consecutive ───────────────────────
+  // ════════════════════════════════════════════════════════════
+  // PHASE 3b: Science I & Science II THEORY — spread across
+  //   3 different days each (no two on same day for either)
+  // ════════════════════════════════════════════════════════════
+  ['1','2'].forEach(grp=>{
+    const row=csl.find(r=>{
+      const s=D.subjects.find(x=>x.id===r.subjectId);
+      return isSciTheory(s)&&sciGroup(s)===grp;
+    });
+    if(!row)return;
+    const subj=D.subjects.find(x=>x.id===row.subjectId);
+    const item={subjectId:row.subjectId,teacherId:row.teacherId};
+    const tgt=getTgt(row.subjectId);
+    // Try to use exactly 3 distinct days (or fewer if tgt<3), 1 period each
+    const numDays=Math.min(3,tgt);
+    shuffle(sdays);
+    let daysUsedForThis=[];
+    for(const day of sdays){
+      if(daysUsedForThis.length>=numDays)break;
+      if(getDayUsed(day,item.subjectId)>0)continue; // already has this subject today
+      const mp=maxPDay(day);
+      for(let p=2;p<=mp;p++){
+        if(p===sb||p===lb)continue;
+        if(canPlace(item,day,p)){doPlace(item,day,p);daysUsedForThis.push(day);break;}
+      }
+    }
+    // If tgt>3, only add to days NOT yet used for this subject (strict: 1/day max for Sci I/II)
+    if(tgt>numDays){
+      shuffle(sdays);
+      for(const day of sdays){
+        if(getUsed(item.subjectId)>=tgt)break;
+        if(getDayUsed(day,item.subjectId)>0)continue; // STRICT: never 2x on same day
+        const mp=maxPDay(day);
+        for(let p=2;p<=mp;p++){
+          if(p===sb||p===lb)continue;
+          if(canPlace(item,day,p)){doPlace(item,day,p);break;}
+        }
+      }
+    }
+  });
+
+  // ════════════════════════════════════════════════════════════
+  // PHASE 4: Computer — 2 consecutive
+  // ════════════════════════════════════════════════════════════
   csl.forEach(row=>{
     const subj=D.subjects.find(x=>x.id===row.subjectId);
     if(!isComputer(subj))return;
@@ -1159,13 +1236,15 @@ function autoFill(){
       for(let p=lateStart;p<=mp-1&&!placed;p++){
         if(canConsec(item,day,p,2)){doConsec(item,day,p,2);placed=true;}
       }
-      for(let p=1;p<=mp-1&&!placed;p++){
+      for(let p=2;p<=mp-1&&!placed;p++){
         if(canConsec(item,day,p,2)){doConsec(item,day,p,2);placed=true;}
       }
     }
   });
 
-  // ── PHASE 4b: PS1 (5th std) — 1 double + rest singles ───────
+  // ════════════════════════════════════════════════════════════
+  // PHASE 4b: PS1 (5th std) — 1 double + rest singles
+  // ════════════════════════════════════════════════════════════
   if(cls2&&['5th','5','V'].includes(cls2.std)){
     csl.forEach(row=>{
       const subj=D.subjects.find(x=>x.id===row.subjectId);
@@ -1177,19 +1256,18 @@ function autoFill(){
       for(const day of sdays){
         if(dblDone)break;
         const mp=maxPDay(day);
-        for(let p=1;p<=mp-1;p++){
+        for(let p=2;p<=mp-1;p++){
           if(p>limit)continue;
           if(canConsec(item,day,p,2)){doConsec(item,day,p,2);dblDone=true;break;}
         }
       }
-      // Singles on other days
       const dblDay=days.find(day=>getDayUsed(day,row.subjectId)>=2);
       shuffle(sdays);
       for(const day of sdays){
         if(getUsed(item.subjectId)>=tgt)break;
         if(day===dblDay)continue;
         const mp=maxPDay(day);
-        for(let p=1;p<=mp;p++){
+        for(let p=2;p<=mp;p++){
           if(p>limit)continue;
           if(canPlace(item,day,p)){doPlace(item,day,p);break;}
         }
@@ -1197,24 +1275,14 @@ function autoFill(){
     });
   }
 
-  // ── PHASE 5: Class teacher → P1 ─────────────────────────────
-  if(ctId){
-    const ctRow=csl.find(r=>r.teacherId===ctId);
-    if(ctRow){
-      const item={subjectId:ctRow.subjectId,teacherId:ctId};
-      shuffle(sdays);
-      sdays.forEach(day=>{
-        if(getUsed(item.subjectId)>=getTgt(item.subjectId))return;
-        if(canPlace(item,day,1))doPlace(item,day,1);
-      });
-    }
-  }
-
-  // ── PHASE 6: >=7 or >=8 period subjects — force doubles ─────
+  // ════════════════════════════════════════════════════════════
+  // PHASE 6: >=7 or >=8 period subjects — force doubles
+  // ════════════════════════════════════════════════════════════
   csl.forEach(row=>{
     const subj=D.subjects.find(x=>x.id===row.subjectId);
     if(!subj)return;
     if(isPE(subj)||isSciPrac(subj)||isComputer(subj)||isLateOnly(subj)||isPS1(subj))return;
+    if(isSciTheory(subj)&&sciGroup(subj))return; // handled in 3b
     const tgt=getTgt(row.subjectId);
     if(tgt<7)return;
     const dblNeeded=tgt>=8?2:1;
@@ -1224,43 +1292,98 @@ function autoFill(){
     for(const day of sdays){
       if(dblDone>=dblNeeded)break;
       const mp=maxPDay(day);
-      for(let p=1;p<=mp-1;p++){
+      for(let p=2;p<=mp-1;p++){
         if(subj.type==='theory'&&p>limit)continue;
         if(canConsec(item,day,p,2)){doConsec(item,day,p,2);dblDone++;break;}
       }
     }
   });
 
-  // ── PHASE 7: All remaining periods — random spread ───────────
-  let queue=[];
+  // ════════════════════════════════════════════════════════════
+  // PHASE 7: All remaining periods.
+  //   Rule: any subject placed twice on the same day MUST be consecutive.
+  //   Strategy: for subjects with 2+ remaining periods, try pair-placement
+  //   (consecutive) first; single leftover goes through normal placement.
+  // ════════════════════════════════════════════════════════════
+  // Build remaining-count map (excluding subjects handled with dayMax=1, e.g. Sci I/II)
+  const remainMap={};
   csl.forEach(row=>{
     const subj=D.subjects.find(x=>x.id===row.subjectId);if(!subj)return;
-    const rem=getTgt(row.subjectId)-getUsed(row.subjectId);
-    for(let i=0;i<rem;i++)
-      queue.push({subjectId:row.subjectId,teacherId:row.teacherId,
-        type:subj.type,priority:subj.priority||'normal',
-        isLate:isLateOnly(subj),isPrac:isSciPrac(subj)});
+    remainMap[row.subjectId]={teacherId:row.teacherId,type:subj.type,
+      priority:subj.priority||'normal',isLate:isLateOnly(subj),
+      oneOnly:dayMax(row.subjectId)===1,
+      rem:getTgt(row.subjectId)-getUsed(row.subjectId)};
   });
-  shuffle(queue);
 
   let slots=[];
   days.forEach(day=>{
     const mp=maxPDay(day);
-    for(let p=1;p<=mp;p++)slots.push({day,p});
+    for(let p=2;p<=mp;p++)slots.push({day,p}); // P1 reserved for class teacher
   });
-  shuffle(slots);
+
+  // Sub-phase 7a: pair-place subjects that have an even number of remaining
+  // periods >=2 and are NOT one-per-day-only — place as consecutive pairs
+  const subjIds=Object.keys(remainMap).map(Number);
+  shuffle(subjIds);
+  subjIds.forEach(sid=>{
+    const info=remainMap[sid];
+    if(info.oneOnly)return; // Sci I/II etc handled elsewhere, skip pairing
+    const item={subjectId:sid,teacherId:info.teacherId};
+    while(info.rem>=2){
+      shuffle(slots);
+      let placed=false;
+      for(const {day,p} of slots){
+        const isLatePeriod=p>limit;
+        if(isLatePeriod&&info.type==='theory')continue;
+        if(!isLatePeriod&&info.type==='practical')continue;
+        if(info.isLate&&p<=limit)continue;
+        if(canConsec(item,day,p,2)){
+          doConsec(item,day,p,2);info.rem-=2;placed=true;break;
+        }
+      }
+      if(!placed){
+        // try relaxed type constraint
+        for(const {day,p} of slots){
+          if(info.isLate&&p<=limit)continue;
+          if(canConsec(item,day,p,2)){
+            doConsec(item,day,p,2);info.rem-=2;placed=true;break;
+          }
+        }
+      }
+      if(!placed){
+        // try fully relaxed (any slot, any type) — still consecutive
+        for(const {day,p} of slots){
+          if(canConsec(item,day,p,2)){
+            doConsec(item,day,p,2);info.rem-=2;placed=true;break;
+          }
+        }
+      }
+      if(!placed)break; // can't pair anymore, leave remainder for single placement
+    }
+  });
+
+  // Sub-phase 7b: place remaining singles (odd leftovers, oneOnly subjects, anything left)
+  let queue=[];
+  subjIds.forEach(sid=>{
+    const info=remainMap[sid];
+    for(let i=0;i<info.rem;i++)
+      queue.push({subjectId:sid,teacherId:info.teacherId,type:info.type,
+        priority:info.priority,isLate:info.isLate,oneOnly:info.oneOnly});
+  });
+  shuffle(queue);
 
   const unplaced=[];
   for(const item of queue){
     if(getUsed(item.subjectId)>=getTgt(item.subjectId))continue;
     let placed=false;
+    shuffle(slots);
     for(let pass=0;pass<=2&&!placed;pass++){
       for(const {day,p} of slots){
         if(!slotFree(day,p))continue;
-        const isLate=p>limit;
+        const isLatePeriod=p>limit;
         if(pass<2){
-          if(isLate&&item.type==='theory')continue;
-          if(!isLate&&item.type==='practical')continue;
+          if(isLatePeriod&&item.type==='theory')continue;
+          if(!isLatePeriod&&item.type==='practical')continue;
         }
         if(pass===0&&item.priority==='high'&&getDayUsed(day,item.subjectId)>0)continue;
         if(item.isLate&&p<=limit)continue;
@@ -1270,7 +1393,6 @@ function autoFill(){
     }
     if(!placed)unplaced.push(item);
   }
-  // Retry unplaced
   for(const item of unplaced){
     if(getUsed(item.subjectId)>=getTgt(item.subjectId))continue;
     shuffle(slots);
@@ -1279,6 +1401,17 @@ function autoFill(){
       doPlace(item,day,p);break;
     }
   }
+  // Also try P1 slots if a subject still needs placement and P1 is free
+  const stillNeeded=csl.filter(r=>getUsed(r.subjectId)<getTgt(r.subjectId));
+  stillNeeded.forEach(row=>{
+    const subj=D.subjects.find(x=>x.id===row.subjectId);
+    const item={subjectId:row.subjectId,teacherId:row.teacherId,type:subj?.type};
+    shuffle(days);
+    for(const day of days){
+      if(getUsed(item.subjectId)>=getTgt(item.subjectId))break;
+      if(canPlace(item,day,1))doPlace(item,day,1);
+    }
+  });
 
   save();loadEditor();checkLoads();
 
