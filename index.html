@@ -150,6 +150,20 @@ body{font-family:'DM Sans',sans-serif;background:#eaf0f6;color:var(--tx);min-hei
       </div>
       <div id="prevA" style="margin-top:11px;"></div>
     </div>
+    <div class="card"><div class="ct">☁️ Cloud Sync (Google Sheet)</div>
+      <div class="ib">📌 सर्व शिक्षकांनी एकाच Google Sheet शी जोडलेले राहिल्यास, प्रत्येकाने स्वतःच्या वर्गाचा डेटा cloud ला पाठवू शकतो आणि इतरांचा latest डेटा download करू शकतो.</div>
+      <div class="fg">
+        <div style="grid-column:1/-1;"><label>Cloud Sync URL (Apps Script Web App URL)</label>
+          <input type="text" id="cloudUrl" placeholder="https://script.google.com/macros/s/.../exec"></div>
+        <div><label>आपले नाव (Updated By)</label><input type="text" id="cloudUserName" placeholder="उदा. Anis Momin"></div>
+      </div>
+      <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="btn bp" onclick="saveCloudSettings()">💾 URL Save करा</button>
+        <span id="cloudSv" style="color:var(--ok);font-size:.74rem;display:none;">✓ Saved!</span>
+        <button class="btn bk" onclick="cloudDownloadAll()">☁️⬇️ सर्व डेटा Cloud वरून आणा</button>
+      </div>
+      <div id="cloudStatus" style="margin-top:8px;font-size:.74rem;color:var(--mu);"></div>
+    </div>
     <div class="card"><div class="ct">📅 Working Days</div>
       <div style="display:flex;gap:11px;flex-wrap:wrap;" id="wdDays">
         <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:.84rem;"><input type="checkbox" value="Monday" checked> Mon</label>
@@ -248,14 +262,24 @@ body{font-family:'DM Sans',sans-serif;background:#eaf0f6;color:var(--tx);min-hei
 
 <!-- EDITOR -->
 <div id="page-editor" class="page">
+  <div class="card" style="background:linear-gradient(135deg,#1a3a5c,#2471a3);">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px;">
+      <div>
+        <div style="color:#fff;font-weight:700;font-size:.92rem;">🏫 सर्व वर्गांचे Timetable एकत्र तयार करा</div>
+        <div style="color:#cfe3f5;font-size:.74rem;margin-top:2px;">एका क्रमाने (इयत्तानुसार) सर्व वर्ग generate होतात — प्रत्येक वर्ग आधीच्या सर्व वर्गांचा timetable लक्षात घेऊन तयार होतो, त्यामुळे एकाच शिक्षकाचा दोन वर्गांत वेळेचा गोंधळ होत नाही.</div>
+      </div>
+      <button class="btn bg2" onclick="autoFillAllClasses()" style="white-space:nowrap;">⚡⚡ सर्व वर्ग Auto-Generate</button>
+    </div>
+  </div>
   <div class="card">
-    <div class="ct">📅 Timetable Editor</div>
+    <div class="ct">📅 Timetable Editor (एक वर्ग)</div>
     <div id="tlw"></div>
     <div style="display:flex;gap:7px;align-items:flex-end;flex-wrap:wrap;margin-bottom:11px;">
       <div><div class="fl">Class</div><select id="ttsel" class="fi" style="min-width:200px;" onchange="loadEditor()"><option value="">-- Select --</option></select></div>
-      <button class="btn bg2" onclick="autoFill()">⚡ Auto-Generate</button>
+      <button class="btn bg2" onclick="autoFill()">⚡ Auto-Generate (हाच वर्ग)</button>
       <button class="btn bo" onclick="clearTT()">🗑️ Clear</button>
       <button class="btn bp" onclick="saveTT()">💾 Save</button>
+      <button class="btn bk" onclick="cloudUploadClass()">☁️⬆️ हा वर्ग Cloud ला पाठवा</button>
     </div>
     <div id="cflts"></div>
     <div id="ttarea"><div class="es"><p>📅 Select a class.</p></div></div>
@@ -493,6 +517,8 @@ function applyS(){
    'lunchBreakAfter','lunchBreakDuration','studyDuration','studyBreakDuration','subjectPeriodLimit','maxTeacherPeriods'].forEach(id=>{
     const e=document.getElementById(id);if(e&&c[id]!==undefined)e.value=c[id];});
   if(c.workingDays)document.querySelectorAll('#wdDays input').forEach(cb=>cb.checked=c.workingDays.includes(cb.value));
+  const cuE=document.getElementById('cloudUrl');if(cuE)cuE.value=c.cloudUrl||'';
+  const cnE=document.getElementById('cloudUserName');if(cnE)cnE.value=c.cloudUserName||'';
   renderPrev();
 }
 function saveS(){
@@ -506,6 +532,120 @@ function saveS(){
   save();const sv=document.getElementById('sv');sv.style.display='inline';setTimeout(()=>sv.style.display='none',2000);
   renderPrev();toast('Settings saved!');
 }
+// ===== CLOUD SYNC (Google Sheet via Apps Script) =====
+function saveCloudSettings(){
+  const url=document.getElementById('cloudUrl').value.trim();
+  const name=document.getElementById('cloudUserName').value.trim();
+  D.cfg.cloudUrl=url;
+  D.cfg.cloudUserName=name;
+  save();
+  const el=document.getElementById('cloudSv');el.style.display='inline';setTimeout(()=>el.style.display='none',2000);
+  toast('Cloud settings saved!');
+}
+function cloudStatus(msg,isError){
+  const el=document.getElementById('cloudStatus');
+  if(el){el.textContent=msg;el.style.color=isError?'#e74c3c':'#7f8c8d';}
+}
+// Upload ONLY the currently-selected class's data (timetable + its subject
+// assignments) to the shared Google Sheet — does not touch other classes.
+async function cloudUploadClass(){
+  const cid=document.getElementById('ttsel')?.value;
+  if(!cid)return toast('आधी वर्ग select करा!','error');
+  const url=D.cfg.cloudUrl;
+  if(!url)return toast('आधी Setup → Cloud Sync मध्ये URL टाका!','error');
+  const userName=D.cfg.cloudUserName||'Unknown';
+
+  const cls=D.classes.find(c=>c.id===cid);
+  const payload={
+    classId:cid,
+    updatedBy:userName,
+    data:{
+      classInfo:cls,
+      timetable:D.TT[cid]||{},
+      classSubjects:D.CS[cid]||[],
+      // Include shared reference data so the receiving side can map IDs correctly
+      subjects:D.subjects,
+      teachers:D.teachers,
+      cfg:D.cfg
+    }
+  };
+
+  cloudStatus('⏳ पाठवत आहे...',false);
+  toast('Cloud ला पाठवत आहे...','warn',2000);
+  try{
+    const res=await fetch(url,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'}, // text/plain avoids CORS preflight with Apps Script
+      body:JSON.stringify(payload)
+    });
+    const result=await res.json();
+    if(result.ok){
+      cloudStatus(`✅ ${cls?.std}-${cls?.division} यशस्वीरित्या पाठवले — ${new Date(result.savedAt).toLocaleString('en-IN')}`,false);
+      toast('✅ Cloud ला पाठवले!');
+    } else {
+      cloudStatus('❌ Error: '+(result.error||'unknown'),true);
+      toast('❌ पाठवण्यात अडचण आली','error');
+    }
+  } catch(err){
+    cloudStatus('❌ Connection error: '+err.message,true);
+    toast('❌ Cloud शी जोडता आले नाही — URL तपासा','error',5000);
+  }
+}
+// Download ALL classes' data from the shared Google Sheet and merge it into
+// the local app (overwrites local timetables/subjects/teachers with cloud's
+// latest version — this is how a new device/browser gets the full school data).
+async function cloudDownloadAll(){
+  const url=D.cfg.cloudUrl;
+  if(!url)return toast('आधी Setup → Cloud Sync मध्ये URL टाका!','error');
+  if(!confirm('Cloud वरून सर्व डेटा आणायचा? यामुळे सध्याचा local डेटा cloud च्या latest डेटाने बदलला जाईल.'))return;
+
+  cloudStatus('⏳ डाउनलोड होत आहे...',false);
+  toast('Cloud वरून डेटा आणत आहे...','warn',3000);
+  try{
+    const res=await fetch(url,{method:'GET'});
+    const result=await res.json();
+    if(result.error){
+      cloudStatus('❌ Error: '+result.error,true);
+      return toast('❌ डाउनलोड करताना अडचण','error');
+    }
+    const classIds=Object.keys(result.classes||{});
+    if(!classIds.length){
+      cloudStatus('ℹ️ Cloud मध्ये अजून कोणताही डेटा नाही.',false);
+      return toast('Cloud मध्ये डेटा सापडला नाही','warn');
+    }
+    // Merge: for each class found in cloud, update its timetable + classSubjects.
+    // Also merge subjects/teachers lists (union by id, cloud's newer entries win).
+    let latestSubjects=null,latestTeachers=null,latestClasses=[];
+    classIds.forEach(cid=>{
+      const entry=result.classes[cid];
+      const d=entry.data;
+      if(!d)return;
+      D.TT[cid]=d.timetable||{};
+      D.CS[cid]=d.classSubjects||[];
+      if(d.classInfo)latestClasses.push(d.classInfo);
+      if(d.subjects)latestSubjects=d.subjects; // assume same shared list across classes
+      if(d.teachers)latestTeachers=d.teachers;
+    });
+    if(latestSubjects)D.subjects=latestSubjects;
+    if(latestTeachers)D.teachers=latestTeachers;
+    // Merge classes: keep existing local classes, add/update any from cloud
+    latestClasses.forEach(cls=>{
+      const idx=D.classes.findIndex(c=>c.id===cls.id);
+      if(idx>=0)D.classes[idx]=cls;else D.classes.push(cls);
+    });
+    save();
+    cloudStatus(`✅ ${classIds.length} वर्गांचा डेटा यशस्वीरित्या आणला — ${new Date().toLocaleString('en-IN')}`,false);
+    toast(`✅ ${classIds.length} वर्गांचा डेटा download झाला!`,'success',5000);
+    // Refresh all UI
+    renderTeachers();renderClasses();renderSubjects();popSubjSel();popCTSel();
+    if(document.getElementById('ttsel'))popSel('ttsel');
+    if(document.getElementById('ttsel')?.value)loadEditor();
+  } catch(err){
+    cloudStatus('❌ Connection error: '+err.message,true);
+    toast('❌ Cloud शी जोडता आले नाही — URL तपासा','error',5000);
+  }
+}
+
 function renderPrev(){
   const c=D.cfg;const aS=m2t12(t2m(c.assemblyTime||'07:15'));const aE=m2t12(t2m(c.assemblyTime||'07:15')+(+(c.assemblyDuration||15)));
   const rows=buildRows('Monday');const gc=['#d6eaf8','#d5f5e3','#fdebd0'];
@@ -939,10 +1079,14 @@ function clearP(){
 function closeMod(){document.getElementById('modP').classList.remove('show');}
 
 // ===== AUTO-FILL =====
-function autoFill(){
-  const cid=document.getElementById('ttsel').value;if(!cid)return toast('Class select करा!','error');
-  const csl=D.CS[cid];if(!csl?.length)return toast('आधी subjects assign करा!','error');
-  if(!confirm('Auto-generate? (सध्याचा timetable clear होईल)'))return;
+// Core generator: fills the timetable for ONE class (cid), taking into
+// account whatever is ALREADY placed in D.TT for ALL OTHER classes (so
+// teacher-conflict checks against other classes work correctly whether
+// called standalone or as part of a "generate all classes" run).
+// Returns {ok:boolean, leftover:[{name,have,need}]}
+function generateForClass(cid){
+  const csl=D.CS[cid];
+  if(!csl?.length)return{ok:false,leftover:[],reason:'no-subjects'};
 
   const cfg=D.cfg;
   const days=[...(cfg.workingDays||[])];
@@ -1638,17 +1782,108 @@ function autoFill(){
     if(!anyPlaced)break;
   }
 
+  const leftover=csl.filter(row=>getUsed(row.subjectId)<getTgt(row.subjectId)).map(r=>{
+    const s=D.subjects.find(x=>x.id===r.subjectId);
+    return{name:s?.name||'?',have:getUsed(r.subjectId),need:getTgt(r.subjectId)};
+  });
+  return{ok:leftover.length===0,leftover};
+}
+
+// Single-class wrapper (used by the Editor tab's ⚡ Auto-Generate button)
+function autoFill(){
+  const cid=document.getElementById('ttsel').value;if(!cid)return toast('Class select करा!','error');
+  if(!D.CS[cid]?.length)return toast('आधी subjects assign करा!','error');
+  if(!confirm('Auto-generate? (सध्याचा timetable clear होईल)'))return;
+
+  const result=generateForClass(cid);
   save();loadEditor();checkLoads();
 
-  const leftover=csl.filter(row=>getUsed(row.subjectId)<getTgt(row.subjectId));
-  if(leftover.length){
-    toast('⚠️ न मिळालेले तास: '+leftover.map(r=>{
-      const s=D.subjects.find(x=>x.id===r.subjectId);
-      return`${s?.name}(${getUsed(r.subjectId)}/${getTgt(r.subjectId)})`;
-    }).join(', '),'warn',7000);
+  if(!result.ok){
+    toast('⚠️ न मिळालेले तास: '+result.leftover.map(r=>`${r.name}(${r.have}/${r.need})`).join(', '),'warn',7000);
   } else toast('✅ सर्व नियमांनुसार timetable तयार!');
 }
 
+// All-classes wrapper (Setup-wide "सर्व वर्ग Auto-Generate" button).
+// Processes classes in std+division order, sequentially, so that each
+// class's generation sees every PREVIOUSLY-generated class's timetable —
+// this lets teacher-conflict checks naturally prevent overlaps across the
+// whole school, exactly like generating them one-by-one in order, but
+// automated. Progress is reported via a live-updating toast/modal.
+function autoFillAllClasses(){
+  if(!D.classes.length)return toast('आधी वर्ग add करा!','error');
+  const withSubj=D.classes.filter(c=>D.CS[c.id]?.length);
+  if(!withSubj.length)return toast('कोणत्याही वर्गाला विषय assign केलेले नाहीत!','error');
+  if(!confirm(`सर्व ${withSubj.length} वर्गांचे timetable auto-generate करायचे? (प्रत्येक वर्गाचा सध्याचा timetable clear होईल). वेळ लागू शकतो — कृपया पूर्ण होईपर्यंत वाट पहा.`))return;
+
+  // Sort by std (numeric where possible) then division — predictable, stable order
+  const stdOrder=(s)=>{const n=parseInt(s);return isNaN(n)?999:n;};
+  const sorted=[...withSubj].sort((a,b)=>{
+    const sa=stdOrder(a.std),sb=stdOrder(b.std);
+    if(sa!==sb)return sa-sb;
+    return(a.division||'').localeCompare(b.division||'');
+  });
+
+  showProgressModal(sorted.length);
+
+  let allOk=true;
+  const failedList=[];
+  let i=0;
+
+  function step(){
+    if(i>=sorted.length){
+      finishProgressModal(allOk,failedList);
+      return;
+    }
+    const cls=sorted[i];
+    updateProgressModal(i+1,sorted.length,`${cls.std}-${cls.division}`);
+    const result=generateForClass(cls.id);
+    if(!result.ok){
+      allOk=false;
+      failedList.push(`${cls.std}-${cls.division}: `+result.leftover.map(r=>`${r.name}(${r.have}/${r.need})`).join(', '));
+    }
+    i++;
+    // setTimeout lets the browser repaint the progress UI between classes
+    // (otherwise the tab would freeze and look unresponsive for 36 classes)
+    setTimeout(step,10);
+  }
+  step();
+}
+
+function showProgressModal(total){
+  let m=document.getElementById('progModal');
+  if(!m){
+    m=document.createElement('div');
+    m.id='progModal';
+    m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99999;display:flex;align-items:center;justify-content:center;';
+    m.innerHTML=`<div style="background:#fff;border-radius:12px;padding:22px 26px;max-width:380px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3);">
+      <div style="font-weight:700;color:#1a3a5c;font-size:.95rem;margin-bottom:10px;">⚡ सर्व वर्गांचे Timetable तयार होत आहे...</div>
+      <div id="progText" style="font-size:.8rem;color:#555;margin-bottom:8px;">सुरू होत आहे...</div>
+      <div style="height:8px;background:#e0e0e0;border-radius:4px;overflow:hidden;"><div id="progBar" style="height:100%;width:0%;background:#27ae60;transition:width .2s;"></div></div>
+    </div>`;
+    document.body.appendChild(m);
+  }
+  m.style.display='flex';
+}
+function updateProgressModal(done,total,label){
+  const t=document.getElementById('progText');
+  const b=document.getElementById('progBar');
+  if(t)t.textContent=`(${done}/${total}) ${label} तयार होत आहे...`;
+  if(b)b.style.width=Math.round(done/total*100)+'%';
+}
+function finishProgressModal(allOk,failedList){
+  const m=document.getElementById('progModal');
+  if(m)m.style.display='none';
+  save();
+  // Refresh whatever view is currently open
+  if(document.getElementById('ttsel')?.value)loadEditor();
+  checkLoads();
+  if(allOk){
+    toast(`✅ सर्व ${failedList.length===0?'':''}वर्गांचे timetable तयार झाले!`,'success',6000);
+  } else {
+    toast(`⚠️ ${failedList.length} वर्गांत काही तास कमी राहिले. तपशील खाली कन्सोलमध्ये (किंवा Reports → Free Periods मध्ये) बघा.`,'warn',8000);
+    console.log('Auto-generate (all classes) — incomplete:\n'+failedList.join('\n'));
+  }
+}
 
 // ===== VIEW =====
 function renderCV(){const cid=document.getElementById('vcsel').value;if(!cid)return;document.getElementById('cva').innerHTML=buildTTGrid(cid,false);}
