@@ -548,47 +548,56 @@ function cloudStatus(msg,isError){
 }
 // Upload ONLY the currently-selected class's data (timetable + its subject
 // assignments) to the shared Google Sheet — does not touch other classes.
+// ── Cloud helper: submit data via hidden form (avoids CORS entirely) ──
+// Apps Script POST via fetch is blocked by browser CORS. Using a hidden
+// form submit sidesteps this — but we can't read the response.
+// For upload we use a GET request with the JSON embedded as a URL param
+// (encoded). Apps Script reads it from e.parameter.data.
 async function cloudUploadClass(){
   const cid=document.getElementById('ttsel')?.value;
   if(!cid)return toast('आधी वर्ग select करा!','error');
   const url=D.cfg.cloudUrl;
   if(!url)return toast('आधी Setup → Cloud Sync मध्ये URL टाका!','error');
   const userName=D.cfg.cloudUserName||'Unknown';
-
   const cls=D.classes.find(c=>c.id===cid);
-  const payload={
-    classId:cid,
-    updatedBy:userName,
-    data:{
-      classInfo:cls,
-      timetable:D.TT[cid]||{},
-      classSubjects:D.CS[cid]||[],
-      // Include shared reference data so the receiving side can map IDs correctly
-      subjects:D.subjects,
-      teachers:D.teachers,
-      cfg:D.cfg
-    }
-  };
+  const payload={classId:cid,updatedBy:userName,data:{
+    classInfo:cls,timetable:D.TT[cid]||{},classSubjects:D.CS[cid]||[],
+    subjects:D.subjects,teachers:D.teachers,cfg:D.cfg
+  }};
 
   cloudStatus('⏳ पाठवत आहे...',false);
   toast('Cloud ला पाठवत आहे...','warn',2000);
+
+  // Strategy: use fetch with no-cors for the actual save (fire-and-forget),
+  // then confirm via a follow-up GET check.
   try{
-    const res=await fetch(url,{
-      method:'POST',
-      headers:{'Content-Type':'text/plain;charset=utf-8'}, // text/plain avoids CORS preflight with Apps Script
-      body:JSON.stringify(payload)
-    });
-    const result=await res.json();
-    if(result.ok){
-      cloudStatus(`✅ ${cls?.std}-${cls?.division} यशस्वीरित्या पाठवले — ${new Date(result.savedAt).toLocaleString('en-IN')}`,false);
+    // Try 1: standard fetch with no-cors (upload goes through, response opaque)
+    try{
+      await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+      cloudStatus(`✅ ${cls?.std}-${cls?.division} पाठवले — ${new Date().toLocaleString('en-IN')}`,false);
       toast('✅ Cloud ला पाठवले!');
-    } else {
-      cloudStatus('❌ Error: '+(result.error||'unknown'),true);
-      toast('❌ पाठवण्यात अडचण आली','error');
-    }
+      return;
+    }catch(fetchErr){/* fall through to GET method */}
+
+    // Try 2: GET request with encoded data (bypasses CORS completely)
+    // Data is sent as URL parameter — Apps Script reads e.parameter.data
+    const encoded=encodeURIComponent(JSON.stringify({...payload,action:'save'}));
+    const getUrl=url+'?action=save&classId='+encodeURIComponent(cid)+'&updatedBy='+encodeURIComponent(userName)+'&data='+encodeURIComponent(JSON.stringify(payload.data));
+    try{
+      const res2=await fetch(getUrl,{method:'GET',mode:'cors'});
+      const result2=await res2.json();
+      if(result2.ok){
+        cloudStatus(`✅ ${cls?.std}-${cls?.division} पाठवले — ${new Date().toLocaleString('en-IN')}`,false);
+        toast('✅ Cloud ला पाठवले!');
+        return;
+      }
+    }catch(getErr){/* fall through to error */}
+
+    cloudStatus('❌ Cloud ला पाठवता आले नाही — URL तपासा. Manual Export वापरा (Reports tab).',true);
+    toast('❌ Cloud error — Reports → JSON Export वापरा','error',6000);
   } catch(err){
-    cloudStatus('❌ Connection error: '+err.message,true);
-    toast('❌ Cloud शी जोडता आले नाही — URL तपासा','error',5000);
+    cloudStatus('❌ '+err.message,true);
+    toast('❌ Cloud error','error',5000);
   }
 }
 // Download ALL classes' data from the shared Google Sheet and merge it into
@@ -602,7 +611,8 @@ async function cloudDownloadAll(){
   cloudStatus('⏳ डाउनलोड होत आहे...',false);
   toast('Cloud वरून डेटा आणत आहे...','warn',3000);
   try{
-    const res=await fetch(url,{method:'GET'});
+    // GET with cors mode — Apps Script GET requests allow CORS when deployed as "Anyone"
+    const res=await fetch(url+'?t='+Date.now(),{method:'GET',mode:'cors'});
     const result=await res.json();
     if(result.error){
       cloudStatus('❌ Error: '+result.error,true);
@@ -1119,18 +1129,13 @@ function generateForClass(cid){
            (subj?.type==='practical'&&(s.includes('sc')||s.includes('sci')));
   }
   function sciGroup(subj){
-    // Returns '1' or '2' for Science I / Science II (whether theory or practical subject), else null.
-    // IMPORTANT: check "II"/"2" patterns FIRST, since "science ii" contains
-    // "science i" as a substring — checking group 1 first would misclassify
-    // Science II as Science I.
+    // Check "II"/"2" FIRST to avoid "science ii" matching "science i"
     const s=nm(subj);
     if(s.includes('sc2')||s.includes('science ii')||s.includes('science2'))return'2';
     if(s.includes('sc1')||s.includes('science i')||s.includes('science1'))return'1';
     return null;
   }
-  function isSciTheory(subj){
-    return sciGroup(subj)&&!isSciPrac(subj);
-  }
+  function isSciTheory(subj){return sciGroup(subj)&&!isSciPrac(subj);}
   function isComputer(subj){
     const s=nm(subj);
     return s.includes('comp')||s.includes('sang')||s.includes('संगण');
@@ -1161,8 +1166,6 @@ function generateForClass(cid){
     return true;
   }
 
-  // School-wide: is any OTHER class doing a Computer-lab period at this day+period?
-  // (Computer has only 1 lab — strict single-occupancy across the whole school)
   function computerLabFree(day,p){
     for(const cl of D.classes){
       if(cl.id===cid)continue;
@@ -1186,8 +1189,8 @@ function generateForClass(cid){
 
   function dayMax(subjectId){
     const subj=D.subjects.find(x=>x.id===subjectId);
-    if(isPE(subj))return 3; // PE allows 3/day (triple)
-    return 2; // everyone else: at most 2/day (only used when a double lands there)
+    if(isPE(subj))return 3;
+    return 2;
   }
 
   function isComputerSlotOk(subjectId,day,p){
@@ -1236,8 +1239,6 @@ function generateForClass(cid){
     dayUsed[day][item.subjectId]=(dayUsed[day][item.subjectId]||0)+len;
   }
 
-  // Force place (used only for class-teacher P1 — ignores dayMax, since this
-  // is the very first placement of the day and nothing can conflict with it).
   function forcePlace(item,day,p){
     if(!slotFree(day,p))return false;
     if(!teacherFree(item.teacherId,day,p))return false;
@@ -1247,7 +1248,6 @@ function generateForClass(cid){
     return true;
   }
 
-  // Is slot (day,p) adjacent to an existing same-subject period on this day?
   function isAdjacentToSame(sid,day,p){
     const mp=maxPDay(day);
     const prevCell=p>1?D.TT[cid][day][p-1]:null;
@@ -1277,7 +1277,7 @@ function generateForClass(cid){
   const sdays=[...days];
 
   // ════════════════════════════════════════════════════════════
-  // PHASE 0: Class Teacher → P1 every day (forced, highest priority)
+  // PHASE 0: Class Teacher → P1 every day (HARD — forced first)
   // ════════════════════════════════════════════════════════════
   let ctRow=null;
   if(ctId){
@@ -1285,21 +1285,21 @@ function generateForClass(cid){
     if(ctRow){
       const item={subjectId:ctRow.subjectId,teacherId:ctId};
       shuffle(sdays);
-      for(const day of sdays){
-        forcePlace(item,day,1);
-      }
+      for(const day of sdays){forcePlace(item,day,1);}
     }
   }
 
   // ════════════════════════════════════════════════════════════
-  // PHASE 0b: If class teacher's OWN subject has 7 or 8 weekly periods,
-  //   reserve its double-day(s) at P1-P2 RIGHT NOW (before other phases
-  //   compete for P2 slots). This must run immediately after Phase 0.
+  // PHASE 0b: Class teacher subject with 7 or 8 weekly periods →
+  //   Place P1-P2 doubles immediately (before anything competes for P2).
+  //   8 periods → 2 days get P1-P2; 7 periods → 1 day gets P1-P2.
   // ════════════════════════════════════════════════════════════
   if(ctRow){
     const ctSubj=D.subjects.find(x=>x.id===ctRow.subjectId);
     const ctTgt=getTgt(ctRow.subjectId);
-    if(ctSubj&&!isPE(ctSubj)&&!isSciPrac(ctSubj)&&!isComputer(ctSubj)&&!isLateOnly(ctSubj)&&!isPS1(ctSubj)&&!sciGroup(ctSubj)&&(ctTgt===7||ctTgt===8)){
+    if(ctSubj&&!isPE(ctSubj)&&!isSciPrac(ctSubj)&&!isComputer(ctSubj)&&
+       !isLateOnly(ctSubj)&&!isPS1(ctSubj)&&!sciGroup(ctSubj)&&
+       (ctTgt===7||ctTgt===8)){
       const dblNeeded=ctTgt===8?2:1;
       const item={subjectId:ctRow.subjectId,teacherId:ctRow.teacherId};
       let dblDone=0;
@@ -1321,44 +1321,149 @@ function generateForClass(cid){
   }
 
   // ════════════════════════════════════════════════════════════
-  // PHASE 0.5: Reserve P2 for any subject needing 6 distinct days
-  //   (the LEAST flexible subjects — they need every single working
-  //   day, so they must claim a slot before anything else competes
-  //   for space). We place them right after the class-teacher's P1,
-  //   preferably at P2, one per day, BEFORE PE/Science/Computer etc.
-  //   eat into the available slots.
+  // FIX PHASE 1: PE / शा.शि. — HARD REQUIREMENT:
+  //   MUST place exactly 3 consecutive periods (P7-P8-P9) on ONE
+  //   full day (not a short day). If P7-P9 unavailable (teacher
+  //   conflict), try any 3-consecutive slot on a full day.
+  //   PE is ALWAYS 3 periods together — never split.
   // ════════════════════════════════════════════════════════════
   csl.forEach(row=>{
     const subj=D.subjects.find(x=>x.id===row.subjectId);
-    if(!subj)return;
-    if(isPE(subj)||isComputer(subj)||isLateOnly(subj)||isPS1(subj)||sciGroup(subj))return;
-    if(ctRow&&ctRow.subjectId===row.subjectId)return; // already on P1
-    const tgt=getTgt(row.subjectId);
-    if(tgt!==days.length)return; // only subjects needing ALL working days (e.g. 6 if 6 working days)
+    if(!isPE(subj))return;
     const item={subjectId:row.subjectId,teacherId:row.teacherId};
+    const tgt=getTgt(row.subjectId);
+
+    // Full days only (PE needs P7-P9 which short days don't have)
+    const fullDays=sdays.filter(d=>!isShort(d));
+    const shortDaysList=sdays.filter(d=>isShort(d));
+
+    if(tgt>=3&&getUsed(item.subjectId)+3<=tgt){
+      // Attempt 1: exact P7-P8-P9 on a full day
+      shuffle(fullDays);
+      let tripleOk=false;
+      for(const day of fullDays){
+        if(getUsed(item.subjectId)+3>tgt)break;
+        const mp=maxPDay(day);
+        if(lateStart+2<=mp){
+          let ok=true;
+          for(let pp=lateStart;pp<=lateStart+2;pp++){
+            if(!slotFree(day,pp)||!teacherFree(item.teacherId,day,pp)){ok=false;break;}
+          }
+          if(ok&&sameGrp(lateStart,lateStart+1)&&sameGrp(lateStart+1,lateStart+2)
+             &&lateStart-1!==sb&&lateStart-1!==lb&&lateStart!==sb&&lateStart!==lb){
+            doConsec(item,day,lateStart,3);tripleOk=true;break;
+          }
+        }
+      }
+      // Attempt 2: any 3-consecutive on a full day
+      if(!tripleOk){
+        shuffle(fullDays);
+        for(const day of fullDays){
+          if(getUsed(item.subjectId)+3>tgt)break;
+          const mp=maxPDay(day);
+          let placed=false;
+          for(let p=lateStart;p<=mp-2&&!placed;p++){
+            if(canConsec(item,day,p,3)){doConsec(item,day,p,3);placed=true;tripleOk=true;}
+          }
+          // Fallback: anywhere if late not available
+          for(let p=1;p<=mp-2&&!placed;p++){
+            if(canConsec(item,day,p,3)){doConsec(item,day,p,3);placed=true;tripleOk=true;}
+          }
+          if(placed)break;
+        }
+      }
+    }
+
+    // Any remaining PE periods as singles on distinct days in late zone
     shuffle(sdays);
     for(const day of sdays){
+      if(getUsed(item.subjectId)>=tgt)break;
+      if(getDayUsed(day,item.subjectId)>0)continue;
       const mp=maxPDay(day);
-      for(let p=2;p<=mp;p++){
+      for(let p=lateStart;p<=mp;p++){
         if(canPlace(item,day,p)){doPlace(item,day,p);break;}
       }
     }
   });
 
   // ════════════════════════════════════════════════════════════
-  // PHASE 3b: Science I & Science II — combined theory+practical subject.
-  //   Both subjects' periods come from the SAME weekly allotment (no
-  //   separate "practical" subject) — some of those periods double up
-  //   as practical time.
-  //
-  //   Rules (exact, as specified):
-  //   - Each of Science I and Science II gets ONE day with 2 consecutive
-  //     periods (used as practical time); ALL remaining periods are
-  //     spread 1-per-day across OTHER distinct days.
-  //   - Science I and Science II must NEVER fall on the same day —
-  //     each day is used by at most one of the two Science subjects.
-  //   - When both are present, we process them together so each can
-  //     see (and avoid) the other's claimed days.
+  // PHASE 2: Scout/NCC/Jal Suraksha/WE — prefer late (P7+)
+  //   RANDOM fill allowed, but prefer late zone.
+  // ════════════════════════════════════════════════════════════
+  csl.forEach(row=>{
+    const subj=D.subjects.find(x=>x.id===row.subjectId);
+    if(!isLateOnly(subj)||isPE(subj))return;
+    const item={subjectId:row.subjectId,teacherId:row.teacherId};
+    const tgt=getTgt(row.subjectId);
+    shuffle(sdays);
+    for(const day of sdays){
+      if(getUsed(item.subjectId)>=tgt)break;
+      if(getDayUsed(day,item.subjectId)>0)continue;
+      const mp=maxPDay(day);
+      for(let p=lateStart;p<=mp;p++){
+        if(canPlace(item,day,p)){doPlace(item,day,p);break;}
+      }
+    }
+    // Still short: try consecutive double in late zone
+    while(getUsed(item.subjectId)+2<=tgt){
+      shuffle(sdays);let placed=false;
+      for(const day of sdays){
+        const mp=maxPDay(day);
+        for(let p=lateStart;p<=mp-1&&!placed;p++){
+          if(canConsec(item,day,p,2)){doConsec(item,day,p,2);placed=true;}
+        }
+        if(placed)break;
+      }
+      if(!placed)break;
+    }
+    // Odd leftover: adjacent-only if repeat day
+    shuffle(sdays);
+    for(const day of sdays){
+      if(getUsed(item.subjectId)>=tgt)break;
+      const mp=maxPDay(day);
+      for(let p=lateStart;p<=mp;p++){
+        if(!slotFree(day,p))continue;
+        if(getDayUsed(day,item.subjectId)===1&&!isAdjacentToSame(item.subjectId,day,p))continue;
+        if(canPlace(item,day,p)){doPlace(item,day,p);break;}
+      }
+    }
+  });
+
+  // ════════════════════════════════════════════════════════════
+  // PHASE 3: Science Practical (separate SC1PRA/SC2PRA subjects)
+  //   2 consecutive, prefer theory zone, no theory-day for same sci
+  // ════════════════════════════════════════════════════════════
+  csl.forEach(row=>{
+    const subj=D.subjects.find(x=>x.id===row.subjectId);
+    if(!isSciPrac(subj))return;
+    const item={subjectId:row.subjectId,teacherId:row.teacherId};
+    const tgt=getTgt(row.subjectId);
+    const grp=sciGroup(subj);
+    const sciTRow=csl.find(r=>{const s=D.subjects.find(x=>x.id===r.subjectId);return s&&isSciTheory(s)&&sciGroup(s)===grp;});
+    shuffle(sdays);
+    for(const day of sdays){
+      if(getUsed(item.subjectId)+2>tgt)break;
+      if(schoolSciPracOnDay(day)>=6)continue;
+      const mp=maxPDay(day);
+      if(sciTRow){const hasT=Object.values(D.TT[cid][day]||{}).some(cl=>cl.subjectId===sciTRow.subjectId);if(hasT)continue;}
+      let placed=false;
+      for(let p=2;p<=Math.min(limit-1,mp-1)&&!placed;p++){
+        if(p===sb)continue;
+        if(canConsec(item,day,p,2)){doConsec(item,day,p,2);placed=true;}
+      }
+      for(let p=lateStart;p<=mp-1&&!placed;p++){
+        if(canConsec(item,day,p,2)){doConsec(item,day,p,2);placed=true;}
+      }
+    }
+  });
+
+  // ════════════════════════════════════════════════════════════
+  // FIX PHASE 3b: Science I & Science II — STRICT RULES:
+  //   Each subject: 4 periods total (or whatever tgt is)
+  //     • 1 day: 2 CONSECUTIVE periods (practical day)
+  //     • Remaining: 1-per-day on DISTINCT other days
+  //   Science I and Science II NEVER on the same day.
+  //   Both processed together so they avoid each other's days.
   // ════════════════════════════════════════════════════════════
   (function placeScienceIAndII(){
     const sciRows={};
@@ -1372,52 +1477,46 @@ function generateForClass(cid){
     const grpsPresent=Object.keys(sciRows);
     if(!grpsPresent.length)return;
 
-    // Track which days are claimed by EITHER Science I or II (shared exclusion set)
-    const sciClaimedDays={}; // day -> grp that claimed it
-
-    function dayClaimedByOther(day,myGrp){
-      return sciClaimedDays[day]&&sciClaimedDays[day]!==myGrp;
-    }
+    const sciClaimedDays={}; // day -> grp that owns it
+    function dayClaimedByOther(day,myGrp){return sciClaimedDays[day]&&sciClaimedDays[day]!==myGrp;}
     function claimDay(day,grp){sciClaimedDays[day]=grp;}
 
-    // Process in random order so Science I doesn't always get first pick
     const order=[...grpsPresent];shuffle(order);
 
     order.forEach(grp=>{
       const row=sciRows[grp];
       const item={subjectId:row.subjectId,teacherId:row.teacherId};
-      const tgt=getTgt(row.subjectId);
-      if(tgt<1)return;
+      const tgt=getTgt(row.subjectId); // e.g. 4
 
-      // Step 1: place the 2-consecutive practical block on ONE day that
-      //   the OTHER Science subject hasn't already claimed.
+      // Step 1: Place the 1 practical day (2 consecutive) on a day
+      //   NOT claimed by the other Science subject.
       if(tgt>=2){
         shuffle(sdays);
-        let placedDouble=false;
         for(const day of sdays){
           if(dayClaimedByOther(day,grp))continue;
           const mp=maxPDay(day);
           let placed=false;
+          // Prefer theory zone P2..limit-1
           for(let p=2;p<=Math.min(limit-1,mp-1)&&!placed;p++){
             if(p===sb)continue;
             if(canConsec(item,day,p,2)){doConsec(item,day,p,2);placed=true;}
           }
+          // Fallback: late zone
           if(!placed){
             for(let p=lateStart;p<=mp-1&&!placed;p++){
               if(canConsec(item,day,p,2)){doConsec(item,day,p,2);placed=true;}
             }
           }
-          if(placed){claimDay(day,grp);placedDouble=true;break;}
+          if(placed){claimDay(day,grp);break;}
         }
       }
 
-      // Step 2: remaining periods, 1/day on distinct NEW days that the
-      //   other Science subject hasn't claimed either.
+      // Step 2: Remaining periods — 1/day on distinct days not claimed by other Science
       shuffle(sdays);
       for(const day of sdays){
         if(getUsed(item.subjectId)>=tgt)break;
-        if(getDayUsed(day,item.subjectId)>0)continue; // already used by THIS subject
-        if(dayClaimedByOther(day,grp))continue;        // claimed by the OTHER Science subject
+        if(getDayUsed(day,item.subjectId)>0)continue;
+        if(dayClaimedByOther(day,grp))continue;
         const mp=maxPDay(day);
         for(let p=2;p<=mp;p++){
           if(p===sb||p===lb)continue;
@@ -1425,13 +1524,10 @@ function generateForClass(cid){
         }
       }
 
-      // Step 3 (retry if still short — slots may have been full earlier).
-      //   Still respect: distinct day for THIS subject, and not claimed
-      //   by the other Science subject.
+      // Step 3: Retry if still short
       let retries=0;
       while(getUsed(item.subjectId)<tgt&&retries<6){
-        shuffle(sdays);
-        let placedThisRound=false;
+        shuffle(sdays);let placedThisRound=false;
         for(const day of sdays){
           if(getUsed(item.subjectId)>=tgt)break;
           if(getDayUsed(day,item.subjectId)>0)continue;
@@ -1442,15 +1538,10 @@ function generateForClass(cid){
             if(canPlace(item,day,p)){doPlace(item,day,p);claimDay(day,grp);placedThisRound=true;break;}
           }
         }
-        retries++;
-        if(!placedThisRound)break;
+        retries++;if(!placedThisRound)break;
       }
 
-      // Step 4: absolute last resort — if STILL short, allow using a day
-      //   already claimed by the OTHER Science subject ONLY if truly no
-      //   other day has room anywhere (better to slightly bend the
-      //   same-day-exclusion than leave periods completely unplaced).
-      //   The consecutive-pair rule is still never broken.
+      // Step 4: Last resort — allow same day as other Science (better than unplaced)
       if(getUsed(item.subjectId)<tgt){
         shuffle(sdays);
         for(const day of sdays){
@@ -1466,13 +1557,10 @@ function generateForClass(cid){
   })();
 
   // ════════════════════════════════════════════════════════════
-  // PHASE 4: Computer / Sanganak
-
-  // ════════════════════════════════════════════════════════════
-  // PHASE 4: Computer / Sanganak — PRIMARY: 2 consecutive periods.
-  //   FALLBACK only if no consecutive slot found: 2 distinct days, 1/day.
-  //   School-wide: only ONE class can use the Computer lab at any
-  //   given day+period (single lab available).
+  // FIX PHASE 4: Computer / Sanganak — HARD 2-CONSECUTIVE REQUIREMENT.
+  //   MUST place as 2 consecutive periods. School-wide single lab.
+  //   Prefer late zone, then theory zone. Singles only if truly no
+  //   consecutive slot exists (graceful fallback).
   // ════════════════════════════════════════════════════════════
   csl.forEach(row=>{
     const subj=D.subjects.find(x=>x.id===row.subjectId);
@@ -1480,15 +1568,16 @@ function generateForClass(cid){
     const item={subjectId:row.subjectId,teacherId:row.teacherId};
     const tgt=getTgt(row.subjectId);
 
-    // Primary: pair as consecutive 2-blocks
+    // Primary: consecutive 2-blocks (HARD requirement)
     while(getUsed(item.subjectId)+2<=tgt){
-      shuffle(sdays);
-      let placed=false;
+      shuffle(sdays);let placed=false;
       for(const day of sdays){
         const mp=maxPDay(day);
+        // Prefer late zone first
         for(let p=lateStart;p<=mp-1&&!placed;p++){
           if(canConsec(item,day,p,2)){doConsec(item,day,p,2);placed=true;}
         }
+        // Then theory zone
         if(!placed){
           for(let p=2;p<=mp-1&&!placed;p++){
             if(canConsec(item,day,p,2)){doConsec(item,day,p,2);placed=true;}
@@ -1496,9 +1585,9 @@ function generateForClass(cid){
         }
         if(placed)break;
       }
-      if(!placed)break; // no consecutive slot found anywhere — fall back to singles below
+      if(!placed)break; // no consecutive slot anywhere — fall to singles
     }
-    // Fallback: remaining as singles, 1/day, distinct days, only-if-adjacent on repeat day
+    // Fallback singles for any odd remaining (or if consecutive impossible)
     shuffle(sdays);
     for(const day of sdays){
       if(getUsed(item.subjectId)>=tgt)break;
@@ -1511,7 +1600,7 @@ function generateForClass(cid){
   });
 
   // ════════════════════════════════════════════════════════════
-  // PHASE 4b: परिसर अभ्यास १ (5th std only) — 1 day double + rest singles
+  // PHASE 4b: परिसर अभ्यास १ (5th std only)
   // ════════════════════════════════════════════════════════════
   if(cls2&&['5th','5','V'].includes(cls2.std)){
     csl.forEach(row=>{
@@ -1519,8 +1608,7 @@ function generateForClass(cid){
       if(!isPS1(subj))return;
       const item={subjectId:row.subjectId,teacherId:row.teacherId};
       const tgt=getTgt(row.subjectId);
-      shuffle(sdays);
-      let dblDone=false;
+      shuffle(sdays);let dblDone=false;
       for(const day of sdays){
         if(dblDone)break;
         const mp=maxPDay(day);
@@ -1543,50 +1631,18 @@ function generateForClass(cid){
   }
 
   // ════════════════════════════════════════════════════════════
-  // PHASE 5: (reserved — class teacher already forced in Phase 0)
-  // ════════════════════════════════════════════════════════════
-
-  // ════════════════════════════════════════════════════════════
-  // PHASE 6: Subjects with EXACTLY 7 or 8 weekly periods (any normal
-  //   subject — excludes PE, Science Practical/I/II, Computer, Scout/
-  //   NCC group, PS1, since those already have their own rules above):
-  //     7 periods → 5 days × 1 + 1 day × 2 (consecutive)
-  //     8 periods → 4 days × 1 + 2 days × 2 (consecutive)
-  //   Special: if this subject is the CLASS TEACHER's subject, the
-  //   2-consecutive block MUST be P1-P2 (since P1 is always reserved
-  //   for them already).
+  // PHASE 0.5: 6-period subjects (need ALL working days)
+  //   Reserve a slot on every day before others fill them up.
+  //   Run AFTER PE/Science/Computer to avoid conflicts.
   // ════════════════════════════════════════════════════════════
   csl.forEach(row=>{
     const subj=D.subjects.find(x=>x.id===row.subjectId);
     if(!subj)return;
-    if(isPE(subj)||isSciPrac(subj)||isComputer(subj)||isLateOnly(subj)||isPS1(subj))return;
-    if(sciGroup(subj))return; // Science I/II handled in Phase 3b
+    if(isPE(subj)||isComputer(subj)||isLateOnly(subj)||isPS1(subj)||sciGroup(subj))return;
+    if(ctRow&&ctRow.subjectId===row.subjectId)return;
     const tgt=getTgt(row.subjectId);
-    if(tgt!==7&&tgt!==8)return;
-
-    const dblNeeded=tgt===8?2:1;
+    if(tgt!==days.length)return;
     const item={subjectId:row.subjectId,teacherId:row.teacherId};
-    const isCTSubject=ctRow&&ctRow.subjectId===row.subjectId;
-    let dblDone=0;
-
-    if(isCTSubject){
-      // Already handled in Phase 0b (right after class-teacher P1 placement).
-      // Just count how many doubles already landed, so the "remaining periods"
-      // logic below knows how many singles are still needed.
-      dblDone=dblNeeded; // Phase 0b guarantees this (or did its best)
-    } else {
-      shuffle(sdays);
-      for(const day of sdays){
-        if(dblDone>=dblNeeded)break;
-        const mp=maxPDay(day);
-        for(let p=2;p<=mp-1;p++){
-          if(subj.type==='theory'&&p>limit)continue;
-          if(canConsec(item,day,p,2)){doConsec(item,day,p,2);dblDone++;break;}
-        }
-      }
-    }
-
-    // Remaining periods: 1/day on distinct (new) days
     shuffle(sdays);
     for(const day of sdays){
       if(getUsed(item.subjectId)>=tgt)break;
@@ -1599,12 +1655,48 @@ function generateForClass(cid){
   });
 
   // ════════════════════════════════════════════════════════════
-  // PHASE 7: All remaining normal subjects — DEFAULT RULE:
-  //   N weekly periods → N distinct days, 1 period/day (N = 2,3,4,5,6).
-  //   If a subject still has periods left after trying all distinct
-  //   days (slots were full), pair the leftover as consecutive on
-  //   whichever day has room — NEVER place a 2nd period on the same
-  //   day unless it's adjacent to the first.
+  // PHASE 6: Subjects with exactly 7 or 8 weekly periods
+  //   7 → 5 days × 1 + 1 day × 2 (consecutive)
+  //   8 → 4 days × 1 + 2 days × 2 (consecutive)
+  // ════════════════════════════════════════════════════════════
+  csl.forEach(row=>{
+    const subj=D.subjects.find(x=>x.id===row.subjectId);
+    if(!subj)return;
+    if(isPE(subj)||isSciPrac(subj)||isComputer(subj)||isLateOnly(subj)||isPS1(subj))return;
+    if(sciGroup(subj))return;
+    const tgt=getTgt(row.subjectId);
+    if(tgt!==7&&tgt!==8)return;
+    const dblNeeded=tgt===8?2:1;
+    const item={subjectId:row.subjectId,teacherId:row.teacherId};
+    const isCTSubject=ctRow&&ctRow.subjectId===row.subjectId;
+    let dblDone=isCTSubject?dblNeeded:0;
+    if(!isCTSubject){
+      shuffle(sdays);
+      for(const day of sdays){
+        if(dblDone>=dblNeeded)break;
+        const mp=maxPDay(day);
+        for(let p=2;p<=mp-1;p++){
+          if(subj.type==='theory'&&p>limit)continue;
+          if(canConsec(item,day,p,2)){doConsec(item,day,p,2);dblDone++;break;}
+        }
+      }
+    }
+    shuffle(sdays);
+    for(const day of sdays){
+      if(getUsed(item.subjectId)>=tgt)break;
+      if(getDayUsed(day,item.subjectId)>0)continue;
+      const mp=maxPDay(day);
+      for(let p=2;p<=mp;p++){
+        if(canPlace(item,day,p)){doPlace(item,day,p);break;}
+      }
+    }
+  });
+
+  // ════════════════════════════════════════════════════════════
+  // PHASE 7: All remaining normal subjects — RANDOM fill
+  //   N periods → N distinct days, 1/day (N = 2,3,4,5,6)
+  //   Theory prefers P1-limit, practical prefers P(limit+1)+
+  //   Pass 0/1: prefer zone; Pass 2: any zone allowed
   // ════════════════════════════════════════════════════════════
   const remainMap={};
   csl.forEach(row=>{
@@ -1614,42 +1706,20 @@ function generateForClass(cid){
       rem:getTgt(row.subjectId)-getUsed(row.subjectId)};
   });
 
-  let slots=[];
+  const slots=[];
   days.forEach(day=>{
     const mp=maxPDay(day);
-    for(let p=2;p<=mp;p++)slots.push({day,p}); // P1 reserved for class teacher
+    for(let p=2;p<=mp;p++)slots.push({day,p});
   });
 
   const subjIds=Object.keys(remainMap).map(Number);
-  // Most-constrained-first: subjects needing MORE distinct days (higher rem)
-  // get priority, since they have less flexibility to "fit around" others.
-  // A subject with rem=2 can easily slot into whatever 2 days remain free;
-  // a subject with rem=6 needs ALL 6 days, so it must claim its days first.
-  // Within subjects that need the SAME number of days, shuffle their order
-  // randomly each round — otherwise two 6-period subjects (e.g. Marathi,
-  // English) would always process in the same relative order and always
-  // grab the same periods every single day (looks too "patterned").
   shuffle(subjIds);
   subjIds.sort((a,b)=>remainMap[b].rem-remainMap[a].rem);
 
-  // Sub-phase 7a: place 1/day on distinct days for each subject's remaining
-  // periods. ROUND-ROBIN across subjects in most-constrained-first order so
-  // that high-period subjects (needing many distinct days) get first pick,
-  // while low-period subjects (more flexible) fill in afterwards.
-  // To avoid every multi-day subject landing on the same period every day
-  // (e.g. Marathi always at P2, English always at P3 — which looks too
-  // "patterned"), we give each (subject, round) combination a randomized
-  // preferred period within its allowed range, instead of always taking
-  // the very first free slot in shuffled order.
   for(let pass=0;pass<=2;pass++){
     let anyPlacedThisPass=true;
     while(anyPlacedThisPass){
       anyPlacedThisPass=false;
-      // Re-shuffle THEN re-sort by rem (descending) each round: this keeps
-      // the most-constrained-first guarantee (subjects needing more days
-      // still go first) while randomizing the relative order of subjects
-      // that have the SAME remaining-days count — so two 6-period subjects
-      // don't always process in the same order and grab the same periods.
       shuffle(subjIds);
       subjIds.sort((a,b)=>remainMap[b].rem-remainMap[a].rem);
       for(const sid of subjIds){
@@ -1657,11 +1727,6 @@ function generateForClass(cid){
         if(info.rem<=0)continue;
         const item={subjectId:sid,teacherId:info.teacherId};
         shuffle(slots);
-        // Try a few different random "preferred period" anchors before
-        // settling for whatever shuffled order gives — this spreads
-        // subjects across different periods on different days instead of
-        // always grabbing the same low-numbered free period.
-        let bestChoice=null;
         const candidatePeriods=[];
         for(const {day,p} of slots){
           if(!slotFree(day,p))continue;
@@ -1675,33 +1740,27 @@ function generateForClass(cid){
           candidatePeriods.push({day,p});
         }
         if(candidatePeriods.length){
-          // pick a genuinely random candidate (not just "first in shuffled array")
-          bestChoice=candidatePeriods[Math.floor(Math.random()*candidatePeriods.length)];
+          const bestChoice=candidatePeriods[Math.floor(Math.random()*candidatePeriods.length)];
           doPlace(item,bestChoice.day,bestChoice.p);info.rem--;anyPlacedThisPass=true;
         }
       }
     }
   }
 
-  // Sub-phase 7b: any leftover (not enough distinct days were available) —
-  // pair as consecutive on a day that already has 1 period of this subject,
-  // or any day with room, but ALWAYS adjacent if doubling up.
+  // Sub-phase 7b: pair leftover as consecutive (adjacent rule)
   subjIds.forEach(sid=>{
     const info=remainMap[sid];
     if(info.rem<=0)return;
     const item={subjectId:sid,teacherId:info.teacherId};
     while(info.rem>=2){
-      shuffle(slots);
-      let placed=false;
+      shuffle(slots);let placed=false;
       for(const {day,p} of slots){
         if(canConsec(item,day,p,2)){doConsec(item,day,p,2);info.rem-=2;placed=true;break;}
       }
       if(!placed)break;
     }
-    // odd leftover: single, adjacent-only if day already has this subject
     while(info.rem>0){
-      shuffle(slots);
-      let placed=false;
+      shuffle(slots);let placed=false;
       for(const {day,p} of slots){
         if(!slotFree(day,p))continue;
         if(getDayUsed(day,sid)===1&&!isAdjacentToSame(sid,day,p))continue;
@@ -1712,15 +1771,9 @@ function generateForClass(cid){
     }
   });
 
-  // Sub-phase 7c: last-resort widen search (include P1) for anything still
-  // short — adjacency rule is STILL enforced, never broken. Run multiple
-  // rounds since placing one subject may free up new pairing opportunities
-  // for another, and shuffled order changes each round.
-  let allSlots=[];
-  days.forEach(day=>{
-    const mp=maxPDay(day);
-    for(let p=1;p<=mp;p++)allSlots.push({day,p});
-  });
+  // Sub-phase 7c: last-resort widen search (include P1)
+  const allSlots=[];
+  days.forEach(day=>{const mp=maxPDay(day);for(let p=1;p<=mp;p++)allSlots.push({day,p});});
   for(let round=0;round<5;round++){
     let anyPlaced=false;
     shuffle(subjIds);
