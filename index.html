@@ -1169,6 +1169,17 @@ function generateForClass(cid){
     const s=nm(subj);
     return (s.includes('work')&&s.includes('exp'))||s.includes('कार्य');
   }
+  function isGeography(subj){
+    const s=nm(subj);
+    return s.includes('geog')||s.includes('भूगोल');
+  }
+  function isHistory(subj){
+    const s=nm(subj);
+    return (s.includes('hist')||s.includes('इतिहास'))&&!isGeography(subj);
+  }
+  function is6thClass(cls){
+    return cls?.std==='6'||cls?.std==='6th'||cls?.std==='षष्ठी';
+  }
 
   // ── Helpers ──────────────────────────────────────────────────
   function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}}
@@ -1633,6 +1644,8 @@ function generateForClass(cid){
   //   Each gets 3 periods spread across 3 DISTINCT days, never overlapping.
   // ════════════════════════════════════════════════════════════
   (function placeHindiSanskrut(){
+    // Skip for 6th class (Hindi is standalone in Phase 3f, not combined)
+    if(is6thClass(cls2))return;
     const rows={};
     ['hindi','sanskrut'].forEach(type=>{
       const row=csl.find(r=>{
@@ -1690,6 +1703,206 @@ function generateForClass(cid){
       }
     });
   })();
+
+  // ════════════════════════════════════════════════════════════
+  // PHASE 3d: Geography & History — combined subject (6 total, 3+3)
+  //   Rule: ONLY ONE of Geography OR History on any given day.
+  //   Each gets 3 periods on 3 DISTINCT days, never overlapping.
+  // ════════════════════════════════════════════════════════════
+  (function placeGeographyHistory(){
+    // Skip for 6th class (History is standalone in Phase 3f, not combined with Geography)
+    if(is6thClass(cls2))return;
+    const rows={};
+    ['geog','hist'].forEach(type=>{
+      const row=csl.find(r=>{
+        const s=D.subjects.find(x=>x.id===r.subjectId);
+        return s&&(type==='geog'?isGeography(s):isHistory(s));
+      });
+      if(row)rows[type]=row;
+    });
+    const typesPresent=Object.keys(rows);
+    if(!typesPresent.length)return;
+
+    const subjClaimedDays={}; // day -> type ('geog'|'hist') that claimed it
+    function dayClaimedByOther(day,myType){
+      return subjClaimedDays[day]&&subjClaimedDays[day]!==myType;
+    }
+    function claimDay(day,type){subjClaimedDays[day]=type;}
+
+    const order=[...typesPresent];shuffle(order);
+    order.forEach(type=>{
+      const row=rows[type];
+      const item={subjectId:row.subjectId,teacherId:row.teacherId};
+      const tgt=getTgt(row.subjectId);
+      if(tgt<1)return;
+
+      // Place 1/day on 3 distinct days that the other subject hasn't claimed
+      shuffle(sdays);
+      for(const day of sdays){
+        if(getUsed(item.subjectId)>=tgt)break;
+        if(getDayUsed(day,item.subjectId)>0)continue;
+        if(dayClaimedByOther(day,type))continue;
+        const mp=maxPDay(day);
+        for(let p=2;p<=mp;p++){
+          if(p===sb||p===lb)continue;
+          if(canPlace(item,day,p)){doPlace(item,day,p);claimDay(day,type);break;}
+        }
+      }
+
+      // Retry if short
+      let retries=0;
+      while(getUsed(item.subjectId)<tgt&&retries<5){
+        shuffle(sdays);
+        let placed=false;
+        for(const day of sdays){
+          if(getUsed(item.subjectId)>=tgt)break;
+          if(getDayUsed(day,item.subjectId)>0)continue;
+          if(dayClaimedByOther(day,type))continue;
+          const mp=maxPDay(day);
+          for(let p=2;p<=mp;p++){
+            if(p===sb||p===lb)continue;
+            if(canPlace(item,day,p)){doPlace(item,day,p);claimDay(day,type);placed=true;break;}
+          }
+        }
+        retries++;
+        if(!placed)break;
+      }
+    });
+  })();
+
+  // ════════════════════════════════════════════════════════════
+  // PHASE 3e: General Science (6th std) — 6 तास
+  //   1 day: 2 consecutive (practical time)
+  //   4 days: 1 each (theory)
+  //   Total: 5 distinct days used
+  // ════════════════════════════════════════════════════════════
+  csl.forEach(row=>{
+    const subj=D.subjects.find(x=>x.id===row.subjectId);
+    if(!isGeneralScience(subj))return;
+    const item={subjectId:row.subjectId,teacherId:row.teacherId};
+    const tgt=getTgt(row.subjectId);
+    if(tgt<1)return;
+
+    // Step 1: Try to place 2 consecutive (practical) on ONE day
+    shuffle(sdays);
+    if(tgt>=2){
+      for(const day of sdays){
+        if(getUsed(item.subjectId)+2>tgt)break;
+        const mp=maxPDay(day);
+        // Practical preferably not during breaks
+        for(let p=2;p<=Math.min(limit-1,mp-1);p++){
+          if(p===sb)continue;
+          if(canConsec(item,day,p,2)){doConsec(item,day,p,2);break;}
+        }
+      }
+    }
+
+    // Step 2: Remaining singles on distinct days
+    shuffle(sdays);
+    for(const day of sdays){
+      if(getUsed(item.subjectId)>=tgt)break;
+      if(getDayUsed(day,item.subjectId)>0)continue;
+      const mp=maxPDay(day);
+      for(let p=2;p<=mp;p++){
+        if(p===sb||p===lb)continue;
+        if(canPlace(item,day,p)){doPlace(item,day,p);break;}
+      }
+    }
+  });
+
+  // ════════════════════════════════════════════════════════════
+  // PHASE 3f: 6th Class Core Subjects (Math, English, Hindi, History)
+  //   Math = 7: 1 day double P1-P2 + 5 days single
+  //   English = 7: 1 day double (not restricted to P1-P2) + 5 days single
+  //   Hindi = 5: 5 days × 1 ONLY (never 2 on same day)
+  //   History = 3: 3 days × 1 ONLY
+  // ════════════════════════════════════════════════════════════
+  csl.forEach(row=>{
+    const subj=D.subjects.find(x=>x.id===row.subjectId);
+    if(!subj||!is6thClass(cls2))return;
+
+    const tgt=getTgt(row.subjectId);
+    const item={subjectId:row.subjectId,teacherId:row.teacherId};
+    const s=nm(subj);
+
+    // Math = 7: double P1-P2 + singles
+    if(s.includes('math')&&tgt===7){
+      // Try to place double at P1-P2 on one day
+      shuffle(sdays);
+      for(const day of sdays){
+        if(getUsed(item.subjectId)>=tgt)break;
+        const mp=maxPDay(day);
+        if(1<=mp&&2<=mp&&canConsec(item,day,1,2)){doConsec(item,day,1,2);break;}
+      }
+      // Place remaining 5 singles on distinct days
+      shuffle(sdays);
+      for(const day of sdays){
+        if(getUsed(item.subjectId)>=tgt)break;
+        if(getDayUsed(day,item.subjectId)>0)continue;
+        const mp=maxPDay(day);
+        for(let p=2;p<=mp;p++){
+          if(p===sb||p===lb)continue;
+          if(canPlace(item,day,p)){doPlace(item,day,p);break;}
+        }
+      }
+      return;
+    }
+
+    // English = 7: double (anywhere except P1-P2) + singles
+    if(s.includes('eng')&&tgt===7){
+      // Try to place double (not P1-P2)
+      shuffle(sdays);
+      for(const day of sdays){
+        if(getUsed(item.subjectId)>=tgt)break;
+        const mp=maxPDay(day);
+        for(let p=2;p<=mp-1;p++){
+          if(canConsec(item,day,p,2)){doConsec(item,day,p,2);break;}
+        }
+      }
+      // Place remaining 5 singles on distinct days
+      shuffle(sdays);
+      for(const day of sdays){
+        if(getUsed(item.subjectId)>=tgt)break;
+        if(getDayUsed(day,item.subjectId)>0)continue;
+        const mp=maxPDay(day);
+        for(let p=2;p<=mp;p++){
+          if(p===sb||p===lb)continue;
+          if(canPlace(item,day,p)){doPlace(item,day,p);break;}
+        }
+      }
+      return;
+    }
+
+    // Hindi = 5: exactly 5 days × 1 ONLY (never 2 on same day)
+    if(s.includes('hindi')&&tgt===5){
+      shuffle(sdays);
+      for(const day of sdays){
+        if(getUsed(item.subjectId)>=tgt)break;
+        if(getDayUsed(day,item.subjectId)>0)continue; // never 2 on same day
+        const mp=maxPDay(day);
+        for(let p=2;p<=mp;p++){
+          if(p===sb||p===lb)continue;
+          if(canPlace(item,day,p)){doPlace(item,day,p);break;}
+        }
+      }
+      return;
+    }
+
+    // History = 3: 3 days × 1 ONLY (6th class only, not combined with Geography)
+    if(s.includes('hist')&&tgt===3&&!s.includes('geog')){
+      shuffle(sdays);
+      for(const day of sdays){
+        if(getUsed(item.subjectId)>=tgt)break;
+        if(getDayUsed(day,item.subjectId)>0)continue; // never 2 on same day
+        const mp=maxPDay(day);
+        for(let p=2;p<=mp;p++){
+          if(p===sb||p===lb)continue;
+          if(canPlace(item,day,p)){doPlace(item,day,p);break;}
+        }
+      }
+      return;
+    }
+  });
 
   // ════════════════════════════════════════════════════════════
   // PHASE 4: Computer / Sanganak
@@ -1787,6 +2000,8 @@ function generateForClass(cid){
     if(!subj)return;
     if(isPE(subj)||isSciPrac(subj)||isComputer(subj)||isLateOnly(subj)||isPS1(subj))return;
     if(sciGroup(subj))return; // Science I/II handled in Phase 3b
+    // Skip 6th class Math/English (handled in Phase 3f)
+    if(is6thClass(cls2)&&nm(subj).match(/math|eng/))return;
     const tgt=getTgt(row.subjectId);
     if(tgt!==7&&tgt!==8)return;
 
@@ -1802,10 +2017,14 @@ function generateForClass(cid){
       dblDone=dblNeeded; // Phase 0b guarantees this (or did its best)
     } else {
       shuffle(sdays);
+      // For 5th std: restrict double to P1-P2 (like class teacher subjects)
+      const is5th=cls2?.std==='5'||cls2?.std==='5th'||cls2?.std==='पाचवी';
+      const minP=is5th?1:2;
+      const maxP=is5th?2:(limit-1);
       for(const day of sdays){
         if(dblDone>=dblNeeded)break;
         const mp=maxPDay(day);
-        for(let p=2;p<=mp-1;p++){
+        for(let p=minP;p<=Math.min(maxP,mp-1);p++){
           if(subj.type==='theory'&&p>limit)continue;
           if(canConsec(item,day,p,2)){doConsec(item,day,p,2);dblDone++;break;}
         }
@@ -1835,6 +2054,8 @@ function generateForClass(cid){
   const remainMap={};
   csl.forEach(row=>{
     const subj=D.subjects.find(x=>x.id===row.subjectId);if(!subj)return;
+    // Skip 6th class subjects already handled in Phase 3f
+    if(is6thClass(cls2)&&nm(subj).match(/math|eng|hindi|hist/))return;
     remainMap[row.subjectId]={teacherId:row.teacherId,type:subj.type,
       priority:subj.priority||'normal',
       rem:getTgt(row.subjectId)-getUsed(row.subjectId)};
