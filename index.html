@@ -1646,60 +1646,47 @@ function generateForClass(cid){
   (function placeHindiSanskrut(){
     // Skip for 6th class (Hindi is standalone in Phase 3f, not combined)
     if(is6thClass(cls2))return;
-    const rows={};
-    ['hindi','sanskrut'].forEach(type=>{
-      const row=csl.find(r=>{
-        const s=D.subjects.find(x=>x.id===r.subjectId);
-        return s&&isHindiOrSanskrut(s)&&(type==='hindi'?nm(s).includes('hindi'):nm(s).includes('sanskrut'));
-      });
-      if(row)rows[type]=row;
-    });
-    const typesPresent=Object.keys(rows);
-    if(!typesPresent.length)return;
-
-    const langClaimedDays={}; // day -> type ('hindi'|'sanskrut') that claimed it
-    function dayClaimedByOther(day,myType){
-      return langClaimedDays[day]&&langClaimedDays[day]!==myType;
-    }
-    function claimDay(day,type){langClaimedDays[day]=type;}
-
-    const order=[...typesPresent];shuffle(order);
-    order.forEach(type=>{
-      const row=rows[type];
-      const item={subjectId:row.subjectId,teacherId:row.teacherId};
-      const tgt=getTgt(row.subjectId);
-      if(tgt<1)return;
-
-      // Place 1/day on distinct days that the other language hasn't claimed
+    
+    // Find Hindi and Sanskrut subjects by explicit name match
+    const hindRows=csl.filter(r=>{const s=D.subjects.find(x=>x.id===r.subjectId);return s&&nm(s).includes('hindi');});
+    const sanskRows=csl.filter(r=>{const s=D.subjects.find(x=>x.id===r.subjectId);return s&&nm(s).includes('sanskrut');});
+    
+    if(!hindRows.length||!sanskRows.length)return; // need both subjects
+    
+    const hindRow=hindRows[0];
+    const sanskRow=sanskRows[0];
+    
+    const langUsedDays={}; // track which days each language has claimed
+    
+    // Process both subjects
+    [
+      {row:hindRow,type:'hindi',tgt:3},
+      {row:sanskRow,type:'sanskrut',tgt:3}
+    ].forEach(spec=>{
+      const item={subjectId:spec.row.subjectId,teacherId:spec.row.teacherId};
+      const otherType=spec.type==='hindi'?'sanskrut':'hindi';
+      
       shuffle(sdays);
       for(const day of sdays){
-        if(getUsed(item.subjectId)>=tgt)break;
+        if(getUsed(item.subjectId)>=spec.tgt)break;
+        
+        // Never place on a day the OTHER subject is using
+        if(langUsedDays[day]===otherType)continue;
+        
+        // Never place 2 on same day
         if(getDayUsed(day,item.subjectId)>0)continue;
-        if(dayClaimedByOther(day,type))continue;
+        
         const mp=maxPDay(day);
-        for(let p=2;p<=mp;p++){
-          if(p===sb||p===lb)continue;
-          if(canPlace(item,day,p)){doPlace(item,day,p);claimDay(day,type);break;}
-        }
-      }
-
-      // Retry if short
-      let retries=0;
-      while(getUsed(item.subjectId)<tgt&&retries<5){
-        shuffle(sdays);
+        // Try to place on this day
         let placed=false;
-        for(const day of sdays){
-          if(getUsed(item.subjectId)>=tgt)break;
-          if(getDayUsed(day,item.subjectId)>0)continue;
-          if(dayClaimedByOther(day,type))continue;
-          const mp=maxPDay(day);
-          for(let p=2;p<=mp;p++){
-            if(p===sb||p===lb)continue;
-            if(canPlace(item,day,p)){doPlace(item,day,p);claimDay(day,type);placed=true;break;}
+        for(let p=2;p<=mp&&!placed;p++){
+          if(p===sb||p===lb)continue;
+          if(canPlace(item,day,p)){
+            doPlace(item,day,p);
+            langUsedDays[day]=spec.type; // claim day for this language
+            placed=true;
           }
         }
-        retries++;
-        if(!placed)break;
       }
     });
   })();
@@ -1710,62 +1697,49 @@ function generateForClass(cid){
   //   Each gets 3 periods on 3 DISTINCT days, never overlapping.
   // ════════════════════════════════════════════════════════════
   (function placeGeographyHistory(){
-    // Skip for 6th class (History is standalone in Phase 3f, not combined with Geography)
+    // Skip for 6th class (History is standalone in Phase 3f, not combined)
     if(is6thClass(cls2))return;
-    const rows={};
-    ['geog','hist'].forEach(type=>{
-      const row=csl.find(r=>{
-        const s=D.subjects.find(x=>x.id===r.subjectId);
-        return s&&(type==='geog'?isGeography(s):isHistory(s));
-      });
-      if(row)rows[type]=row;
-    });
-    const typesPresent=Object.keys(rows);
-    if(!typesPresent.length)return;
-
-    const subjClaimedDays={}; // day -> type ('geog'|'hist') that claimed it
-    function dayClaimedByOther(day,myType){
-      return subjClaimedDays[day]&&subjClaimedDays[day]!==myType;
-    }
-    function claimDay(day,type){subjClaimedDays[day]=type;}
-
-    const order=[...typesPresent];shuffle(order);
-    order.forEach(type=>{
-      const row=rows[type];
-      const item={subjectId:row.subjectId,teacherId:row.teacherId};
-      const tgt=getTgt(row.subjectId);
-      if(tgt<1)return;
-
-      // Place 1/day on 3 distinct days that the other subject hasn't claimed
+    
+    // Find Geography and History subjects by explicit name match
+    const geogRows=csl.filter(r=>{const s=D.subjects.find(x=>x.id===r.subjectId);return s&&isGeography(s);});
+    const histRows=csl.filter(r=>{const s=D.subjects.find(x=>x.id===r.subjectId);return s&&isHistory(s)&&!isGeography(s);});
+    
+    if(!geogRows.length||!histRows.length)return; // need both subjects
+    
+    const geogRow=geogRows[0]; // take first match (should be only one)
+    const histRow=histRows[0];
+    
+    const subjUsedDays={}; // track which days each subject has claimed
+    
+    // Process both subjects
+    [
+      {row:geogRow,type:'geog',tgt:3},
+      {row:histRow,type:'hist',tgt:3}
+    ].forEach(spec=>{
+      const item={subjectId:spec.row.subjectId,teacherId:spec.row.teacherId};
+      const otherType=spec.type==='geog'?'hist':'geog';
+      
       shuffle(sdays);
       for(const day of sdays){
-        if(getUsed(item.subjectId)>=tgt)break;
+        if(getUsed(item.subjectId)>=spec.tgt)break;
+        
+        // Never place on a day the OTHER subject is using
+        if(subjUsedDays[day]===otherType)continue;
+        
+        // Never place 2 on same day
         if(getDayUsed(day,item.subjectId)>0)continue;
-        if(dayClaimedByOther(day,type))continue;
+        
         const mp=maxPDay(day);
-        for(let p=2;p<=mp;p++){
-          if(p===sb||p===lb)continue;
-          if(canPlace(item,day,p)){doPlace(item,day,p);claimDay(day,type);break;}
-        }
-      }
-
-      // Retry if short
-      let retries=0;
-      while(getUsed(item.subjectId)<tgt&&retries<5){
-        shuffle(sdays);
+        // Try to place on this day
         let placed=false;
-        for(const day of sdays){
-          if(getUsed(item.subjectId)>=tgt)break;
-          if(getDayUsed(day,item.subjectId)>0)continue;
-          if(dayClaimedByOther(day,type))continue;
-          const mp=maxPDay(day);
-          for(let p=2;p<=mp;p++){
-            if(p===sb||p===lb)continue;
-            if(canPlace(item,day,p)){doPlace(item,day,p);claimDay(day,type);placed=true;break;}
+        for(let p=2;p<=mp&&!placed;p++){
+          if(p===sb||p===lb)continue;
+          if(canPlace(item,day,p)){
+            doPlace(item,day,p);
+            subjUsedDays[day]=spec.type; // claim day for this subject
+            placed=true;
           }
         }
-        retries++;
-        if(!placed)break;
       }
     });
   })();
