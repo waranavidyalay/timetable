@@ -1180,6 +1180,25 @@ function generateForClass(cid){
   function is6thClass(cls){
     return cls?.std==='6'||cls?.std==='6th'||cls?.std==='षष्ठी';
   }
+  function getClassStd(cls){
+    // Extract numeric standard: '5', '5th', 'पाचवी' → 5
+    const s=String(cls?.std||'').toLowerCase();
+    if(s.includes('5')||s.includes('पाच'))return 5;
+    if(s.includes('6')||s.includes('षष्ठ'))return 6;
+    if(s.includes('7')||s.includes('सप्त'))return 7;
+    if(s.includes('8')||s.includes('अष्ट'))return 8;
+    return null;
+  }
+  function getWEDay(cls){
+    // WE schedule: 5→Mon, 6→Tue, 7→Thu, 8→Fri
+    const std=getClassStd(cls);
+    return {5:'Monday',6:'Tuesday',7:'Thursday',8:'Friday'}[std]||null;
+  }
+  function getPEDay(cls){
+    // PE schedule: 5→Thu, 6→Mon, 7→Fri, 8→Tue
+    const std=getClassStd(cls);
+    return {5:'Thursday',6:'Monday',7:'Friday',8:'Tuesday'}[std]||null;
+  }
 
   // ── Helpers ──────────────────────────────────────────────────
   function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}}
@@ -1379,28 +1398,32 @@ function generateForClass(cid){
   });
 
   // ════════════════════════════════════════════════════════════
-  // PHASE 1: PE / शा.शि. — ALWAYS 3 consecutive P7-P8-P9 on ONE day.
-  //   Only PE/Sha.Shi. gets a triple block — no other subject.
-  //   If tgt < 3, fall back to individual singles on distinct days.
+  // PHASE 1: PE / शा.शि. — FIXED day per class standard, P7-P8-P9 triple
+  //   5th→Thursday, 6th→Monday, 7th→Friday, 8th→Tuesday
+  //   All sections of the same class use the same day.
   // ════════════════════════════════════════════════════════════
   csl.forEach(row=>{
     const subj=D.subjects.find(x=>x.id===row.subjectId);
     if(!isPE(subj))return;
     const item={subjectId:row.subjectId,teacherId:row.teacherId};
     const tgt=getTgt(row.subjectId);
-    shuffle(sdays);
-    // Try to place 3 consecutive at P7-P8-P9 on exactly ONE day
-    if(tgt>=3){
-      for(const day of sdays){
-        if(getUsed(item.subjectId)+3>tgt)break;
-        const mp=maxPDay(day);
-        const p=lateStart; // P7
-        if(p+2<=mp&&canConsec(item,day,p,3)){doConsec(item,day,p,3);break;}
+    
+    // Get fixed day for this class's PE
+    const peDay=getPEDay(cls2);
+    
+    // Try to place 3 consecutive at P7-P8-P9 on the fixed day
+    if(tgt>=3&&peDay){
+      const mp=maxPDay(peDay);
+      const p=lateStart; // P7
+      if(p+2<=mp&&canConsec(item,peDay,p,3)){
+        doConsec(item,peDay,p,3);
       }
     }
-    // Place any remaining singles on distinct late-period days
+    
+    // Place any remaining singles on other days (late periods)
     shuffle(sdays);
     for(const day of sdays){
+      if(day===peDay)continue; // PE triple already on fixed day
       if(getUsed(item.subjectId)>=tgt)break;
       if(getDayUsed(day,item.subjectId)>0)continue;
       const mp=maxPDay(day);
@@ -1411,38 +1434,44 @@ function generateForClass(cid){
   });
 
   // ════════════════════════════════════════════════════════════
-  // PHASE 2: Work Experience (fixed P8-P9) + Scout/NCC/late-only subjects
-  //   Work Experience: MUST be P8-P9 (2 consecutive, fixed periods for practicum)
+  // PHASE 2: Work Experience (fixed day+periods) + Scout/NCC/late-only subjects
+  //   Work Experience: FIXED day per class standard, P7-P8-P9 triple (3 consecutive)
+  //   5th→Monday, 6th→Tuesday, 7th→Thursday, 8th→Friday
   //   Other late-only: prefer P7+, 1/day on distinct days
   // ════════════════════════════════════════════════════════════
-  // Step 2a: Work Experience — STRICTLY P8-P9 only
+  // Step 2a: Work Experience — FIXED day+periods per class
   csl.forEach(row=>{
     const subj=D.subjects.find(x=>x.id===row.subjectId);
     if(!isWorkExperience(subj))return;
     const item={subjectId:row.subjectId,teacherId:row.teacherId};
     const tgt=getTgt(row.subjectId);
-    shuffle(sdays);
-    // Try to place 2 consecutive at P8-P9 on ONE day
-    if(tgt>=2){
-      for(const day of sdays){
-        if(getUsed(item.subjectId)+2>tgt)break;
-        const mp=maxPDay(day);
-        if(8<=mp&&9<=mp&&canConsec(item,day,8,2)){doConsec(item,day,8,2);break;}
+    
+    // Get fixed day for this class's WE
+    const weDay=getWEDay(cls2);
+    
+    // Try to place 3 consecutive at P7-P8-P9 on the fixed day
+    if(tgt>=3&&weDay){
+      const mp=maxPDay(weDay);
+      const p=lateStart; // P7
+      if(p+2<=mp&&canConsec(item,weDay,p,3)){
+        doConsec(item,weDay,p,3);
       }
     }
-    // Place any remaining singles at P8 or P9 on other days
+    
+    // Place any remaining singles on other days (late periods)
     shuffle(sdays);
     for(const day of sdays){
+      if(day===weDay)continue; // WE triple already on fixed day
       if(getUsed(item.subjectId)>=tgt)break;
       if(getDayUsed(day,item.subjectId)>0)continue;
       const mp=maxPDay(day);
-      for(let p=8;p<=Math.min(9,mp);p++){
+      for(let p=lateStart;p<=mp;p++){
         if(canPlace(item,day,p)){doPlace(item,day,p);break;}
       }
     }
   });
 
-  // Step 2b: Other late-only subjects (Scout, JAL, etc.) — P7+ (NOT P8-P9 fixed)
+  // Step 2b: Other late-only subjects (Scout, JAL, etc.) — P7+ (NOT fixed day)
   csl.forEach(row=>{
     const subj=D.subjects.find(x=>x.id===row.subjectId);
     if(!isLateOnly(subj)||isPE(subj)||isWorkExperience(subj))return;
