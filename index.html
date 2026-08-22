@@ -1106,6 +1106,20 @@ function generateForClass(cid){
   const cfg=D.cfg;
   const days=[...(cfg.workingDays||[])];
   const cls2=D.classes.find(x=>x.id===cid);
+  
+  // Track SCMNR/WEIT teachers' special reserved days
+  const teacherSpecialDays={}; // teacherId -> {scmnrDay, weitDay}
+  csl.forEach(row=>{
+    const subj=D.subjects.find(x=>x.id===row.subjectId);
+    if(!subj)return;
+    const tid=row.teacherId;
+    if(!teacherSpecialDays[tid])teacherSpecialDays[tid]={};
+    if(isSCMNR(subj))teacherSpecialDays[tid].scmnrDay='Monday';
+    if(isWorkExperience(subj)){
+      const weDay=getWEDay(cls2);
+      if(weDay)teacherSpecialDays[tid].weitDay=weDay;
+    }
+  });
   const ctId=cls2?.classTeacherId;
   const limit=+(cfg.subjectPeriodLimit||6);
   const sb=+(cfg.shortBreakAfter||3);
@@ -2215,6 +2229,14 @@ function generateForClass(cid){
         for(const {day,p} of slots){
           if(!slotFree(day,p))continue;
           if(getDayUsed(day,sid)>0)continue;
+          // Skip teacher's special day (if subject is NOT SCMNR/WEIT)
+          const subj=D.subjects.find(x=>x.id===sid);
+          if(!isSCMNR(subj)&&!isWorkExperience(subj)){
+            const tid=info.teacherId;
+            if(teacherSpecialDays[tid]?.scmnrDay===day || teacherSpecialDays[tid]?.weitDay===day){
+              continue; // teacher's reserved day, skip for other subjects
+            }
+          }
           const isLatePeriod=p>limit;
           if(pass<2){
             if(isLatePeriod&&info.type==='theory')continue;
@@ -2243,6 +2265,14 @@ function generateForClass(cid){
       shuffle(slots);
       let placed=false;
       for(const {day,p} of slots){
+        // Skip teacher's special day (if subject is NOT SCMNR/WEIT)
+        const subj=D.subjects.find(x=>x.id===sid);
+        if(!isSCMNR(subj)&&!isWorkExperience(subj)){
+          const tid=info.teacherId;
+          if(teacherSpecialDays[tid]?.scmnrDay===day || teacherSpecialDays[tid]?.weitDay===day){
+            continue; // teacher's reserved day, skip
+          }
+        }
         if(canConsec(item,day,p,2)){doConsec(item,day,p,2);info.rem-=2;placed=true;break;}
       }
       if(!placed)break;
@@ -2252,6 +2282,14 @@ function generateForClass(cid){
       shuffle(slots);
       let placed=false;
       for(const {day,p} of slots){
+        // Skip teacher's special day (if subject is NOT SCMNR/WEIT)
+        const subj=D.subjects.find(x=>x.id===sid);
+        if(!isSCMNR(subj)&&!isWorkExperience(subj)){
+          const tid=info.teacherId;
+          if(teacherSpecialDays[tid]?.scmnrDay===day || teacherSpecialDays[tid]?.weitDay===day){
+            continue; // teacher's reserved day, skip
+          }
+        }
         if(!slotFree(day,p))continue;
         if(getDayUsed(day,sid)===1&&!isAdjacentToSame(sid,day,p))continue;
         if(!canPlace(item,day,p))continue;
@@ -2280,6 +2318,14 @@ function generateForClass(cid){
       shuffle(allSlots);
       for(const {day,p} of allSlots){
         if(info.rem<=0)break;
+        // Skip teacher's special day (if subject is NOT SCMNR/WEIT)
+        const subj=D.subjects.find(x=>x.id===sid);
+        if(!isSCMNR(subj)&&!isWorkExperience(subj)){
+          const tid=info.teacherId;
+          if(teacherSpecialDays[tid]?.scmnrDay===day || teacherSpecialDays[tid]?.weitDay===day){
+            continue; // teacher's reserved day, skip
+          }
+        }
         if(!slotFree(day,p))continue;
         if(getDayUsed(day,sid)===1&&!isAdjacentToSame(sid,day,p))continue;
         if(!canPlace(item,day,p))continue;
