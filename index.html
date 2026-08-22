@@ -1167,7 +1167,22 @@ function generateForClass(cid){
   }
   function isWorkExperience(subj){
     const s=nm(subj);
-    return (s.includes('work')&&s.includes('exp'))||s.includes('कार्य');
+    const code=(subj?.code||'').toUpperCase();
+    return (s.includes('work')&&s.includes('exp'))||s.includes('कार्य')||code==='WEIT';
+  }
+  function isSCMNR(subj){
+    // Scout, Guide, NCC, MCC, RSP - subject code detection
+    const code=(subj?.code||'').toUpperCase();
+    return code==='SCMNR'||code.includes('SCOUT')||code.includes('NCC')||
+           code.includes('MCC')||code.includes('RSP')||code.includes('GUIDE');
+  }
+  function isMath1(subj){
+    const code=(subj?.code||'').toUpperCase();
+    return code==='MATH1'||code==='M1'||(nm(subj).includes('math')&&nm(subj).includes('1'));
+  }
+  function isMath2(subj){
+    const code=(subj?.code||'').toUpperCase();
+    return code==='MATH2'||code==='M2'||(nm(subj).includes('math')&&nm(subj).includes('2'));
   }
   function isGeography(subj){
     const s=nm(subj);
@@ -1392,6 +1407,40 @@ function generateForClass(cid){
     for(const day of sdays){
       const mp=maxPDay(day);
       for(let p=2;p<=mp;p++){
+        if(canPlace(item,day,p)){doPlace(item,day,p);break;}
+      }
+    }
+  });
+
+  // ════════════════════════════════════════════════════════════
+  // PHASE 0.75: SCMNR (Scout/NCC/MCC/RSP/Guide) — FIXED Monday P7-P8-P9
+  //   All classes: every section of every standard uses Monday P7-P8-P9
+  //   (detected by subject code 'SCMNR' or individual codes)
+  // ════════════════════════════════════════════════════════════
+  csl.forEach(row=>{
+    const subj=D.subjects.find(x=>x.id===row.subjectId);
+    if(!isSCMNR(subj))return;
+    const item={subjectId:row.subjectId,teacherId:row.teacherId};
+    const tgt=getTgt(row.subjectId);
+    
+    // Try to place 3 consecutive at P7-P8-P9 on Monday (fixed for all classes)
+    if(tgt>=3){
+      const mondayDay='Monday';
+      const mp=maxPDay(mondayDay);
+      const p=lateStart; // P7
+      if(p+2<=mp&&canConsec(item,mondayDay,p,3)){
+        doConsec(item,mondayDay,p,3);
+      }
+    }
+    
+    // Place any remaining singles on other days
+    shuffle(sdays);
+    for(const day of sdays){
+      if(day==='Monday')continue;
+      if(getUsed(item.subjectId)>=tgt)break;
+      if(getDayUsed(day,item.subjectId)>0)continue;
+      const mp=maxPDay(day);
+      for(let p=lateStart;p<=mp;p++){
         if(canPlace(item,day,p)){doPlace(item,day,p);break;}
       }
     }
@@ -1908,6 +1957,54 @@ function generateForClass(cid){
   });
 
   // ════════════════════════════════════════════════════════════
+  // PHASE 3.7: Math 1 & Math 2 — separate teachers, 4-4 तास
+  //   Each gets: 2 single days (1-1) + 1 double day (2)
+  //   Different days (no overlap)
+  //   Assigned manually by teacher/section in Editor
+  // ════════════════════════════════════════════════════════════
+  csl.forEach(row=>{
+    const subj=D.subjects.find(x=>x.id===row.subjectId);
+    if(!subj||(!isMath1(subj)&&!isMath2(subj)))return;
+    const item={subjectId:row.subjectId,teacherId:row.teacherId};
+    const tgt=getTgt(row.subjectId);
+    if(tgt!==4)return; // Math 1/2 should have 4 periods each
+    
+    const isMath1Subj=isMath1(subj);
+    const otherMathId=csl.find(r=>{
+      const s=D.subjects.find(x=>x.id===r.subjectId);
+      return s&&(isMath1Subj?isMath2(s):isMath1(s));
+    })?.subjectId;
+    
+    // Step 1: Try to place 1 double (2 consecutive) on a day
+    shuffle(sdays);
+    let doublePlaced=false;
+    for(const day of sdays){
+      if(doublePlaced)break;
+      if(getDayUsed(day,item.subjectId)>0)continue;
+      // Prefer not to use same day as other Math subject (if both exist)
+      if(otherMathId&&getDayUsed(day,otherMathId)>0)continue;
+      const mp=maxPDay(day);
+      for(let p=2;p<=mp-1;p++){
+        if(p===sb||p===lb)continue;
+        if(canConsec(item,day,p,2)){doConsec(item,day,p,2);doublePlaced=true;break;}
+      }
+    }
+    
+    // Step 2: Place 2 singles on distinct OTHER days
+    shuffle(sdays);
+    for(const day of sdays){
+      if(getUsed(item.subjectId)>=tgt)break;
+      if(getDayUsed(day,item.subjectId)>0)continue;
+      if(otherMathId&&getDayUsed(day,otherMathId)>0)continue;
+      const mp=maxPDay(day);
+      for(let p=2;p<=mp;p++){
+        if(p===sb||p===lb)continue;
+        if(canPlace(item,day,p)){doPlace(item,day,p);break;}
+      }
+    }
+  });
+
+  // ════════════════════════════════════════════════════════════
   // PHASE 4: Computer / Sanganak
 
   // ════════════════════════════════════════════════════════════
@@ -2059,6 +2156,8 @@ function generateForClass(cid){
     const subj=D.subjects.find(x=>x.id===row.subjectId);if(!subj)return;
     // Skip 6th class subjects already handled in Phase 3f
     if(is6thClass(cls2)&&nm(subj).match(/math|eng|hindi|hist/))return;
+    // Skip subjects handled in earlier phases
+    if(isSCMNR(subj)||isMath1(subj)||isMath2(subj)||isWorkExperience(subj))return;
     remainMap[row.subjectId]={teacherId:row.teacherId,type:subj.type,
       priority:subj.priority||'normal',
       rem:getTgt(row.subjectId)-getUsed(row.subjectId)};
