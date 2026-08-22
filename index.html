@@ -1461,21 +1461,23 @@ function generateForClass(cid){
   });
 
   // ════════════════════════════════════════════════════════════
-  // PHASE 1: PE / शा.शि. — FIXED day per class standard, P7-P8-P9 triple
+  // PHASE 1: PE / शा.शि. — FIXED day per class standard (5-8 ONLY), P7-P8-P9 triple
   //   5th→Thursday, 6th→Monday, 7th→Friday, 8th→Tuesday
   //   All sections of the same class use the same day.
+  //   9-10th: handled in Phase 1b (flexible)
   // ════════════════════════════════════════════════════════════
   csl.forEach(row=>{
     const subj=D.subjects.find(x=>x.id===row.subjectId);
     if(!isPE(subj))return;
+    const std=getClassStd(cls2);
+    // Only fixed schedule for 5-8th
+    if(!std||std<5||std>8)return;
     const item={subjectId:row.subjectId,teacherId:row.teacherId};
     const tgt=getTgt(row.subjectId);
     
-    // Get fixed day for this class's PE
+    // MUST place exactly 3 periods at P7-P8-P9 on fixed day
     const peDay=getPEDay(cls2);
-    
-    // Try to place 3 consecutive at P7-P8-P9 on the fixed day
-    if(tgt>=3&&peDay){
+    if(peDay){
       const mp=maxPDay(peDay);
       const p=lateStart; // P7
       if(p+2<=mp&&canConsec(item,peDay,p,3)){
@@ -1497,39 +1499,74 @@ function generateForClass(cid){
   });
 
   // ════════════════════════════════════════════════════════════
-  // PHASE 2: Work Experience (fixed day+periods) + Scout/NCC/late-only subjects
-  //   Work Experience: FIXED day per class standard, P7-P8-P9 triple (3 consecutive)
-  //   5th→Monday, 6th→Tuesday, 7th→Thursday, 8th→Friday
-  //   Other late-only: prefer P7+, 1/day on distinct days
+  // PHASE 1b: PE / शा.शि. — 9-10th classes (flexible, non-fixed)
+  //   Not tied to specific days like 5-8th
+  //   Try to place 3 consecutive P7-P8-P9 on any single day, flex
   // ════════════════════════════════════════════════════════════
-  // Step 2a: Work Experience — FIXED day+periods per class
   csl.forEach(row=>{
     const subj=D.subjects.find(x=>x.id===row.subjectId);
-    if(!isWorkExperience(subj))return;
+    if(!isPE(subj))return;
+    const std=getClassStd(cls2);
+    // Only for 9-10th (5-8 already handled in Phase 1)
+    if(!std||std<9)return;
     const item={subjectId:row.subjectId,teacherId:row.teacherId};
     const tgt=getTgt(row.subjectId);
     
-    // Get fixed day for this class's WE
-    const weDay=getWEDay(cls2);
-    
-    // Try to place 3 consecutive at P7-P8-P9 on the fixed day
-    if(tgt>=3&&weDay){
-      const mp=maxPDay(weDay);
-      const p=lateStart; // P7
-      if(p+2<=mp&&canConsec(item,weDay,p,3)){
-        doConsec(item,weDay,p,3);
+    // Try to place 3 consecutive P7-P8-P9 on any day
+    shuffle(sdays);
+    if(tgt>=3){
+      for(const day of sdays){
+        if(getUsed(item.subjectId)+3>tgt)break;
+        const mp=maxPDay(day);
+        const p=lateStart; // P7
+        if(p+2<=mp&&canConsec(item,day,p,3)){doConsec(item,day,p,3);break;}
       }
     }
     
-    // Place any remaining singles on other days (late periods)
+    // Place remaining singles on other days
     shuffle(sdays);
     for(const day of sdays){
-      if(day===weDay)continue; // WE triple already on fixed day
       if(getUsed(item.subjectId)>=tgt)break;
       if(getDayUsed(day,item.subjectId)>0)continue;
       const mp=maxPDay(day);
       for(let p=lateStart;p<=mp;p++){
         if(canPlace(item,day,p)){doPlace(item,day,p);break;}
+      }
+    }
+  });
+
+  // ════════════════════════════════════════════════════════════
+  // PHASE 2: Work Experience (fixed day+periods for 5-8) + Scout/NCC/late-only subjects
+  //   Work Experience: FIXED day per class standard (5-8 ONLY), P7-P8-P9 triple
+  //   5th→Monday, 6th→Tuesday, 7th→Thursday, 8th→Friday
+  //   Other late-only: prefer P7+, 1/day on distinct days
+  // ════════════════════════════════════════════════════════════
+  // Step 2a: Work Experience (WEIT) — FIXED day+periods per class (5-8 ONLY)
+  //   MUST place exactly 3 periods P7-P8-P9: 5→Mon, 6→Tue, 7→Thu, 8→Fri
+  csl.forEach(row=>{
+    const subj=D.subjects.find(x=>x.id===row.subjectId);
+    if(!isWorkExperience(subj))return;
+    const std=getClassStd(cls2);
+    // WEIT only for classes 5-8, NOT 9-10
+    if(!std||std<5||std>8)return;
+    const item={subjectId:row.subjectId,teacherId:row.teacherId};
+    const tgt=getTgt(row.subjectId);
+    
+    // MUST place exactly 3 at P7-P8-P9 on fixed day
+    const weDay=getWEDay(cls2);
+    if(weDay){
+      const mp=maxPDay(weDay);
+      const p=lateStart; // P7
+      // Try consecutive first
+      if(p+2<=mp&&canConsec(item,weDay,p,3)){
+        doConsec(item,weDay,p,3);
+      } else {
+        // Fallback: place 3 singles if consecutive not possible
+        for(let i=0;i<3&&getUsed(item.subjectId)<tgt;i++){
+          for(let pp=lateStart;pp<=mp;pp++){
+            if(canPlace(item,weDay,pp)){doPlace(item,weDay,pp);break;}
+          }
+        }
       }
     }
   });
@@ -2335,10 +2372,25 @@ function generateForClass(cid){
     if(!anyPlaced)break;
   }
 
+  // RULE 1 VALIDATION: Total periods must match exactly
+  let totalAssigned=0, totalRequired=0;
+  csl.forEach(row=>{
+    const have=getUsed(row.subjectId);
+    const need=getTgt(row.subjectId);
+    totalAssigned+=have;
+    totalRequired+=need;
+  });
+  
   const leftover=csl.filter(row=>getUsed(row.subjectId)<getTgt(row.subjectId)).map(r=>{
     const s=D.subjects.find(x=>x.id===r.subjectId);
     return{name:s?.name||'?',have:getUsed(r.subjectId),need:getTgt(r.subjectId)};
   });
+  
+  // Rule 1 violation: assigned != required
+  if(totalAssigned!==totalRequired){
+    return{ok:false,leftover,reason:'Rule 1 violation: assigned '+totalAssigned+' != required '+totalRequired};
+  }
+  
   return{ok:leftover.length===0,leftover};
 }
 
