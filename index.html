@@ -1431,9 +1431,8 @@ function generateForClass(cid){
   });
 
   // ════════════════════════════════════════════════════════════
-  // PHASE 0.75: SCMNR (Scout/NCC/MCC/RSP) — ULTRA-AGGRESSIVE Monday P7-P8-P9
-  //   7-8-9 ONLY: MANDATORY Monday P7-P8-P9 (3 consecutive, FORCED)
-  //   5-6: SKIPPED
+  // PHASE 0.75: SCMNR — EXPLICIT P7-P8-P9 Placement
+  //   7-8-9 ONLY: MUST place exactly 3 at Monday P7-P8-P9
   // ════════════════════════════════════════════════════════════
   const stdClass=getClassStd(cls2);
   if(stdClass>=7 && stdClass<=9){
@@ -1446,25 +1445,15 @@ function generateForClass(cid){
       
       const mondayDay='Monday';
       const mp=maxPDay(mondayDay);
-      const p=lateStart; // P7
       
-      // ULTRA-AGGRESSIVE: force 3 periods at P7-P8-P9 on Monday
-      if(p+2<=mp){
-        // Try P7-P8-P9 directly (similar to Phase 1-2 logic)
-        for(let pp=p;pp<=p+2&&getUsed(item.subjectId)<tgt;pp++){
-          if(!slotFree(mondayDay,pp))continue;
-          doPlace(item,mondayDay,pp);
+      // Explicitly try to place 3 at P7 (7), P8 (8), P9 (9)
+      const periodsToPlace=[7,8,9];
+      for(const p of periodsToPlace){
+        if(p>mp)break; // period doesn't exist
+        if(getUsed(item.subjectId)>=tgt)break; // got enough
+        if(slotFree(mondayDay,p)){
+          doPlace(item,mondayDay,p);
         }
-      }
-      
-      // If still need more, fill remaining on Monday only
-      while(getUsed(item.subjectId)<tgt){
-        let placed=false;
-        for(let pp=lateStart;pp<=mp;pp++){
-          if(!slotFree(mondayDay,pp))continue;
-          doPlace(item,mondayDay,pp);placed=true;break;
-        }
-        if(!placed)break;
       }
     });
   }
