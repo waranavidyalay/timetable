@@ -1107,14 +1107,14 @@ function generateForClass(cid){
   const days=[...(cfg.workingDays||[])];
   const cls2=D.classes.find(x=>x.id===cid);
   
-  // Track SCMNR/WEIT teachers' special reserved days
+  // Track SCNMR/WEIT teachers' special reserved days
   const teacherSpecialDays={}; // teacherId -> {scmnrDay, weitDay}
   csl.forEach(row=>{
     const subj=D.subjects.find(x=>x.id===row.subjectId);
     if(!subj)return;
     const tid=row.teacherId;
     if(!teacherSpecialDays[tid])teacherSpecialDays[tid]={};
-    if(isSCMNR(subj))teacherSpecialDays[tid].scmnrDay='Monday';
+    if(isSCNMR(subj))teacherSpecialDays[tid].scmnrDay='Monday';
     if(isWorkExperience(subj)){
       const weDay=getWEDay(cls2);
       if(weDay)teacherSpecialDays[tid].weitDay=weDay;
@@ -1184,10 +1184,10 @@ function generateForClass(cid){
     const code=(subj?.code||'').toUpperCase();
     return (s.includes('work')&&s.includes('exp'))||s.includes('कार्य')||code==='WEIT';
   }
-  function isSCMNR(subj){
+  function isSCNMR(subj){
     // Scout, Guide, NCC, MCC, RSP - subject code detection
     const code=(subj?.code||'').toUpperCase();
-    return code==='SCMNR'||code.includes('SCOUT')||code.includes('NCC')||
+    return code==='SCNMR'||code.includes('SCOUT')||code.includes('NCC')||
            code.includes('MCC')||code.includes('RSP')||code.includes('GUIDE');
   }
   function isMath1(subj){
@@ -1362,6 +1362,35 @@ function generateForClass(cid){
   const sdays=[...days];
 
   // ════════════════════════════════════════════════════════════
+  // PHASE 0.75 (MOVED FIRST): SCNMR — ULTRA-AGGRESSIVE Monday P7-P8-P9
+  //   7-8-9 ONLY: GUARANTEED 3 consecutive P7-P8-P9 on Monday
+  //   RUN THIS FIRST before any other subject claims slots!
+  // ════════════════════════════════════════════════════════════
+  const stdSCNMR=getClassStd(cls2);
+  if(stdSCNMR>=7 && stdSCNMR<=9){
+    csl.forEach(row=>{
+      const subj=D.subjects.find(x=>x.id===row.subjectId);
+      if(!isSCNMR(subj))return;
+      const item={subjectId:row.subjectId,teacherId:row.teacherId};
+      const tgt=getTgt(row.subjectId);
+      if(getUsed(item.subjectId)>=tgt)return; // already done
+      
+      const mondayDay='Monday';
+      const mp=maxPDay(mondayDay);
+      
+      // Explicitly force 3 periods at P7, P8, P9 on Monday
+      const periodsToPlace=[7,8,9];
+      for(const p of periodsToPlace){
+        if(p>mp)break; // period doesn't exist
+        if(getUsed(item.subjectId)>=tgt)break; // got enough
+        if(slotFree(mondayDay,p)){
+          doPlace(item,mondayDay,p);
+        }
+      }
+    });
+  }
+
+  // ════════════════════════════════════════════════════════════
   // PHASE 0: Class Teacher → P1 every day (forced, highest priority)
   // ════════════════════════════════════════════════════════════
   let ctRow=null;
@@ -1431,40 +1460,11 @@ function generateForClass(cid){
   });
 
   // ════════════════════════════════════════════════════════════
-  // PHASE 0.75: SCMNR — EXPLICIT P7-P8-P9 Placement
-  //   7-8-9 ONLY: MUST place exactly 3 at Monday P7-P8-P9
-  // ════════════════════════════════════════════════════════════
-  const stdClass=getClassStd(cls2);
-  if(stdClass>=7 && stdClass<=9){
-    csl.forEach(row=>{
-      const subj=D.subjects.find(x=>x.id===row.subjectId);
-      if(!isSCMNR(subj))return;
-      const item={subjectId:row.subjectId,teacherId:row.teacherId};
-      const tgt=getTgt(row.subjectId);
-      if(getUsed(item.subjectId)>=tgt)return; // already done
-      
-      const mondayDay='Monday';
-      const mp=maxPDay(mondayDay);
-      
-      // Explicitly try to place 3 at P7 (7), P8 (8), P9 (9)
-      const periodsToPlace=[7,8,9];
-      for(const p of periodsToPlace){
-        if(p>mp)break; // period doesn't exist
-        if(getUsed(item.subjectId)>=tgt)break; // got enough
-        if(slotFree(mondayDay,p)){
-          doPlace(item,mondayDay,p);
-        }
-      }
-    });
-  }
-
-
   // ════════════════════════════════════════════════════════════
   // PHASE 1-2 COMBINED: PE + WEIT (5-8 ONLY) — DETERMINISTIC PLACEMENT
   //   Both subjects MUST be assigned to their FIXED days before any other
   //   subject touches P7-P8-P9. This prevents conflicts.
-  //   
-  //   PE: 5→Thu, 6→Mon, 7→Fri, 8→Tue (P7-P8-P9, always 3)
+  //   \n  //   PE: 5→Thu, 6→Mon, 7→Fri, 8→Tue (P7-P8-P9, always 3)
   //   WEIT: 5→Mon, 6→Tue, 7→Thu, 8→Fri (P7-P8-P9, always 3)
   //   
   //   For 9-10th: PE handled flexibly in Phase 1b, WEIT not applicable
@@ -1631,7 +1631,7 @@ function generateForClass(cid){
   });
 
   // Step 2b: Other late-only subjects (Scout, JAL, etc.) — P7+ (NOT fixed day)
-  //   BUT: Skip Monday P7-P8-P9 for 7-8-9 classes (reserved for SCMNR)
+  //   BUT: Skip Monday P7-P8-P9 for 7-8-9 classes (reserved for SCNMR)
   const std2b=getClassStd(cls2);
   csl.forEach(row=>{
     const subj=D.subjects.find(x=>x.id===row.subjectId);
@@ -1643,7 +1643,7 @@ function generateForClass(cid){
     for(const day of sdays){
       if(getUsed(item.subjectId)>=tgt)break;
       if(getDayUsed(day,item.subjectId)>0)continue;
-      // Skip Monday P7-P8-P9 for 7-8-9 classes (SCMNR reserved)
+      // Skip Monday P7-P8-P9 for 7-8-9 classes (SCNMR reserved)
       if(std2b>=7&&std2b<=9&&day==='Monday')continue;
       const mp=maxPDay(day);
       for(let p=lateStart;p<=mp;p++){
@@ -2277,7 +2277,7 @@ function generateForClass(cid){
     // Skip 6th class subjects already handled in Phase 3f
     if(is6thClass(cls2)&&nm(subj).match(/math|eng|hindi|hist/))return;
     // Skip subjects handled in earlier phases
-    if(isSCMNR(subj)||isMath1(subj)||isMath2(subj)||isWorkExperience(subj))return;
+    if(isSCNMR(subj)||isMath1(subj)||isMath2(subj)||isWorkExperience(subj))return;
     remainMap[row.subjectId]={teacherId:row.teacherId,type:subj.type,
       priority:subj.priority||'normal',
       rem:getTgt(row.subjectId)-getUsed(row.subjectId)};
@@ -2335,12 +2335,12 @@ function generateForClass(cid){
         for(const {day,p} of slots){
           if(!slotFree(day,p))continue;
           if(getDayUsed(day,sid)>0)continue;
-          // Skip Monday P7-P8-P9 for 7-8-9 classes (SCMNR reserved)
+          // Skip Monday P7-P8-P9 for 7-8-9 classes (SCNMR reserved)
           const std7a=getClassStd(cls2);
           if(std7a>=7&&std7a<=9&&day==='Monday'&&p>=7&&p<=9)continue;
-          // Skip teacher's special day (if subject is NOT SCMNR/WEIT)
+          // Skip teacher's special day (if subject is NOT SCNMR/WEIT)
           const subj=D.subjects.find(x=>x.id===sid);
-          if(!isSCMNR(subj)&&!isWorkExperience(subj)){
+          if(!isSCNMR(subj)&&!isWorkExperience(subj)){
             const tid=info.teacherId;
             if(teacherSpecialDays[tid]?.scmnrDay===day || teacherSpecialDays[tid]?.weitDay===day){
               continue; // teacher's reserved day, skip for other subjects
@@ -2374,9 +2374,9 @@ function generateForClass(cid){
       shuffle(slots);
       let placed=false;
       for(const {day,p} of slots){
-        // Skip teacher's special day (if subject is NOT SCMNR/WEIT)
+        // Skip teacher's special day (if subject is NOT SCNMR/WEIT)
         const subj=D.subjects.find(x=>x.id===sid);
-        if(!isSCMNR(subj)&&!isWorkExperience(subj)){
+        if(!isSCNMR(subj)&&!isWorkExperience(subj)){
           const tid=info.teacherId;
           if(teacherSpecialDays[tid]?.scmnrDay===day || teacherSpecialDays[tid]?.weitDay===day){
             continue; // teacher's reserved day, skip
@@ -2391,9 +2391,9 @@ function generateForClass(cid){
       shuffle(slots);
       let placed=false;
       for(const {day,p} of slots){
-        // Skip teacher's special day (if subject is NOT SCMNR/WEIT)
+        // Skip teacher's special day (if subject is NOT SCNMR/WEIT)
         const subj=D.subjects.find(x=>x.id===sid);
-        if(!isSCMNR(subj)&&!isWorkExperience(subj)){
+        if(!isSCNMR(subj)&&!isWorkExperience(subj)){
           const tid=info.teacherId;
           if(teacherSpecialDays[tid]?.scmnrDay===day || teacherSpecialDays[tid]?.weitDay===day){
             continue; // teacher's reserved day, skip
@@ -2427,12 +2427,12 @@ function generateForClass(cid){
       shuffle(allSlots);
       for(const {day,p} of allSlots){
         if(info.rem<=0)break;
-        // Skip Monday P7-P8-P9 for 7-8-9 classes (SCMNR reserved)
+        // Skip Monday P7-P8-P9 for 7-8-9 classes (SCNMR reserved)
         const std7c=getClassStd(cls2);
         if(std7c>=7&&std7c<=9&&day==='Monday'&&p>=7&&p<=9)continue;
-        // Skip teacher's special day (if subject is NOT SCMNR/WEIT)
+        // Skip teacher's special day (if subject is NOT SCNMR/WEIT)
         const subj=D.subjects.find(x=>x.id===sid);
-        if(!isSCMNR(subj)&&!isWorkExperience(subj)){
+        if(!isSCNMR(subj)&&!isWorkExperience(subj)){
           const tid=info.teacherId;
           if(teacherSpecialDays[tid]?.scmnrDay===day || teacherSpecialDays[tid]?.weitDay===day){
             continue; // teacher's reserved day, skip
