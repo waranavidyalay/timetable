@@ -1478,51 +1478,73 @@ function generateForClass(cid){
   //   
   //   For 9-10th: PE handled flexibly in Phase 1b, WEIT not applicable
   // ════════════════════════════════════════════════════════════
-  (function placePEandWEIT(){
-    const std=getClassStd(cls2);
-    // Only for 5-8th (9-10th handled separately)
-    if(!std||std<5||std>8)return;
-    
-    // Process PE first, then WEIT (both need P7-P8-P9 on specific days)
-    const subjsToPlace=[];
-    
+  // AGGRESSIVE Phase 1-2: Force WEIT/PE into fixed days
+  const std=getClassStd(cls2);
+  if(std>=5&&std<=8){
+    // WEIT first (more constrained: fixed day MANDATORY)
     csl.forEach(row=>{
       const subj=D.subjects.find(x=>x.id===row.subjectId);
-      if(!subj)return;
-      if(isPE(subj))subjsToPlace.push({row,subj,type:'PE'});
-      if(isWorkExperience(subj))subjsToPlace.push({row,subj,type:'WEIT'});
-    });
-    
-    subjsToPlace.forEach(spec=>{
-      const row=spec.row;
+      if(!isWorkExperience(subj))return;
       const item={subjectId:row.subjectId,teacherId:row.teacherId};
       const tgt=getTgt(row.subjectId);
-      let fixedDay=null;
+      if(getUsed(item.subjectId)>=tgt)return; // already done
       
-      if(spec.type==='PE'){
-        fixedDay=getPEDay(cls2);
-      } else if(spec.type==='WEIT'){
-        fixedDay=getWEDay(cls2);
-      }
+      const weitDay=getWEDay(cls2);
+      if(!weitDay)return;
+      const mp=maxPDay(weitDay);
+      const p=lateStart; // P7
       
-      // MUST place exactly 3 at P7-P8-P9 on fixed day
-      if(fixedDay){
-        const mp=maxPDay(fixedDay);
-        const p=lateStart; // P7
-        // Try consecutive
-        if(p+2<=mp&&canConsec(item,fixedDay,p,3)){
-          doConsec(item,fixedDay,p,3);
-        } else {
-          // Fallback: place 3 singles
-          for(let i=0;i<3&&getUsed(item.subjectId)<tgt;i++){
-            for(let pp=lateStart;pp<=mp;pp++){
-              if(canPlace(item,fixedDay,pp)){doPlace(item,fixedDay,pp);break;}
-            }
-          }
+      // FORCE: place exactly 3 at P7-P8-P9 or as close as possible
+      if(p+2<=mp){
+        for(let pp=p;pp<=p+2&&getUsed(item.subjectId)<tgt;pp++){
+          if(!slotFree(weitDay,pp))continue;
+          doPlace(item,weitDay,pp);
         }
       }
+      
+      // If still incomplete, try to fill on same day in other late slots
+      while(getUsed(item.subjectId)<tgt){
+        let placed=false;
+        for(let pp=lateStart;pp<=mp;pp++){
+          if(!slotFree(weitDay,pp))continue;
+          doPlace(item,weitDay,pp);placed=true;break;
+        }
+        if(!placed)break;
+      }
     });
-  })();
+    
+    // PE second (fixed day MANDATORY)
+    csl.forEach(row=>{
+      const subj=D.subjects.find(x=>x.id===row.subjectId);
+      if(!isPE(subj))return;
+      const item={subjectId:row.subjectId,teacherId:row.teacherId};
+      const tgt=getTgt(row.subjectId);
+      if(getUsed(item.subjectId)>=tgt)return; // already done
+      
+      const peDay=getPEDay(cls2);
+      if(!peDay)return;
+      const mp=maxPDay(peDay);
+      const p=lateStart; // P7
+      
+      // FORCE: place exactly 3 at P7-P8-P9 or as close as possible
+      if(p+2<=mp){
+        for(let pp=p;pp<=p+2&&getUsed(item.subjectId)<tgt;pp++){
+          if(!slotFree(peDay,pp))continue;
+          doPlace(item,peDay,pp);
+        }
+      }
+      
+      // If still incomplete, try to fill on same day in other late slots
+      while(getUsed(item.subjectId)<tgt){
+        let placed=false;
+        for(let pp=lateStart;pp<=mp;pp++){
+          if(!slotFree(peDay,pp))continue;
+          doPlace(item,peDay,pp);placed=true;break;
+        }
+        if(!placed)break;
+      }
+    });
+  }
 
   // ════════════════════════════════════════════════════════════
   // PHASE 1: PE fallback for any leftover (5-8th already in combined phase)
