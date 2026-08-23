@@ -1438,10 +1438,13 @@ function generateForClass(cid){
   csl.forEach(row=>{
     const subj=D.subjects.find(x=>x.id===row.subjectId);
     if(!isSCMNR(subj))return;
+    const std=getClassStd(cls2);
+    // SKIP SCMNR for 5-8 (WEIT/PE need Monday P7-P8-P9)
+    if(std && std>=5 && std<=8)return;
     const item={subjectId:row.subjectId,teacherId:row.teacherId};
     const tgt=getTgt(row.subjectId);
     
-    // Try to place 3 consecutive at P7-P8-P9 on Monday (fixed for all classes)
+    // Try to place 3 consecutive at P7-P8-P9 on Monday (only 9-10)
     if(tgt>=3){
       const mondayDay='Monday';
       const mp=maxPDay(mondayDay);
