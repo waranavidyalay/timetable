@@ -1387,6 +1387,19 @@ function generateForClass(cid){
           doPlace(item,mondayDay,p);
         }
       }
+      
+      // Fallback: if still need more periods, place on Monday in other slots
+      while(getUsed(item.subjectId)<tgt){
+        let placed=false;
+        for(let pp=lateStart;pp<=mp;pp++){
+          if(getUsed(item.subjectId)>=tgt)break;
+          if(slotFree(mondayDay,pp)){
+            doPlace(item,mondayDay,pp);
+            placed=true;break;
+          }
+        }
+        if(!placed)break;
+      }
     });
   }
 
@@ -1568,6 +1581,7 @@ function generateForClass(cid){
   //   ALWAYS P7-P8-P9 consecutive (3 periods) on ONE day only
   //   Day is flexible (any Monday-Saturday), but MUST be single day
   //   NO singles on other days — PE is triple-only
+  //   For 9th: SKIP Monday P7-P8-P9 (reserved for SCNMR)
   // ════════════════════════════════════════════════════════════
   csl.forEach(row=>{
     const subj=D.subjects.find(x=>x.id===row.subjectId);
@@ -1579,8 +1593,11 @@ function generateForClass(cid){
     const tgt=getTgt(row.subjectId);
     
     // MUST place exactly 3 consecutive P7-P8-P9 on ONE day (any day, flexible)
+    // But for 9th: skip Monday (SCNMR reserved there)
     shuffle(sdays);
     for(const day of sdays){
+      // Skip Monday for 9th class (SCNMR on Monday P7-P8-P9)
+      if(std===9 && day==='Monday')continue;
       const mp=maxPDay(day);
       const p=lateStart; // P7
       if(p+2<=mp&&canConsec(item,day,p,3)){
@@ -1592,10 +1609,12 @@ function generateForClass(cid){
     // Fallback if consecutive not possible on any day: place 3 singles on same day
     shuffle(sdays);
     for(const day of sdays){
+      // Skip Monday for 9th class
+      if(std===9 && day==='Monday')continue;
       let placed=0;
       const mp=maxPDay(day);
       for(let p=lateStart;p<=mp&&placed<3;p++){
-        if(canPlace(item,day,p)){doPlace(item,day,p);placed++;}
+        if(canPlace(item,day,p)){doPlace(item,day,p);placed++;;}
       }
       if(placed===3)return; // 3 placed on this day, done
     }
