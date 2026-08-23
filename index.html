@@ -1219,15 +1219,19 @@ function generateForClass(cid){
     return null;
   }
   function getWEDay(cls){
-    // WE schedule: 5→Mon, 6→Tue, 7→Thu, 8→Fri
+    // WEIT schedule: CLASS-LEVEL fixed (all sections same day)
+    // 5→Mon, 6→Tue, 7→Thu, 8→Fri
     const std=getClassStd(cls);
     return {5:'Monday',6:'Tuesday',7:'Thursday',8:'Friday'}[std]||null;
   }
   function getPEDay(cls){
-    // PE schedule: 5→Thu, 6→Mon, 7→Fri, 8→Tue
+    // PE schedule: CLASS-LEVEL fixed (all sections same day)
+    // 5→Thu, 6→Mon, 7→Fri, 8→Tue
     const std=getClassStd(cls);
     return {5:'Thursday',6:'Monday',7:'Friday',8:'Tuesday'}[std]||null;
   }
+  // ⚠️ IMPORTANT: These days are CLASS-LEVEL, not section-level
+  // All sections of 5th class get Monday WEIT, not mixed days
 
   // ── Helpers ──────────────────────────────────────────────────
   function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}}
