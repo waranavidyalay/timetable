@@ -1544,39 +1544,40 @@ function generateForClass(cid){
   });
 
   // ════════════════════════════════════════════════════════════
-  // PHASE 1b: PE / शा.शि. — 9-10th classes (flexible, non-fixed)
-  //   Not tied to specific days like 5-8th
-  //   Try to place 3 consecutive P7-P8-P9 on any single day, flex
+  // PHASE 1b: PE / शा.शि. — 9-10th classes (flexible day, RIGID structure)
+  //   ALWAYS P7-P8-P9 consecutive (3 periods) on ONE day only
+  //   Day is flexible (any Monday-Saturday), but MUST be single day
+  //   NO singles on other days — PE is triple-only
   // ════════════════════════════════════════════════════════════
   csl.forEach(row=>{
     const subj=D.subjects.find(x=>x.id===row.subjectId);
     if(!isPE(subj))return;
     const std=getClassStd(cls2);
-    // Only for 9-10th (5-8 already handled in Phase 1)
+    // Only for 9-10th (5-8 already handled in combined Phase 1-2)
     if(!std||std<9)return;
     const item={subjectId:row.subjectId,teacherId:row.teacherId};
     const tgt=getTgt(row.subjectId);
     
-    // Try to place 3 consecutive P7-P8-P9 on any day
+    // MUST place exactly 3 consecutive P7-P8-P9 on ONE day (any day, flexible)
     shuffle(sdays);
-    if(tgt>=3){
-      for(const day of sdays){
-        if(getUsed(item.subjectId)+3>tgt)break;
-        const mp=maxPDay(day);
-        const p=lateStart; // P7
-        if(p+2<=mp&&canConsec(item,day,p,3)){doConsec(item,day,p,3);break;}
+    for(const day of sdays){
+      const mp=maxPDay(day);
+      const p=lateStart; // P7
+      if(p+2<=mp&&canConsec(item,day,p,3)){
+        doConsec(item,day,p,3); // place 3 consecutive P7-P8-P9
+        return; // done — PE is complete on this one day
       }
     }
     
-    // Place remaining singles on other days
+    // Fallback if consecutive not possible on any day: place 3 singles on same day
     shuffle(sdays);
     for(const day of sdays){
-      if(getUsed(item.subjectId)>=tgt)break;
-      if(getDayUsed(day,item.subjectId)>0)continue;
+      let placed=0;
       const mp=maxPDay(day);
-      for(let p=lateStart;p<=mp;p++){
-        if(canPlace(item,day,p)){doPlace(item,day,p);break;}
+      for(let p=lateStart;p<=mp&&placed<3;p++){
+        if(canPlace(item,day,p)){doPlace(item,day,p);placed++;}
       }
+      if(placed===3)return; // 3 placed on this day, done
     }
   });
 
