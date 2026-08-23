@@ -1431,38 +1431,43 @@ function generateForClass(cid){
   });
 
   // ════════════════════════════════════════════════════════════
-  // PHASE 0.75: SCMNR (Scout/NCC/MCC/RSP/Guide) — GUARANTEED Monday P7-P8-P9
-  //   ALL classes (5-9): SCMNR on Monday P7-P8-P9 (GUARANTEED consecutive 3)
+  // PHASE 0.75: SCMNR (Scout/NCC/MCC/RSP) — ULTRA-AGGRESSIVE Monday P7-P8-P9
+  //   7-8-9 ONLY: MANDATORY Monday P7-P8-P9 (3 consecutive, FORCED)
+  //   5-6: SKIPPED
   // ════════════════════════════════════════════════════════════
-  csl.forEach(row=>{
-    const subj=D.subjects.find(x=>x.id===row.subjectId);
-    if(!isSCMNR(subj))return;
-    const std=getClassStd(cls2);
-    if(!std || std<5)return;
-    const item={subjectId:row.subjectId,teacherId:row.teacherId};
-    const tgt=getTgt(row.subjectId);
-    if(getUsed(item.subjectId)>=tgt)return; // already done
-    
-    // FORCE: place exactly 3 consecutive at Monday P7-P8-P9
-    const mondayDay='Monday';
-    const mp=maxPDay(mondayDay);
-    const p=lateStart; // P7
-    
-    // Try to place as 3 consecutive first (P7-P8-P9)
-    if(p+2<=mp&&canConsec(item,mondayDay,p,3)){
-      doConsec(item,mondayDay,p,3);
-      return;
-    }
-    
-    // Fallback: place 3 singles on Monday only (not spread)
-    let placed=0;
-    for(let pp=lateStart;pp<=mp&&placed<tgt;pp++){
-      if(slotFree(mondayDay,pp)){
-        doPlace(item,mondayDay,pp);
-        placed++;
+  const stdClass=getClassStd(cls2);
+  if(stdClass>=7 && stdClass<=9){
+    csl.forEach(row=>{
+      const subj=D.subjects.find(x=>x.id===row.subjectId);
+      if(!isSCMNR(subj))return;
+      const item={subjectId:row.subjectId,teacherId:row.teacherId};
+      const tgt=getTgt(row.subjectId);
+      if(getUsed(item.subjectId)>=tgt)return; // already done
+      
+      const mondayDay='Monday';
+      const mp=maxPDay(mondayDay);
+      const p=lateStart; // P7
+      
+      // ULTRA-AGGRESSIVE: force 3 periods at P7-P8-P9 on Monday
+      if(p+2<=mp){
+        // Try P7-P8-P9 directly (similar to Phase 1-2 logic)
+        for(let pp=p;pp<=p+2&&getUsed(item.subjectId)<tgt;pp++){
+          if(!slotFree(mondayDay,pp))continue;
+          doPlace(item,mondayDay,pp);
+        }
       }
-    }
-  });
+      
+      // If still need more, fill remaining on Monday only
+      while(getUsed(item.subjectId)<tgt){
+        let placed=false;
+        for(let pp=lateStart;pp<=mp;pp++){
+          if(!slotFree(mondayDay,pp))continue;
+          doPlace(item,mondayDay,pp);placed=true;break;
+        }
+        if(!placed)break;
+      }
+    });
+  }
 
 
   // ════════════════════════════════════════════════════════════
