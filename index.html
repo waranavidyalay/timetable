@@ -1364,6 +1364,7 @@ function generateForClass(cid){
   // ════════════════════════════════════════════════════════════
   // PHASE 0.75 (MOVED FIRST): SCNMR — ULTRA-AGGRESSIVE Monday P7-P8-P9
   //   7-8-9 ONLY: GUARANTEED 3 consecutive P7-P8-P9 on Monday
+  //   9th class STRICTLY: ONLY P7-P8-P9, no other periods
   //   RUN THIS FIRST before any other subject claims slots!
   // ════════════════════════════════════════════════════════════
   const stdSCNMR=getClassStd(cls2);
@@ -1388,17 +1389,20 @@ function generateForClass(cid){
         }
       }
       
-      // Fallback: if still need more periods, place on Monday in other slots
-      while(getUsed(item.subjectId)<tgt){
-        let placed=false;
-        for(let pp=lateStart;pp<=mp;pp++){
-          if(getUsed(item.subjectId)>=tgt)break;
-          if(slotFree(mondayDay,pp)){
-            doPlace(item,mondayDay,pp);
-            placed=true;break;
+      // For 9th class: STRICT — ONLY P7-P8-P9, do NOT place on other periods
+      // For 7-8th: if still need more, place on Monday in other slots (fallback)
+      if(stdSCNMR!==9){
+        while(getUsed(item.subjectId)<tgt){
+          let placed=false;
+          for(let pp=lateStart;pp<=mp;pp++){
+            if(getUsed(item.subjectId)>=tgt)break;
+            if(slotFree(mondayDay,pp)){
+              doPlace(item,mondayDay,pp);
+              placed=true;break;
+            }
           }
+          if(!placed)break;
         }
-        if(!placed)break;
       }
     });
   }
@@ -1578,9 +1582,8 @@ function generateForClass(cid){
 
   // ════════════════════════════════════════════════════════════
   // PHASE 1b: PE / शा.शि. — 9-10th classes (flexible day, RIGID structure)
-  //   ALWAYS consecutive on ONE day only (P7-P8 if 2 तास, P7-P8-P9 if 3 तास)
-  //   9th: SKIP Monday P7-P8-P9 (reserved for SCNMR)
-  //   10th: Flexible any day
+  //   9th: ALWAYS 3 तास P7-P8-P9 on ONE day (skip Monday for SCNMR)
+  //   10th: 2 या 3 तास consecutive on ONE day (based on target)
   // ════════════════════════════════════════════════════════════
   csl.forEach(row=>{
     const subj=D.subjects.find(x=>x.id===row.subjectId);
@@ -1591,11 +1594,17 @@ function generateForClass(cid){
     const item={subjectId:row.subjectId,teacherId:row.teacherId};
     const tgt=getTgt(row.subjectId);
     
-    // Determine how many consecutive periods needed (2 or 3, based on target)
-    let consecutiveNeeded=tgt;
-    if(consecutiveNeeded>3)consecutiveNeeded=3; // max 3 at P7-P8-P9
+    // Determine how many consecutive periods needed
+    let consecutiveNeeded;
+    if(std===9){
+      consecutiveNeeded=3; // 9th ALWAYS 3 तास (P7-P8-P9)
+    } else {
+      // 10th: based on target (2 or 3)
+      consecutiveNeeded=tgt;
+      if(consecutiveNeeded>3)consecutiveNeeded=3; // max 3
+    }
     
-    // MUST place exactly tgt consecutive periods on ONE day
+    // MUST place exactly consecutiveNeeded periods on ONE day
     shuffle(sdays);
     for(const day of sdays){
       // Skip Monday for 9th class (SCNMR reserved there)
@@ -1604,7 +1613,7 @@ function generateForClass(cid){
       const p=lateStart; // P7
       // Check if enough consecutive slots available
       if(p+consecutiveNeeded-1<=mp&&canConsec(item,day,p,consecutiveNeeded)){
-        doConsec(item,day,p,consecutiveNeeded); // place consecutive periods (2 or 3)
+        doConsec(item,day,p,consecutiveNeeded); // place consecutive periods
         return; // done — PE is complete on this one day
       }
     }
@@ -1616,10 +1625,10 @@ function generateForClass(cid){
       if(std===9 && day==='Monday')continue;
       let placed=0;
       const mp=maxPDay(day);
-      for(let p=lateStart;p<=mp&&placed<tgt;p++){
+      for(let p=lateStart;p<=mp&&placed<consecutiveNeeded;p++){
         if(canPlace(item,day,p)){doPlace(item,day,p);placed++;}
       }
-      if(placed===tgt)return; // all tgt periods placed on this day, done
+      if(placed===consecutiveNeeded)return; // all needed periods placed on this day, done
     }
   });
 
