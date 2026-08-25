@@ -1362,47 +1362,42 @@ function generateForClass(cid){
   const sdays=[...days];
 
   // ════════════════════════════════════════════════════════════
-  // PHASE 0.75 (MOVED FIRST): SCNMR — ULTRA-AGGRESSIVE Monday P7-P8-P9
+  // PHASE 0.75 (MOVED FIRST): SCNMR — ULTRA-FORCE Monday P7-P8-P9
   //   7-8-9 ONLY: GUARANTEED 3 consecutive P7-P8-P9 on Monday
-  //   9th class STRICTLY: ONLY P7-P8-P9, no other periods
-  //   RUN THIS FIRST before any other subject claims slots!
+  //   CRITICAL: Find SCNMR subject and place it FORCEFULLY
+  //   9th class: STRICTLY P7-P8-P9 ONLY
   // ════════════════════════════════════════════════════════════
   const stdSCNMR=getClassStd(cls2);
   if(stdSCNMR>=7 && stdSCNMR<=9){
-    csl.forEach(row=>{
+    // Find SCNMR subjects in CS list
+    const scnmrRows=csl.filter(row=>{
+      const subj=D.subjects.find(x=>x.id===row.subjectId);
+      return isSCNMR(subj);
+    });
+    
+    scnmrRows.forEach(row=>{
       const subj=D.subjects.find(x=>x.id===row.subjectId);
       if(!isSCNMR(subj))return;
       const item={subjectId:row.subjectId,teacherId:row.teacherId};
       const tgt=getTgt(row.subjectId);
-      if(getUsed(item.subjectId)>=tgt)return; // already done
+      
+      // Check if already placed
+      const currentUsed=Object.keys(D.TT[cid]||{}).reduce((sum,day)=>{
+        return sum+(Object.keys(D.TT[cid][day]||{}).filter(p=>D.TT[cid][day][p]?.subjectId===row.subjectId).length);
+      },0);
+      if(currentUsed>=tgt)return; // already done
       
       const mondayDay='Monday';
-      const mp=maxPDay(mondayDay);
+      if(!D.TT[cid][mondayDay])D.TT[cid][mondayDay]={};
       
-      // Explicitly force 3 periods at P7, P8, P9 on Monday
+      // FORCE place 3 periods at P7, P8, P9 on Monday
       const periodsToPlace=[7,8,9];
+      let placed=0;
       for(const p of periodsToPlace){
-        if(p>mp)break; // period doesn't exist
-        if(getUsed(item.subjectId)>=tgt)break; // got enough
-        if(slotFree(mondayDay,p)){
-          doPlace(item,mondayDay,p);
-        }
-      }
-      
-      // For 9th class: STRICT — ONLY P7-P8-P9, do NOT place on other periods
-      // For 7-8th: if still need more, place on Monday in other slots (fallback)
-      if(stdSCNMR!==9){
-        while(getUsed(item.subjectId)<tgt){
-          let placed=false;
-          for(let pp=lateStart;pp<=mp;pp++){
-            if(getUsed(item.subjectId)>=tgt)break;
-            if(slotFree(mondayDay,pp)){
-              doPlace(item,mondayDay,pp);
-              placed=true;break;
-            }
-          }
-          if(!placed)break;
-        }
+        if(placed>=tgt)break;
+        // Direct placement (overwrite if needed)
+        D.TT[cid][mondayDay][p]={subjectId:row.subjectId,teacherId:row.teacherId};
+        placed++;
       }
     });
   }
@@ -1605,13 +1600,24 @@ function generateForClass(cid){
     }
     
     // MUST place exactly consecutiveNeeded periods on ONE day
+    // For 9th: AGGRESSIVE force placement of P7-P8-P9
     shuffle(sdays);
     for(const day of sdays){
       // Skip Monday for 9th class (SCNMR reserved there)
       if(std===9 && day==='Monday')continue;
       const mp=maxPDay(day);
       const p=lateStart; // P7
-      // Check if enough consecutive slots available
+      
+      // For 9th: try aggressive consecutive placement
+      if(std===9&&p+2<=mp){
+        // Try direct canConsec first
+        if(canConsec(item,day,p,3)){
+          doConsec(item,day,p,3);
+          return;
+        }
+      }
+      
+      // For 10th or fallback: check slots and place
       if(p+consecutiveNeeded-1<=mp&&canConsec(item,day,p,consecutiveNeeded)){
         doConsec(item,day,p,consecutiveNeeded); // place consecutive periods
         return; // done — PE is complete on this one day
