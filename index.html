@@ -1484,67 +1484,84 @@ function generateForClass(cid){
   // AGGRESSIVE Phase 1-2: Force WEIT/PE into fixed days
   const std=getClassStd(cls2);
   if(std>=5&&std<=8){
-    // WEIT first (more constrained: fixed day MANDATORY)
+    // WEIT first (more constrained: fixed day MANDATORY, ULTRA-AGGRESSIVE)
     csl.forEach(row=>{
       const subj=D.subjects.find(x=>x.id===row.subjectId);
       if(!isWorkExperience(subj))return;
       const item={subjectId:row.subjectId,teacherId:row.teacherId};
       const tgt=getTgt(row.subjectId);
-      if(getUsed(item.subjectId)>=tgt)return; // already done
+      
+      // Check if already placed
+      const currentUsed=Object.keys(D.TT[cid]||{}).reduce((sum,day)=>{
+        return sum+(Object.keys(D.TT[cid][day]||{}).filter(p=>D.TT[cid][day][p]?.subjectId===row.subjectId).length);
+      },0);
+      if(currentUsed>=tgt)return; // already done
       
       const weitDay=getWEDay(cls2);
       if(!weitDay)return;
-      const mp=maxPDay(weitDay);
-      const p=lateStart; // P7
+      if(!D.TT[cid][weitDay])D.TT[cid][weitDay]={};
       
-      // FORCE: place exactly 3 at P7-P8-P9 or as close as possible
-      if(p+2<=mp){
-        for(let pp=p;pp<=p+2&&getUsed(item.subjectId)<tgt;pp++){
-          if(!slotFree(weitDay,pp))continue;
-          doPlace(item,weitDay,pp);
-        }
+      // FORCE: place exactly 3 at P7-P8-P9 on WEIT day (direct write, no checking)
+      const periodsToPlace=[7,8,9];
+      let placed=0;
+      for(const p of periodsToPlace){
+        if(placed>=tgt)break;
+        // Direct placement (overwrite if needed for WEIT priority)
+        D.TT[cid][weitDay][p]={subjectId:row.subjectId,teacherId:row.teacherId};
+        placed++;
       }
       
-      // If still incomplete, try to fill on same day in other late slots
-      while(getUsed(item.subjectId)<tgt){
-        let placed=false;
-        for(let pp=lateStart;pp<=mp;pp++){
-          if(!slotFree(weitDay,pp))continue;
-          doPlace(item,weitDay,pp);placed=true;break;
+      // If still need more, fill on same day in other late slots
+      if(placed<tgt){
+        const mp=maxPDay(weitDay);
+        for(let pp=lateStart;pp<=mp&&placed<tgt;pp++){
+          if(!D.TT[cid][weitDay][pp]||!D.TT[cid][weitDay][pp].subjectId){
+            D.TT[cid][weitDay][pp]={subjectId:row.subjectId,teacherId:row.teacherId};
+            placed++;
+          }
         }
-        if(!placed)break;
       }
     });
     
-    // PE second (fixed day MANDATORY)
+    // PE second (fixed day MANDATORY, ULTRA-AGGRESSIVE)
     csl.forEach(row=>{
       const subj=D.subjects.find(x=>x.id===row.subjectId);
       if(!isPE(subj))return;
+      const std=getClassStd(cls2);
+      // Only for 5-8 (9-10 handled in Phase 1b)
+      if(!std||std<5||std>8)return;
       const item={subjectId:row.subjectId,teacherId:row.teacherId};
       const tgt=getTgt(row.subjectId);
-      if(getUsed(item.subjectId)>=tgt)return; // already done
+      
+      // Check if already placed
+      const currentUsed=Object.keys(D.TT[cid]||{}).reduce((sum,day)=>{
+        return sum+(Object.keys(D.TT[cid][day]||{}).filter(p=>D.TT[cid][day][p]?.subjectId===row.subjectId).length);
+      },0);
+      if(currentUsed>=tgt)return; // already done
       
       const peDay=getPEDay(cls2);
       if(!peDay)return;
-      const mp=maxPDay(peDay);
-      const p=lateStart; // P7
+      if(!D.TT[cid][peDay])D.TT[cid][peDay]={};
       
-      // FORCE: place exactly 3 at P7-P8-P9 or as close as possible
-      if(p+2<=mp){
-        for(let pp=p;pp<=p+2&&getUsed(item.subjectId)<tgt;pp++){
-          if(!slotFree(peDay,pp))continue;
-          doPlace(item,peDay,pp);
-        }
+      // FORCE: place exactly 3 at P7-P8-P9 on PE day (direct write, no checking)
+      const periodsToPlace=[7,8,9];
+      let placed=0;
+      for(const p of periodsToPlace){
+        if(placed>=tgt)break;
+        // Direct placement (overwrite if needed for PE priority)
+        D.TT[cid][peDay][p]={subjectId:row.subjectId,teacherId:row.teacherId};
+        placed++;
       }
       
-      // If still incomplete, try to fill on same day in other late slots
-      while(getUsed(item.subjectId)<tgt){
-        let placed=false;
-        for(let pp=lateStart;pp<=mp;pp++){
-          if(!slotFree(peDay,pp))continue;
-          doPlace(item,peDay,pp);placed=true;break;
+      // If still need more, fill on same day in other late slots
+      if(placed<tgt){
+        const mp=maxPDay(peDay);
+        for(let pp=lateStart;pp<=mp&&placed<tgt;pp++){
+          if(!D.TT[cid][peDay][pp]||!D.TT[cid][peDay][pp].subjectId){
+            D.TT[cid][peDay][pp]={subjectId:row.subjectId,teacherId:row.teacherId};
+            placed++;
+          }
         }
-        if(!placed)break;
       }
     });
   }
