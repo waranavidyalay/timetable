@@ -1594,6 +1594,12 @@ function generateForClass(cid){
     const item={subjectId:row.subjectId,teacherId:row.teacherId};
     const tgt=getTgt(row.subjectId);
     
+    // Check if already placed (important!)
+    const currentUsed=Object.keys(D.TT[cid]||{}).reduce((sum,day)=>{
+      return sum+(Object.keys(D.TT[cid][day]||{}).filter(p=>D.TT[cid][day][p]?.subjectId===row.subjectId).length);
+    },0);
+    if(currentUsed>=tgt)return; // Already placed enough, stop!
+    
     // Determine how many consecutive periods needed
     let consecutiveNeeded;
     if(std===9){
