@@ -1364,8 +1364,8 @@ function generateForClass(cid){
   // ════════════════════════════════════════════════════════════
   // PHASE 0.75 (MOVED FIRST): SCNMR — ULTRA-FORCE Monday P7-P8-P9
   //   7-8-9 ONLY: GUARANTEED 3 consecutive P7-P8-P9 on Monday
-  //   CRITICAL: Find SCNMR subject and place it FORCEFULLY
-  //   9th class: STRICTLY P7-P8-P9 ONLY
+  //   CRITICAL: STRICTLY 3 तास ONLY (Monday P7-P8-P9), no more!
+  //   Even if CS says more, place ONLY 3
   // ════════════════════════════════════════════════════════════
   const stdSCNMR=getClassStd(cls2);
   if(stdSCNMR>=7 && stdSCNMR<=9){
@@ -1379,7 +1379,9 @@ function generateForClass(cid){
       const subj=D.subjects.find(x=>x.id===row.subjectId);
       if(!isSCNMR(subj))return;
       const item={subjectId:row.subjectId,teacherId:row.teacherId};
-      const tgt=getTgt(row.subjectId);
+      
+      // STRICTLY 3 तास ONLY (ignore getTgt if it's more)
+      const tgt=3; // FORCE 3, not getTgt()
       
       // Check if already placed
       const currentUsed=Object.keys(D.TT[cid]||{}).reduce((sum,day)=>{
@@ -1390,7 +1392,7 @@ function generateForClass(cid){
       const mondayDay='Monday';
       if(!D.TT[cid][mondayDay])D.TT[cid][mondayDay]={};
       
-      // FORCE place 3 periods at P7, P8, P9 on Monday
+      // FORCE place exactly 3 periods at P7, P8, P9 on Monday
       const periodsToPlace=[7,8,9];
       let placed=0;
       for(const p of periodsToPlace){
@@ -1489,7 +1491,9 @@ function generateForClass(cid){
       const subj=D.subjects.find(x=>x.id===row.subjectId);
       if(!isWorkExperience(subj))return;
       const item={subjectId:row.subjectId,teacherId:row.teacherId};
-      const tgt=getTgt(row.subjectId);
+      
+      // STRICTLY 3 तास ONLY (ignore getTgt if it's more)
+      const tgt=3; // FORCE 3, not getTgt()
       
       // Check if already placed
       const currentUsed=Object.keys(D.TT[cid]||{}).reduce((sum,day)=>{
@@ -1511,16 +1515,7 @@ function generateForClass(cid){
         placed++;
       }
       
-      // If still need more, fill on same day in other late slots
-      if(placed<tgt){
-        const mp=maxPDay(weitDay);
-        for(let pp=lateStart;pp<=mp&&placed<tgt;pp++){
-          if(!D.TT[cid][weitDay][pp]||!D.TT[cid][weitDay][pp].subjectId){
-            D.TT[cid][weitDay][pp]={subjectId:row.subjectId,teacherId:row.teacherId};
-            placed++;
-          }
-        }
-      }
+      // No fallback - STRICTLY 3 only!
     });
     
     // PE second (fixed day MANDATORY, ULTRA-AGGRESSIVE)
@@ -1531,7 +1526,9 @@ function generateForClass(cid){
       // Only for 5-8 (9-10 handled in Phase 1b)
       if(!std||std<5||std>8)return;
       const item={subjectId:row.subjectId,teacherId:row.teacherId};
-      const tgt=getTgt(row.subjectId);
+      
+      // STRICTLY 3 तास ONLY (ignore getTgt if it's more)
+      const tgt=3; // FORCE 3, not getTgt()
       
       // Check if already placed
       const currentUsed=Object.keys(D.TT[cid]||{}).reduce((sum,day)=>{
@@ -1553,16 +1550,7 @@ function generateForClass(cid){
         placed++;
       }
       
-      // If still need more, fill on same day in other late slots
-      if(placed<tgt){
-        const mp=maxPDay(peDay);
-        for(let pp=lateStart;pp<=mp&&placed<tgt;pp++){
-          if(!D.TT[cid][peDay][pp]||!D.TT[cid][peDay][pp].subjectId){
-            D.TT[cid][peDay][pp]={subjectId:row.subjectId,teacherId:row.teacherId};
-            placed++;
-          }
-        }
-      }
+      // No fallback - STRICTLY 3 only!
     });
   }
 
@@ -1660,35 +1648,17 @@ function generateForClass(cid){
   //   5th→Monday, 6th→Tuesday, 7th→Thursday, 8th→Friday
   //   Other late-only: prefer P7+, 1/day on distinct days
   // ════════════════════════════════════════════════════════════
-  // Step 2a: Work Experience (WEIT) — Fallback for any incomplete
-  //   5-8th: handled in combined Phase 1-2 above (GUARANTEED placement)
-  //   This ensures any WEIT not yet fully placed gets completed
-  csl.forEach(row=>{
-    const subj=D.subjects.find(x=>x.id===row.subjectId);
-    if(!isWorkExperience(subj))return;
-    const used=getUsed(row.subjectId);
-    const tgt=getTgt(row.subjectId);
-    if(used>=tgt)return; // already complete from combined phase
-    
-    const item={subjectId:row.subjectId,teacherId:row.teacherId};
-    // Place any remaining WEIT singles on late days
-    shuffle(sdays);
-    for(const day of sdays){
-      if(getUsed(item.subjectId)>=tgt)break;
-      if(getDayUsed(day,item.subjectId)>0)continue;
-      const mp=maxPDay(day);
-      for(let p=lateStart;p<=mp;p++){
-        if(canPlace(item,day,p)){doPlace(item,day,p);break;}
-      }
-    }
-  });
+  // Step 2a: Work Experience (WEIT) — SKIP (already guaranteed in Phase 1-2)
+  //   Do NOT place WEIT here — Phase 1-2 already placed EXACTLY 3 तास
+  //   Removing fallback to prevent over-placement
+  // DISABLED: csl.forEach for WEIT
 
   // Step 2b: Other late-only subjects (Scout, JAL, etc.) — P7+ (NOT fixed day)
-  //   BUT: Skip Monday P7-P8-P9 for 7-8-9 classes (reserved for SCNMR)
+  //   BUT: Skip SCNMR (already guaranteed in Phase 0.75-FIRST)
   const std2b=getClassStd(cls2);
   csl.forEach(row=>{
     const subj=D.subjects.find(x=>x.id===row.subjectId);
-    if(!isLateOnly(subj)||isPE(subj)||isWorkExperience(subj))return;
+    if(!isLateOnly(subj)||isPE(subj)||isWorkExperience(subj)||isSCNMR(subj))return; // Skip SCNMR!
     const item={subjectId:row.subjectId,teacherId:row.teacherId};
     const tgt=getTgt(row.subjectId);
     // Default: 1/day, distinct days, late zone (P7+)
@@ -2330,7 +2300,7 @@ function generateForClass(cid){
     // Skip 6th class subjects already handled in Phase 3f
     if(is6thClass(cls2)&&nm(subj).match(/math|eng|hindi|hist/))return;
     // Skip subjects handled in earlier phases
-    if(isSCNMR(subj)||isMath1(subj)||isMath2(subj)||isWorkExperience(subj))return;
+    if(isSCNMR(subj)||isMath1(subj)||isMath2(subj)||isWorkExperience(subj)||isPE(subj))return;
     remainMap[row.subjectId]={teacherId:row.teacherId,type:subj.type,
       priority:subj.priority||'normal',
       rem:getTgt(row.subjectId)-getUsed(row.subjectId)};
