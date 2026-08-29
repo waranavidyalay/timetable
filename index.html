@@ -1380,8 +1380,8 @@ function generateForClass(cid){
       if(!isSCNMR(subj))return;
       const item={subjectId:row.subjectId,teacherId:row.teacherId};
       
-      // STRICTLY 3 तास ONLY (ignore getTgt if it's more)
-      const tgt=3; // FORCE 3, not getTgt()
+      // Use getTgt() for exact value from CS
+      const tgt=getTgt(row.subjectId);
       
       // Check if already placed
       const currentUsed=Object.keys(D.TT[cid]||{}).reduce((sum,day)=>{
@@ -1492,8 +1492,8 @@ function generateForClass(cid){
       if(!isWorkExperience(subj))return;
       const item={subjectId:row.subjectId,teacherId:row.teacherId};
       
-      // STRICTLY 3 तास ONLY (ignore getTgt if it's more)
-      const tgt=3; // FORCE 3, not getTgt()
+      // Use getTgt() for exact value from CS
+      const tgt=getTgt(row.subjectId);
       
       // Check if already placed
       const currentUsed=Object.keys(D.TT[cid]||{}).reduce((sum,day)=>{
@@ -1527,8 +1527,8 @@ function generateForClass(cid){
       if(!std||std<5||std>8)return;
       const item={subjectId:row.subjectId,teacherId:row.teacherId};
       
-      // STRICTLY 3 तास ONLY (ignore getTgt if it's more)
-      const tgt=3; // FORCE 3, not getTgt()
+      // Use getTgt() for exact value from CS
+      const tgt=getTgt(row.subjectId);
       
       // Check if already placed
       const currentUsed=Object.keys(D.TT[cid]||{}).reduce((sum,day)=>{
