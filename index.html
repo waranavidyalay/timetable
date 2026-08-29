@@ -1555,30 +1555,11 @@ function generateForClass(cid){
   }
 
   // ════════════════════════════════════════════════════════════
-  // PHASE 1: PE fallback for any leftover (5-8th already in combined phase)
-  //   5-8th: handled in combined Phase 1-2 above (GUARANTEED placement)
-  //   This phase just ensures any PE not yet placed gets handled
+  // PHASE 1: PE fallback — COMPLETELY DISABLED
+  //   PE is NOW handled in Phase 1-2 (5-8) and Phase 1b (9-10)
+  //   No PE should come here anymore
   // ════════════════════════════════════════════════════════════
-  csl.forEach(row=>{
-    const subj=D.subjects.find(x=>x.id===row.subjectId);
-    if(!isPE(subj))return;
-    // Skip 5-8th (already handled in combined phase 1-2)
-    const used=getUsed(row.subjectId);
-    const tgt=getTgt(row.subjectId);
-    if(used>=tgt)return; // already complete
-    
-    const item={subjectId:row.subjectId,teacherId:row.teacherId};
-    // Place any remaining PE singles on late days
-    shuffle(sdays);
-    for(const day of sdays){
-      if(getUsed(item.subjectId)>=tgt)break;
-      if(getDayUsed(day,item.subjectId)>0)continue;
-      const mp=maxPDay(day);
-      for(let p=lateStart;p<=mp;p++){
-        if(canPlace(item,day,p)){doPlace(item,day,p);break;}
-      }
-    }
-  });
+  // DISABLED: Phase 1 PE fallback
 
   // ════════════════════════════════════════════════════════════
   // PHASE 1b: PE / शा.शि. — 9-10th classes (flexible day, RIGID structure)
