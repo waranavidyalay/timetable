@@ -1469,32 +1469,16 @@ function generateForClass(cid){
     csl.forEach(row=>{
       const subj=D.subjects.find(x=>x.id===row.subjectId);
       if(!isWorkExperience(subj))return;
-      const item={subjectId:row.subjectId,teacherId:row.teacherId};
-      
-      // STRICTLY 3 तास (hardcode, not getTgt which might be 6)
-      const tgt=3; // FORCE 3, ONLY fixed day P7-P8-P9
-      
-      // Check if already placed
-      const currentUsed=Object.keys(D.TT[cid]||{}).reduce((sum,day)=>{
-        return sum+(Object.keys(D.TT[cid][day]||{}).filter(p=>D.TT[cid][day][p]?.subjectId===row.subjectId).length);
-      },0);
-      if(currentUsed>=tgt)return; // already done
       
       const weitDay=getWEDay(cls2);
       if(!weitDay)return;
       if(!D.TT[cid][weitDay])D.TT[cid][weitDay]={};
       
-      // FORCE: place exactly 3 at P7-P8-P9 on WEIT day (direct write, no checking)
-      const periodsToPlace=[7,8,9];
-      let placed=0;
-      for(const p of periodsToPlace){
-        if(placed>=tgt)break;
-        // Direct placement (overwrite if needed for WEIT priority)
-        D.TT[cid][weitDay][p]={subjectId:row.subjectId,teacherId:row.teacherId};
-        placed++;
-      }
-      
-      // No fallback - STRICTLY 3 only!
+      // FORCE place ONLY 3 at P7, P8, P9 on WEIT day (no checking, no fallback)
+      D.TT[cid][weitDay][7]={subjectId:row.subjectId,teacherId:row.teacherId};
+      D.TT[cid][weitDay][8]={subjectId:row.subjectId,teacherId:row.teacherId};
+      D.TT[cid][weitDay][9]={subjectId:row.subjectId,teacherId:row.teacherId};
+      // STOP - no more placement for WEIT!
     });
     
     // PE second (fixed day MANDATORY, ULTRA-AGGRESSIVE)
@@ -1504,32 +1488,16 @@ function generateForClass(cid){
       const std=getClassStd(cls2);
       // Only for 5-8 (9-10 handled in Phase 1b)
       if(!std||std<5||std>8)return;
-      const item={subjectId:row.subjectId,teacherId:row.teacherId};
-      
-      // STRICTLY 3 तास (hardcode, not getTgt which might be 6)
-      const tgt=3; // FORCE 3, ONLY fixed day P7-P8-P9
-      
-      // Check if already placed
-      const currentUsed=Object.keys(D.TT[cid]||{}).reduce((sum,day)=>{
-        return sum+(Object.keys(D.TT[cid][day]||{}).filter(p=>D.TT[cid][day][p]?.subjectId===row.subjectId).length);
-      },0);
-      if(currentUsed>=tgt)return; // already done
       
       const peDay=getPEDay(cls2);
       if(!peDay)return;
       if(!D.TT[cid][peDay])D.TT[cid][peDay]={};
       
-      // FORCE: place exactly 3 at P7-P8-P9 on PE day (direct write, no checking)
-      const periodsToPlace=[7,8,9];
-      let placed=0;
-      for(const p of periodsToPlace){
-        if(placed>=tgt)break;
-        // Direct placement (overwrite if needed for PE priority)
-        D.TT[cid][peDay][p]={subjectId:row.subjectId,teacherId:row.teacherId};
-        placed++;
-      }
-      
-      // No fallback - STRICTLY 3 only!
+      // FORCE place ONLY 3 at P7, P8, P9 on PE day (no checking, no fallback)
+      D.TT[cid][peDay][7]={subjectId:row.subjectId,teacherId:row.teacherId};
+      D.TT[cid][peDay][8]={subjectId:row.subjectId,teacherId:row.teacherId};
+      D.TT[cid][peDay][9]={subjectId:row.subjectId,teacherId:row.teacherId};
+      // STOP - no more placement for PE!
     });
   }
 
