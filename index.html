@@ -1362,45 +1362,24 @@ function generateForClass(cid){
   const sdays=[...days];
 
   // ════════════════════════════════════════════════════════════
-  // PHASE 0.75 (MOVED FIRST): SCNMR — ULTRA-FORCE Monday P7-P8-P9
+  // PHASE 0.75 (MOVED FIRST): SCNMR — ULTRA-AGGRESSIVE Monday P7-P8-P9
   //   7-8-9 ONLY: GUARANTEED 3 consecutive P7-P8-P9 on Monday
-  //   CRITICAL: STRICTLY 3 तास ONLY (Monday P7-P8-P9), no more!
-  //   Even if CS says more, place ONLY 3
+  //   CRITICAL: STRICTLY 3 तास ONLY, Monday P7-P8-P9, NO OTHER PLACEMENT!
   // ════════════════════════════════════════════════════════════
   const stdSCNMR=getClassStd(cls2);
   if(stdSCNMR>=7 && stdSCNMR<=9){
-    // Find SCNMR subjects in CS list
-    const scnmrRows=csl.filter(row=>{
-      const subj=D.subjects.find(x=>x.id===row.subjectId);
-      return isSCNMR(subj);
-    });
-    
-    scnmrRows.forEach(row=>{
+    csl.forEach(row=>{
       const subj=D.subjects.find(x=>x.id===row.subjectId);
       if(!isSCNMR(subj))return;
-      const item={subjectId:row.subjectId,teacherId:row.teacherId};
-      
-      // Use getTgt() for exact value from CS
-      const tgt=getTgt(row.subjectId);
-      
-      // Check if already placed
-      const currentUsed=Object.keys(D.TT[cid]||{}).reduce((sum,day)=>{
-        return sum+(Object.keys(D.TT[cid][day]||{}).filter(p=>D.TT[cid][day][p]?.subjectId===row.subjectId).length);
-      },0);
-      if(currentUsed>=tgt)return; // already done
       
       const mondayDay='Monday';
       if(!D.TT[cid][mondayDay])D.TT[cid][mondayDay]={};
       
-      // FORCE place exactly 3 periods at P7, P8, P9 on Monday
-      const periodsToPlace=[7,8,9];
-      let placed=0;
-      for(const p of periodsToPlace){
-        if(placed>=tgt)break;
-        // Direct placement (overwrite if needed)
-        D.TT[cid][mondayDay][p]={subjectId:row.subjectId,teacherId:row.teacherId};
-        placed++;
-      }
+      // FORCE place ONLY 3 at P7, P8, P9 on Monday (no checking, no fallback)
+      D.TT[cid][mondayDay][7]={subjectId:row.subjectId,teacherId:row.teacherId};
+      D.TT[cid][mondayDay][8]={subjectId:row.subjectId,teacherId:row.teacherId};
+      D.TT[cid][mondayDay][9]={subjectId:row.subjectId,teacherId:row.teacherId};
+      // STOP - no more placement for SCNMR!
     });
   }
 
@@ -1492,8 +1471,8 @@ function generateForClass(cid){
       if(!isWorkExperience(subj))return;
       const item={subjectId:row.subjectId,teacherId:row.teacherId};
       
-      // Use getTgt() for exact value from CS
-      const tgt=getTgt(row.subjectId);
+      // STRICTLY 3 तास (hardcode, not getTgt which might be 6)
+      const tgt=3; // FORCE 3, ONLY fixed day P7-P8-P9
       
       // Check if already placed
       const currentUsed=Object.keys(D.TT[cid]||{}).reduce((sum,day)=>{
@@ -1527,8 +1506,8 @@ function generateForClass(cid){
       if(!std||std<5||std>8)return;
       const item={subjectId:row.subjectId,teacherId:row.teacherId};
       
-      // Use getTgt() for exact value from CS
-      const tgt=getTgt(row.subjectId);
+      // STRICTLY 3 तास (hardcode, not getTgt which might be 6)
+      const tgt=3; // FORCE 3, ONLY fixed day P7-P8-P9
       
       // Check if already placed
       const currentUsed=Object.keys(D.TT[cid]||{}).reduce((sum,day)=>{
@@ -2228,7 +2207,7 @@ function generateForClass(cid){
   csl.forEach(row=>{
     const subj=D.subjects.find(x=>x.id===row.subjectId);
     if(!subj)return;
-    if(isPE(subj)||isSciPrac(subj)||isComputer(subj)||isLateOnly(subj)||isPS1(subj))return;
+    if(isPE(subj)||isSciPrac(subj)||isComputer(subj)||isLateOnly(subj)||isPS1(subj)||isSCNMR(subj)||isWorkExperience(subj))return;
     if(sciGroup(subj))return; // Science I/II handled in Phase 3b
     // Skip 6th class Math/English (handled in Phase 3f)
     if(is6thClass(cls2)&&nm(subj).match(/math|eng/))return;
