@@ -1454,50 +1454,44 @@ function generateForClass(cid){
 
   // ════════════════════════════════════════════════════════════
   // ════════════════════════════════════════════════════════════
-  // PHASE 1-2 COMBINED: PE + WEIT (5-8 ONLY) — DETERMINISTIC PLACEMENT
-  //   Both subjects MUST be assigned to their FIXED days before any other
-  //   subject touches P7-P8-P9. This prevents conflicts.
-  //   \n  //   PE: 5→Thu, 6→Mon, 7→Fri, 8→Tue (P7-P8-P9, always 3)
-  //   WEIT: 5→Mon, 6→Tue, 7→Thu, 8→Fri (P7-P8-P9, always 3)
-  //   
-  //   For 9-10th: PE handled flexibly in Phase 1b, WEIT not applicable
+  // PHASE 1-2 COMBINED: BULLETPROOF PE + WEIT (5-8 ONLY)
+  //   Explicit placement: WEIT on Monday/Tue/Thu/Fri, PE on Thu/Mon/Fri/Tue
+  //   NO checking, NO loops - direct placement ONLY
   // ════════════════════════════════════════════════════════════
-  // AGGRESSIVE Phase 1-2: Force WEIT/PE into fixed days
   const std=getClassStd(cls2);
   if(std>=5&&std<=8){
-    // WEIT first (more constrained: fixed day MANDATORY, ULTRA-AGGRESSIVE)
+    // Get fixed days for this class
+    const weitDay=getWEDay(cls2);  // 5→Mon, 6→Tue, 7→Thu, 8→Fri
+    const peDay=getPEDay(cls2);     // 5→Thu, 6→Mon, 7→Fri, 8→Tue
+    
+    // Ensure day objects exist
+    if(weitDay){
+      if(!D.TT[cid][weitDay])D.TT[cid][weitDay]={};
+      if(!D.TT[cid][peDay])D.TT[cid][peDay]={};
+    }
+    
+    // Place WEIT: Find and place on fixed day
     csl.forEach(row=>{
       const subj=D.subjects.find(x=>x.id===row.subjectId);
       if(!isWorkExperience(subj))return;
-      
-      const weitDay=getWEDay(cls2);
       if(!weitDay)return;
-      if(!D.TT[cid][weitDay])D.TT[cid][weitDay]={};
       
-      // FORCE place ONLY 3 at P7, P8, P9 on WEIT day (no checking, no fallback)
+      // FORCE place 3 periods: P7, P8, P9
       D.TT[cid][weitDay][7]={subjectId:row.subjectId,teacherId:row.teacherId};
       D.TT[cid][weitDay][8]={subjectId:row.subjectId,teacherId:row.teacherId};
       D.TT[cid][weitDay][9]={subjectId:row.subjectId,teacherId:row.teacherId};
-      // STOP - no more placement for WEIT!
     });
     
-    // PE second (fixed day MANDATORY, ULTRA-AGGRESSIVE)
+    // Place PE: Find and place on fixed day
     csl.forEach(row=>{
       const subj=D.subjects.find(x=>x.id===row.subjectId);
       if(!isPE(subj))return;
-      const std=getClassStd(cls2);
-      // Only for 5-8 (9-10 handled in Phase 1b)
-      if(!std||std<5||std>8)return;
-      
-      const peDay=getPEDay(cls2);
       if(!peDay)return;
-      if(!D.TT[cid][peDay])D.TT[cid][peDay]={};
       
-      // FORCE place ONLY 3 at P7, P8, P9 on PE day (no checking, no fallback)
+      // FORCE place 3 periods: P7, P8, P9
       D.TT[cid][peDay][7]={subjectId:row.subjectId,teacherId:row.teacherId};
       D.TT[cid][peDay][8]={subjectId:row.subjectId,teacherId:row.teacherId};
       D.TT[cid][peDay][9]={subjectId:row.subjectId,teacherId:row.teacherId};
-      // STOP - no more placement for PE!
     });
   }
 
