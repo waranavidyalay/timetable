@@ -350,9 +350,9 @@ body{font-family:'DM Sans',sans-serif;background:#eaf0f6;color:var(--tx);min-hei
     <button class="tab" onclick="SRT('rf',this)">🕐 Free Periods</button>
     <button class="tab" onclick="SRT('re',this)">📤 Export</button>
   </div>
-  <div id="rl"><div class="card"><div class="sh"><div class="ct" style="margin-bottom:0;">Teacher Load</div><button class="btn bk" onclick="rLoad()">🔄 Refresh</button></div><div id="loadRep"></div></div></div>
-  <div id="rs" style="display:none;"><div class="card"><div class="sh"><div class="ct" style="margin-bottom:0;">Subject Coverage</div><button class="btn bk" onclick="rSubj()">🔄 Refresh</button></div><div id="subjRep"></div></div></div>
-  <div id="rf" style="display:none;"><div class="card"><div class="sh"><div class="ct" style="margin-bottom:0;">Free Periods</div><button class="btn bk" onclick="rFree()">🔄 Refresh</button></div><div id="freeRep"></div></div></div>
+  <div id="rl"><div class="card"><div class="sh"><div class="ct" style="margin-bottom:0;">👨‍🏫 Teacher Load</div><div style="display:flex;gap:8px;"><button class="btn bk" onclick="rLoad()">🔄 Refresh</button><button class="btn bp" onclick="printReport('loadRep','Teacher_Load')">🖨️ Print</button></div></div><div id="loadRep"></div></div></div>
+  <div id="rs" style="display:none;"><div class="card"><div class="sh"><div class="ct" style="margin-bottom:0;">📚 Subject Coverage</div><div style="display:flex;gap:8px;"><button class="btn bk" onclick="rSubj()">🔄 Refresh</button><button class="btn bp" onclick="printReport('subjRep','Subject_Coverage')">🖨️ Print</button></div></div><div id="subjRep"></div></div></div>
+  <div id="rf" style="display:none;"><div class="card"><div class="sh"><div class="ct" style="margin-bottom:0;">🕐 Free Periods</div><div style="display:flex;gap:8px;"><button class="btn bk" onclick="rFree()">🔄 Refresh</button><button class="btn bp" onclick="printReport('freeRep','Free_Periods')">🖨️ Print</button></div></div><div id="freeRep"></div></div></div>
   <div id="re" style="display:none;"><div class="card"><div class="ct">📤 Export</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
       <button class="btn bp" onclick="expJSON()">📥 JSON Backup</button>
@@ -2413,18 +2413,20 @@ function generateForClass(cid){
     if(slots.length>1){
       const [tid,day,p]=key.split('-');
       const teacher=D.teachers.find(t=>t.id===tid);
-      conflicts.push({teacher:teacher?.name||'?',day,period:`P${p}`,classes:slots.map(s=>`${s.cls.std}-${s.cls.division}`).join(' & ')});
+      const classStrs=slots.map(s=>`<strong>${s.cls.std}-${s.cls.division}</strong>`).join(' & ');
+      const editLinks=slots.map(s=>`<span style="cursor:pointer;color:blue;text-decoration:underline;font-size:.85rem;" onclick="document.getElementById('pCSel').value='${s.cid}';pClass('one');alert('वर्ग ${s.cls.std}-${s.cls.division} लोड झाला। ${day} ${p}व्या तास तपासा।')">📝 ${s.cls.std}-${s.cls.division} fix करा</span>`).join(' | ');
+      conflicts.push({teacher:teacher?.name||'?',day,period:`P${p}`,classes:classStrs,editLinks});
     }
   });
   if(conflicts.length>0){
-    const html=conflicts.map(c=>`<div style="background:#fff3cd;border-left:4px solid #ffc107;padding:8px;margin:3px 0;border-radius:2px;">⚠️ <strong>${c.teacher}</strong> — ${c.day} ${c.period} — एकसच वेळी <strong>${c.classes}</strong> वर्गात!</div>`).join('');
+    const html=conflicts.map(c=>`<div style="background:#fff3cd;border-left:4px solid #ffc107;padding:10px;margin:5px 0;border-radius:3px;"><strong style="color:#8b6914;">⚠️ ${c.teacher}</strong> — <strong>${c.day} ${c.period}</strong> — एकसच वेळी ${c.classes} वर्गात!<br><small style="color:#666;">Fix: ${c.editLinks}</small></div>`).join('');
     const container=document.getElementById('ttarea');
     if(container){
       const existing=container.querySelector('[id="conflicts-container"]');
       if(existing)existing.remove();
       const div=document.createElement('div');
       div.id='conflicts-container';
-      div.innerHTML=`<div style="background:#f8d7da;border:1px solid #f5c6cb;padding:12px;margin:10px 0;border-radius:4px;"><strong style="color:#721c24;">❌ शिक्षक विरोध: </strong>${html}</div>`;
+      div.innerHTML=`<div style="background:#f8d7da;border:2px solid #f5c6cb;padding:15px;margin:10px 0;border-radius:5px;"><strong style="color:#721c24;font-size:1.1rem;">❌ शिक्षक विरोध सापडले!</strong> (प्रत्येक वर्गात क्लिक करा आणि शिक्षक बदला)<br>${html}</div>`;
       container.insertBefore(div,container.firstChild);
     }
   }
@@ -2950,6 +2952,46 @@ function rFree(){
     if(empty.length){h+=`<tr><td><strong>${cls.std}-${cls.division}</strong></td><td>${day}</td><td>${empty.join(', ')}</td><td><span class="badge br">${empty.length}</span></td></tr>`;total+=empty.length;}}));
   h+=`</tbody></table></div><div style="margin-top:7px;font-size:.78rem;color:var(--mu);">Total empty: <strong style="color:#e74c3c;">${total}</strong></div>`;
   document.getElementById('freeRep').innerHTML=h;
+}
+
+// ===== PRINT REPORTS =====
+function printReport(elemId, reportName){
+  const elem=document.getElementById(elemId);
+  if(!elem){alert('Report not found!');return;}
+  const content=elem.innerHTML;
+  const w=window.open('','print','width=1200,height=800');
+  w.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>${reportName}</title>
+      <style>
+        body{font-family:Arial,sans-serif;margin:20px;background:#f5f5f5;}
+        table{width:100%;border-collapse:collapse;background:white;margin-bottom:20px;box-shadow:0 2px 4px rgba(0,0,0,.1);}
+        th{background:#1a3a52;color:white;padding:12px;text-align:left;font-weight:bold;border:1px solid #ddd;}
+        td{padding:10px;border:1px solid #ddd;}
+        tr:nth-child(even){background:#f9f9f9;}
+        tr:hover{background:#f0f0f0;}
+        .title{font-size:24px;font-weight:bold;margin-bottom:20px;color:#1a3a52;}
+        .subtitle{font-size:14px;color:#666;margin-bottom:20px;}
+        .success{color:green;}
+        .warning{color:#ff9800;font-weight:bold;}
+        .short{color:#e74c3c;font-weight:bold;}
+        @media print{body{background:white;}table{box-shadow:none;}}
+      </style>
+    </head>
+    <body>
+      <div class="title">📊 ${reportName}</div>
+      <div class="subtitle">Generated: ${new Date().toLocaleDateString('mr-IN')} ${new Date().toLocaleTimeString('mr-IN')}</div>
+      ${content}
+      <div style="margin-top:30px;font-size:12px;color:#999;text-align:center;">
+        Shree Warana Vidyalaya Timetable System
+      </div>
+    </body>
+    </html>
+  `);
+  w.document.close();
+  setTimeout(()=>w.print(),500);
 }
 
 // ===== EXPORT/IMPORT =====
