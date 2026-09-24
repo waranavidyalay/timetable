@@ -1461,89 +1461,77 @@ function generateForClass(cid){
 
   // ════════════════════════════════════════════════════════════
   // ════════════════════════════════════════════════════════════
-  // PHASE 1-2 COMBINED: PE NEW RULES (completely changed)
-  //   
-  // 5TH: Thursday P7-P8-P9 (ALL divisions)
-  // 6TH: Monday P7-P8-P9 (ALL divisions)
-  // 7TH: Friday P7-P8-P9 (ALL divisions)
-  // 8TH: Tuesday P7-P8-P9 (ALL divisions)
-  // 9TH: Distribute 2 divisions each to Tue/Thu/Fri (NOT Monday)
-  // 10TH: One division per day (flexible: Mon/Tue/Thu/Fri)
+  // PHASE 1-2: PE + WEIT (BULLETPROOF REWRITE)
+  //   Classes 5-8: WEIT fixed day + PE fixed day (both P7-P8-P9)
+  //   Classes 9-10: PE distributed (new rules)
   // ════════════════════════════════════════════════════════════
   
   const std=getClassStd(cls2);
   
-  // CLASSES 5-8: Fixed day, ALL divisions same day
   if(std>=5&&std<=8){
-    const peDay=getPEDay(cls2); // Returns: Thu/Mon/Fri/Tue
+    // CLASSES 5-8: Both WEIT and PE on fixed days
+    const weitDay=getWEDay(cls2);
+    const peDay=getPEDay(cls2);
     
-    if(peDay){
+    // Find PE and WEIT subjects
+    const peRow=csl.find(r=>isPE(D.subjects.find(x=>x.id===r.subjectId)));
+    const weitRow=csl.find(r=>isWorkExperience(D.subjects.find(x=>x.id===r.subjectId)));
+    
+    // WEIT placement (if exists and day is valid)
+    if(weitRow && weitDay){
+      if(!D.TT[cid][weitDay])D.TT[cid][weitDay]={};
+      D.TT[cid][weitDay][7]={subjectId:weitRow.subjectId,teacherId:weitRow.teacherId};
+      D.TT[cid][weitDay][8]={subjectId:weitRow.subjectId,teacherId:weitRow.teacherId};
+      D.TT[cid][weitDay][9]={subjectId:weitRow.subjectId,teacherId:weitRow.teacherId};
+    }
+    
+    // PE placement (if exists and day is valid)
+    if(peRow && peDay){
       if(!D.TT[cid][peDay])D.TT[cid][peDay]={};
-      
-      // Place PE P7-P8-P9
-      csl.forEach(row=>{
-        const s=D.subjects.find(x=>x.id===row.subjectId);
-        if(!isPE(s))return;
-        
-        // FORCE place on fixed day
-        D.TT[cid][peDay][7]={subjectId:row.subjectId,teacherId:row.teacherId};
-        D.TT[cid][peDay][8]={subjectId:row.subjectId,teacherId:row.teacherId};
-        D.TT[cid][peDay][9]={subjectId:row.subjectId,teacherId:row.teacherId};
-      });
+      D.TT[cid][peDay][7]={subjectId:peRow.subjectId,teacherId:peRow.teacherId};
+      D.TT[cid][peDay][8]={subjectId:peRow.subjectId,teacherId:peRow.teacherId};
+      D.TT[cid][peDay][9]={subjectId:peRow.subjectId,teacherId:peRow.teacherId};
     }
   }
   
-  // CLASS 9: Distribute 2 divisions each to Tue/Thu/Fri (NOT Monday)
   else if(std===9){
-    const peSubj=csl.find(row=>isPE(D.subjects.find(x=>x.id===row.subjectId)));
-    if(peSubj){
-      const peItem={subjectId:peSubj.subjectId,teacherId:peSubj.teacherId};
+    // CLASS 9: PE distributed (2 divisions per day)
+    const peRow=csl.find(r=>isPE(D.subjects.find(x=>x.id===r.subjectId)));
+    if(peRow){
+      // Get division index (A=0, B=1, C=2, D=3, E=4, F=5)
+      const divStr=String(cls2?.division||'A').toUpperCase().trim();
+      const divChar=divStr.charAt(0);
+      const divIndex=divChar.charCodeAt(0)-65; // A→0, B→1, etc.
       
-      // Get division letter (A, B, C, D)
-      const cls2Str=String(cls2?.division||'').toUpperCase();
-      const divIndex=cls2Str.charCodeAt(0)-65; // A=0, B=1, C=2, D=3
-      
-      // Map divisions to days:
-      // A,B → Tuesday
-      // C,D → Thursday  
-      // E,F → Friday
+      // Map to day: A,B→Tue, C,D→Thu, E,F→Fri
       let peDay='Tuesday';
       if(divIndex===2||divIndex===3)peDay='Thursday';
       if(divIndex===4||divIndex===5)peDay='Friday';
       
       if(!D.TT[cid][peDay])D.TT[cid][peDay]={};
-      
-      // Place P7-P8-P9
-      D.TT[cid][peDay][7]=peItem;
-      D.TT[cid][peDay][8]=peItem;
-      D.TT[cid][peDay][9]=peItem;
+      D.TT[cid][peDay][7]={subjectId:peRow.subjectId,teacherId:peRow.teacherId};
+      D.TT[cid][peDay][8]={subjectId:peRow.subjectId,teacherId:peRow.teacherId};
+      D.TT[cid][peDay][9]={subjectId:peRow.subjectId,teacherId:peRow.teacherId};
     }
   }
   
-  // CLASS 10: One division per day (flexible)
   else if(std===10){
-    const peSubj=csl.find(row=>isPE(D.subjects.find(x=>x.id===row.subjectId)));
-    if(peSubj){
-      const peItem={subjectId:peSubj.subjectId,teacherId:peSubj.teacherId};
+    // CLASS 10: PE flexible (1 division per day)
+    const peRow=csl.find(r=>isPE(D.subjects.find(x=>x.id===r.subjectId)));
+    if(peRow){
+      // Get division index (A=0, B=1, C=2, D=3)
+      const divStr=String(cls2?.division||'A').toUpperCase().trim();
+      const divChar=divStr.charAt(0);
+      const divIndex=divChar.charCodeAt(0)-65; // A→0, B→1, etc.
       
-      // Get division letter (A, B, C, D)
-      const cls2Str=String(cls2?.division||'').toUpperCase();
-      const divIndex=cls2Str.charCodeAt(0)-65; // A=0, B=1, C=2, D=3
-      
-      // Map divisions to days:
-      // A → Monday
-      // B → Tuesday
-      // C → Thursday
-      // D → Friday
-      const days=['Monday','Tuesday','Thursday','Friday'];
-      const peDay=days[divIndex]||'Monday';
+      // Map to day: A→Mon, B→Tue, C→Thu, D→Fri
+      const dayMap=['Monday','Tuesday','Thursday','Friday'];
+      const peDay=dayMap[divIndex]||'Monday';
       
       if(!D.TT[cid][peDay])D.TT[cid][peDay]={};
-      
-      // Place P7-P8-P9
-      D.TT[cid][peDay][7]=peItem;
-      D.TT[cid][peDay][8]=peItem;
-      D.TT[cid][peDay][9]=peItem;
+      D.TT[cid][peDay][7]={subjectId:peRow.subjectId,teacherId:peRow.teacherId};
+      D.TT[cid][peDay][8]={subjectId:peRow.subjectId,teacherId:peRow.teacherId};
+      D.TT[cid][peDay][9]={subjectId:peRow.subjectId,teacherId:peRow.teacherId};
     }
   }
 
@@ -1578,57 +1566,37 @@ function generateForClass(cid){
   const std2b=getClassStd(cls2);
   csl.forEach(row=>{
     const subj=D.subjects.find(x=>x.id===row.subjectId);
-    if(!isLateOnly(subj)||isPE(subj)||isWorkExperience(subj)||isSCNMR(subj))return; // Skip SCNMR!
+    if(!isLateOnly(subj)||isPE(subj)||isWorkExperience(subj)||isSCNMR(subj))return; // Skip PE/WEIT/SCNMR!
     const item={subjectId:row.subjectId,teacherId:row.teacherId};
-    const tgt=getTgt(row.subjectId);
-    // LIMIT CHECK: Stop if already at target
-    const cur=Object.keys(D.TT[cid]||{}).reduce((s,d)=>s+(Object.keys(D.TT[cid][d]||{}).filter(p=>D.TT[cid][d][p]?.subjectId===row.subjectId).length),0);
-    if(cur>=tgt)return; // Already complete
-    // CRITICAL: Check if already at target BEFORE placement
+    let tgt=getTgt(row.subjectId);
+    
+    // FORCE CE to 1 तास ONLY
+    if(subj.name.includes('Competitive')||subj.code==='CE'){
+      tgt=1; // Hard limit!
+    }
+    
+    // Check if already at target BEFORE ANY placement
     const currentUsed=Object.keys(D.TT[cid]||{}).reduce((sum,day)=>{
       return sum+(Object.keys(D.TT[cid][day]||{}).filter(p=>D.TT[cid][day][p]?.subjectId===row.subjectId).length);
     },0);
-    if(currentUsed>=tgt)return; // Already complete, skip!
-    // Default: 1/day, distinct days, late zone (P7+)
+    if(currentUsed>=tgt)return; // Already complete, STOP!
+    
+    // Place periods one by one, stopping when target reached
+    let placed=0;
     shuffle(sdays);
     for(const day of sdays){
-      if(getUsed(item.subjectId)>=tgt)break;
-      if(getDayUsed(day,item.subjectId)>0)continue;
-      // Skip Monday P7-P8-P9 for 7-8-9 classes (SCNMR reserved)
-      if(std2b>=7&&std2b<=9&&day==='Monday')continue;
+      if(placed>=tgt)break; // STOP when target reached
+      if(getDayUsed(day,item.subjectId)>0)continue; // One per day rule
+      if(std2b>=7&&std2b<=9&&day==='Monday')continue; // Skip Monday for 7-8-9
+      
       const mp=maxPDay(day);
-      for(let p=lateStart;p<=mp;p++){
-        // Also skip P7-P8-P9 on Monday for 7-8-9
-        if(std2b>=7&&std2b<=9&&day==='Monday'&&p>=7&&p<=9)continue;
-        if(canPlace(item,day,p)){doPlace(item,day,p);break;}
-      }
-    }
-    // If still short, try pairing as consecutive double in late zone
-    while(getUsed(item.subjectId)+2<=tgt){
-      shuffle(sdays);
-      let placed=false;
-      for(const day of sdays){
-        // Skip Monday for 7-8-9 classes
-        if(std2b>=7&&std2b<=9&&day==='Monday')continue;
-        const mp=maxPDay(day);
-        for(let p=lateStart;p<=mp-1&&!placed;p++){
-          if(canConsec(item,day,p,2)){doConsec(item,day,p,2);placed=true;}
-        }
-        if(placed)break;
-      }
-      if(!placed)break;
-    }
-    // Single leftover — adjacent-only if day already has this subject
-    shuffle(sdays);
-    for(const day of sdays){
-      if(getUsed(item.subjectId)>=tgt)break;
-      // Skip Monday for 7-8-9 classes
-      if(std2b>=7&&std2b<=9&&day==='Monday')continue;
-      const mp=maxPDay(day);
-      for(let p=lateStart;p<=mp;p++){
+      for(let p=lateStart;p<=mp&&placed<tgt;p++){
         if(!slotFree(day,p))continue;
-        if(getDayUsed(day,item.subjectId)===1&&!isAdjacentToSame(item.subjectId,day,p))continue;
-        if(canPlace(item,day,p)){doPlace(item,day,p);break;}
+        if(canPlace(item,day,p)){
+          doPlace(item,day,p);
+          placed++;
+          break; // Move to next day
+        }
       }
     }
   });
