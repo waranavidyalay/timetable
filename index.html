@@ -43,11 +43,15 @@ body{font-family:'DM Sans',sans-serif;background:#eaf0f6;color:var(--tx);min-hei
 .dt td{padding:5px 9px;border-bottom:1px solid var(--bd);vertical-align:middle;}
 .dt tr:hover td{background:var(--lt);}
 /* PRINT-STYLE TIMETABLE (rows=time, cols=days) */
-.ptt{border-collapse:collapse;width:100%;font-size:.72rem;}
+.ptt{border-collapse:collapse;width:100%;font-size:.72rem;table-layout:fixed;}
 .ptt th{background:var(--pr);color:#fff;padding:5px 5px;text-align:center;font-size:.65rem;white-space:nowrap;border:1px solid #aaa;}
 .ptt th.sh-day{background:#7f3d00;}
 .ptt td{border:1px solid #ccc;padding:3px 3px;vertical-align:middle;text-align:center;}
 .ptt td.time-col{background:#f8fafc;font-weight:700;font-size:.63rem;color:var(--pr);text-align:center;min-width:62px;white-space:nowrap;}
+.ptt th{background:var(--pr);color:#fff;font-weight:700;font-size:.7rem;text-align:center;padding:8px 4px;min-width:90px;width:90px;}
+.ptt th:first-child{background:#f8fafc;color:var(--pr);}
+.ptt th:last-child{min-width:110px;width:110px;}
+.ptt td{min-width:90px;width:90px;padding:4px 2px;text-align:center;}
 .ptt td.day-hdr{background:var(--pr);color:#fff;font-weight:700;font-size:.7rem;text-align:center;}
 .ptt td.sh-hdr{background:#7f3d00;color:#fff;font-weight:700;font-size:.7rem;text-align:center;}
 .ptt td.assembly{background:#fff9c4;color:#856404;font-weight:700;font-size:.63rem;}
@@ -65,7 +69,7 @@ body{font-family:'DM Sans',sans-serif;background:#eaf0f6;color:var(--tx);min-hei
 .cell-subj{font-weight:700;font-size:.72rem;display:block;line-height:1.2;}
 .cell-info{font-size:.6rem;color:#666;display:block;line-height:1.2;}
 /* TEACHER COL */
-.ptt td.tchr-col{background:#f8fafc;font-size:.62rem;text-align:left;padding:4px 5px;vertical-align:top;min-width:110px;}
+.ptt td.tchr-col{background:#f8fafc;font-size:.62rem;text-align:left;padding:4px 5px;vertical-align:top;min-width:120px;width:120px;max-width:120px;word-wrap:break-word;}
 /* MISC */
 .badge{display:inline-block;padding:1px 6px;border-radius:20px;font-size:.63rem;font-weight:700;}
 .bb{background:#d6eaf8;color:#1a5276;}.bgg{background:#d5f5e3;color:#1e8449;}
